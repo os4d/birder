@@ -55,6 +55,25 @@ a:hover {
     border-color: black;
 }
 
+.btn-success {
+    color: black;
+    background-color: #b5dede
+}
+
+.btn-danger {
+    color: black;
+    background-color: #f6b6c2
+}
+.btn-success:hover {
+    color: #d7d7d7;
+    background-color: #89aaaa
+}
+
+.btn-danger:hover {
+    color: #d7d7d7;
+    background-color: #aa787c
+}
+
 .btn-primary:hover {
     color: #fff;
     background-color: #808080;
@@ -91,9 +110,11 @@ footer img.logo {
     color: white;
     width: 40px;
 }
-.navbar a.nav-link.selected{
+
+.navbar a.nav-link.selected {
     color: white;
 }
+
 .card-img-top.status {
     width: 50px;
     margin-top: 10px;
@@ -105,13 +126,13 @@ footer img.logo {
 
 .btn-primary:not(:disabled):not(.disabled).active,
 .btn-primary:not(:disabled):not(.disabled):active,
-.show>.btn-primary.dropdown-toggle {
+.show > .btn-primary.dropdown-toggle {
     color: black;
     background-color: #acacac;
     border-color: #808080;
 }
 
-.btn.toggle:disabled .toggle-on{
+.btn.toggle:disabled .toggle-on {
     color: red;
     background-color: #0062cc;
     border-color: #005cbf;

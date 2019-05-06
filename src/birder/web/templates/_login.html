@@ -3,13 +3,19 @@
         <!-- Login Form -->
         <form method="post" action="{{ config.URL_PREFIX }}/login/">
             <div class="form-group pl-5 pr-5 pt-2">
-                <input type="text" class="form-control mb-4 form-control-lg" name="username" placeholder="login">
+                <input type="text"
+                       autocomplete="username"
+                       class="form-control mb-4 form-control-lg"
+                       name="username" placeholder="login">
                 <input type="password"
                        autocomplete="current-password"
                        class="form-control form-control-lg"
                        name="password" placeholder="password">
             </div>
-            <input class="btn btn-primary" type="submit" class="fadeIn fourth" value="Log In">
+            <input class="btn btn-primary" type="submit" value="Log In">
+            <input class="btn btn-secondary"
+                   onclick="javascript:$('#loginForm').hide();"
+                   type="button" value="Cancel">
         </form>
     </div>
 </div>
