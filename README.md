@@ -16,7 +16,8 @@ Supported protocols/servers
  - http/https
  - Postgres/Postgis 
  - Redis
- 
+ - Celery
+
 
 Installation
 ------------
@@ -28,8 +29,8 @@ docker run \
     --rm \
     --name=${CONTAINER_NAME} \
     -p 5000:5000 \
-    -e MONITORa_${MONITOR_A_NAME}=${MONITOR_A_URL} \
-    -e MONITORb_${MONITOR_B_NAME}=${MONITOR_B_URL} \
+    -e MONITORa_${MONITOR_A_NAME}=${MONITOR_A_CONN_STRING} \
+    -e MONITORb_${MONITOR_B_NAME}=${MONITOR_B_CONN_STRING} \
     -e ADMINS=${BIRDER_ADMIN}:${BIRDER_PASSWORD}\
     -v /tmp/~birder:/var/db \
     ${RUN_OPTIONS} \
@@ -46,7 +47,6 @@ Todo
 ----
  - MySql
  - ftp
- - Celery
  - RabbitMQ
  - amqp
  - clarify behaviour:
