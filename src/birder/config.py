@@ -17,7 +17,7 @@ targets = get_targets()
 
 
 def parse_bool(value):
-    return str(value).lower() in ["1", "t", "true", "y", "yes"]
+    return str(value).lower() in ["1", "t", "true", "y", "yes", "on"]
 
 
 def parse_int(value, default=0):
@@ -52,9 +52,10 @@ class Config:
     POLLING_INTERVAL = parse_int(os.environ.get('POLLING_INTERVAL'), 58)
     DISPLAY_URLS = parse_bool(os.environ.get('DISPLAY_URLS', True))
     ADMINS = parse_users(os.environ.get('ADMINS'))
+    COOKIE_POLICY_MESSAGE = parse_bool(os.environ.get('COOKIE_POLICY_MESSAGE', False))
 
     BOOTSTRAP_USE_MINIFIED = True
-    BOOTSTRAP_SERVE_LOCAL = parse_bool(os.environ.get('BOOTSTRAP_SERVE_LOCAL', ""))
+    BOOTSTRAP_SERVE_LOCAL = parse_bool(os.environ.get('BOOTSTRAP_SERVE_LOCAL', True))
     BOOTSTRAP_QUERYSTRING_REVVING = True
 
     SESSION_TYPE = "redis"
