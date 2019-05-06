@@ -19,9 +19,9 @@ with open(init, 'rb') as f:
 setup(
     name=NAME,
     version=VERSION,
-    url='https://github.com/bitcaster/service-monitor',
-    author='Stefano Apostolico',
-    author_email='s.apostolico@gmail.com',
+    url='https://github.com/os4d/birder',
+    author='OS4D team',
+    author_email='info@os4d.org',
     package_dir={'': 'src'},
     packages=find_packages('src'),
     include_package_data=True,
