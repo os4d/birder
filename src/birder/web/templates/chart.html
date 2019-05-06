@@ -19,6 +19,16 @@
                                data-on="On" data-off="Off">
             </div>
         </div>
+                    <div class="spinner-border">---
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+
         <div class="container charts" id="content">
             {% for entry in urls %}
                 <h3 id="C{{ entry.ts_name }}">{{ entry.label }}</h3>
@@ -32,8 +42,8 @@
                     </small>
                 {% endif %}
                 <div class="row col-12 p-3 m-1">
-                    <div id="chart-{{ entry.ts_name }}-spinner">
 
+                    <div id="chart-{{ entry.ts_name }}-spinner">
 
                         <div class="d-flex justify-content-center">
                             <div class="spinner-border" role="status">

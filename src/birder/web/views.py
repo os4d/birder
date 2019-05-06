@@ -1,17 +1,11 @@
-import time
-from collections import OrderedDict
-from functools import wraps
-
-from time import strftime, strptime
-
-from flask import make_response, render_template, request, redirect, session, Blueprint
-
-from birder.logging import logger
-from ..config import targets
-from ..monitor.tsdb import stats, client, units
-from .app import app, basic_auth, cache, template_dir
-from datetime import datetime as dt, timedelta, datetime
+from datetime import datetime as dt
 from json import dumps
+
+from flask import Blueprint, make_response, redirect, render_template, request, session
+
+from ..config import targets
+from ..monitor.tsdb import client, stats, units
+from .app import app, template_dir
 
 
 def jsonify(**kwargs):
@@ -26,16 +20,23 @@ def jsonify(**kwargs):
 bp = Blueprint('birder', __name__, template_folder=template_dir)
 
 
-@bp.route('/login/')
-@basic_auth.required
+@bp.route('/login/', methods=['POST'])
 def login():
-    return redirect( "%s/" % app.config['URL_PREFIX'])
+    referrer = request.headers.get("Referer", "%s/" % app.config['URL_PREFIX'])
+    username = request.form['username']
+    if username:
+        ok = app.config["ADMINS"].get(username) == request.form['password']
+        if ok:
+            session['user'] = request.form['username']
+
+    return redirect(referrer)
 
 
 @bp.route('/logout/')
-@basic_auth.logout
 def logout():
-    return "", 401
+    referrer = request.headers.get("Referer", "%s/" % app.config['URL_PREFIX'])
+    session['user'] = ""
+    return redirect(referrer)
 
 
 @bp.route('/')

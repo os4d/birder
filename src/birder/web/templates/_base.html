@@ -9,6 +9,7 @@
 {% block styles %}
     {{ super() }}
     <link rel="stylesheet" href="{{ config.URL_PREFIX }}/static/css/theme.css?v={{ version }}">
+    <link rel="stylesheet" href="{{ config.URL_PREFIX }}/static/css/login.css?v={{ version }}">
     <link rel="apple-touch-icon" sizes="76x76"
           href="{{ config.URL_PREFIX }}/static/images/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32"
@@ -46,22 +47,27 @@
                                    href="{{ config.URL_PREFIX }}/{{ g }}/">{{ g.title() }}</a>
                             </li>
                         {% endfor %}
-                        <li class="nav-item">
-                            <a class="nav-link {% if page == "about" %}selected{% endif %}"
-                               href="{{ config.URL_PREFIX }}/about/">About</a>
-                        </li>
-                        <li class="nav-item"><span class="d-md-none nav-link">&nbsp;|&nbsp;</span></li>
+                        <li class="nav-item mr-5">&nbsp;</li>
                         <li class="nav-item">
                             {% if user %}
-                                <a class="nav-link" id="logout" href="#">Logout</a>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        {{ user }}
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                        <a class="dropdown-item" href="{{ config.URL_PREFIX }}/logout/">logout</a>
+                                    </div>
+                                </li>
                             {% elif basic_auth %}
-                                <a class="nav-link" href="{{ config.URL_PREFIX }}/login/">Login</a>
+                                <a class="nav-link" id="login" href="#">Login</a>
                             {% endif %}
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
+        {% include "_login.html" %}
     {% endblock %}
 
     {% block content %}
@@ -70,8 +76,10 @@
         {% block footer %}
             <footer class="py-5 bg-dark">
                 <div class="container">
-                    <p class="m-0 text-center text-white"><img class="logo"
-                                                               src="{{ config.URL_PREFIX }}/static/images/birder.png">birder {{ version }}
+                    <p class="m-0 text-center text-white">
+                        <img class="logo"
+                             src="{{ config.URL_PREFIX }}/static/images/birder.png">
+                        <a href="{{ config.URL_PREFIX }}/about/">birder {{ version }}</a>
                         &copy; 2019 OS4D ltd</p>
                 </div>
                 <!-- /.container -->
@@ -82,31 +90,7 @@
         {{ super() }}
         <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
         <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
-
-        <script>
-            $('#logout').click(function (e) {
-                e.preventDefault();
-                jQuery.ajax({
-                    type: "GET",
-                    url: "{{ config.URL_PREFIX }}/logout/",
-                    async: true,
-                    dataType: 'json',
-                    username: "{{ user }}" + Math.random(),
-                    password: Math.random(),
-                    headers: {"Authorization": "Basic xxx"},
-                })
-                    .done(function () {
-                        // If we don't get an error, we actually got an error as we expect an 401!
-                    })
-                    .fail(function () {
-                        // We expect to get an 401 Unauthorized error! In this case we are successfully
-                        // logged out and we redirect the user.
-                        window.location = "{{ config.URL_PREFIX }}/";
-                    });
-
-                return false;
-            })
-        </script>
+        <script src="{{ config.URL_PREFIX }}/static/js/login.js"></script>
     {% endblock %}
     {% block privacy %}
         {% if config.COOKIE_POLICY_MESSAGE %}

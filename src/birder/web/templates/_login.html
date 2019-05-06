@@ -1,0 +1,15 @@
+<div id="loginForm" class="d-none wrapper">
+    <div id="formContent" class="p-2 pt-3 pb-3">
+        <!-- Login Form -->
+        <form method="post" action="{{ config.URL_PREFIX }}/login/">
+            <div class="form-group pl-5 pr-5 pt-2">
+                <input type="text" class="form-control mb-4 form-control-lg" name="username" placeholder="login">
+                <input type="password"
+                       autocomplete="current-password"
+                       class="form-control form-control-lg"
+                       name="password" placeholder="password">
+            </div>
+            <input class="btn btn-primary" type="submit" class="fadeIn fourth" value="Log In">
+        </form>
+    </div>
+</div>

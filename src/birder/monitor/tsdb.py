@@ -8,7 +8,7 @@ from redis_timeseries import TimeSeries, days, hours, minutes
 
 class TS(TimeSeries):
     def get_data(self, key, granularity):
-        count  = int(re.sub('[a-z]*', '', granularity))
+        count = int(re.sub('[a-z]*', '', granularity))
         successs = self.get_buckets("%s:s" % key, granularity, count)
         failures = self.get_buckets("%s:f" % key, granularity, count)
         return [successs, failures]
@@ -25,10 +25,9 @@ class TS(TimeSeries):
         pipe.execute()
 
     def failure(self, key):
-        pipe =self.hset("%s:f" % key, 1, execute=False)
+        pipe = self.hset("%s:f" % key, 1, execute=False)
         pipe.set(key, 1)
         pipe.execute()
-
 
     def hset(self, key, value, timestamp=None, execute=True):
         # type(pipe): Pipeline

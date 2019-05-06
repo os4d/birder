@@ -1,12 +1,9 @@
-import os
 import signal
 import sys
 from multiprocessing.pool import Pool
-from ..logging import logger
 from time import sleep
 
-from birder import config
-from ..config import get_targets, Target, Config
+from ..config import Config, Target, get_targets
 from .tsdb import stats
 
 

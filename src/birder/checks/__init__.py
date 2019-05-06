@@ -1,16 +1,15 @@
 import os
-from ..logging import logger
+import socket
+from contextlib import closing
+from itertools import count
 from urllib.parse import urlparse
 
-from itertools import count
-from redis import Redis as RedisClient
 import psycopg2
 import requests
 from celery.app.control import Control
-import socket
 from kombu import Connection
+from redis import Redis as RedisClient
 from slugify import slugify
-from contextlib import closing
 
 
 def labelize(varname):
@@ -28,7 +27,7 @@ class Target:
 
         self.order = next(self._ids)
         self.label = labelize(self.name.split('_', 1)[1])
-        self.ts_name = slugify(self.name, separator='_', decimal=False)
+        self.ts_name = slugify(self.init_string, separator='_', decimal=False)
 
         self.conn = ""
         self.scheme = ""

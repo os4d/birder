@@ -1,11 +1,11 @@
 import os
-from .logging import logger
-from .checks import Target, Factory
+
+from .checks import Factory, Target
 
 
 def get_targets(ctx=os.environ) -> [Target]:
     targets = []
-    names = sorted([k for k,v in ctx.items() if k.startswith('MONITOR')])
+    names = sorted([k for k, v in ctx.items() if k.startswith('MONITOR')])
     for i, varname in enumerate(names):
         m = Factory.from_envvar(varname)
         m.order = i

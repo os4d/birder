@@ -1,4 +1,5 @@
 from functools import wraps
+
 from flask import session
 from flask_basicauth import BasicAuth
 
