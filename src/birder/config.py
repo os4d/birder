@@ -1,6 +1,5 @@
 import os
-import re
-
+from .logging import logger
 from .checks import Target, Factory
 
 

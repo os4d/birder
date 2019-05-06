@@ -6,6 +6,9 @@ verify_ssl = true
 [dev-packages]
 bumpversion = "*"
 pytest = "*"
+ipdb = "*"
+isort = "*"
+flake8 = "*"
 
 [packages]
 requests = "*"

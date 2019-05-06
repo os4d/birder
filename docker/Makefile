@@ -35,12 +35,14 @@ build:
 
 
 .run:
-	docker run \
+	cd .. && docker run \
 	 		--rm \
 	 		--name=${CONTAINER_NAME} \
 			-p 5000:5000 \
-			-e MONITOR10_BIRDER=http://localhost:5000 \
+			-e MONITORa_BIRDER=http://localhost:5000 \
+			-e MONITORb_DB=postgis://postgres:@192.168.66.66:6379/aaa \
 			-e ADMINS=sax:123 \
+			-v /tmp/~birder:/var/db \
 			${RUN_OPTIONS} \
 			${DOCKER_IMAGE} \
 			${CMD}

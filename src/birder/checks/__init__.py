@@ -1,5 +1,5 @@
 import os
-import re
+from ..logging import logger
 from urllib.parse import urlparse
 
 from itertools import count
@@ -75,7 +75,8 @@ class Redis(Target):
 
 class Postgres(Target):
     def check(self):
-        conn = psycopg2.connect(self.conn)
+        conn = self.conn.replace('postgis://', 'postgres://')
+        conn = psycopg2.connect(conn, connect_timeout=1)
         cursor = conn.cursor()
         cursor.execute('select 1')
         return True

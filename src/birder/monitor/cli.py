@@ -2,7 +2,7 @@ import os
 import signal
 import sys
 from multiprocessing.pool import Pool
-
+from ..logging import logger
 from time import sleep
 
 from birder import config
@@ -22,18 +22,20 @@ class TermColor:
 
 
 def monitor(target: Target):
+    extra = ""
     try:
         color = TermColor.OKGREEN
         assert target.check()
         stats.success(target.ts_name)
     except KeyboardInterrupt:
         return
-    except BaseException:
-        stats.failure(target.ts_name)
+    except BaseException as e:
         color = TermColor.FAIL
+        extra = str(e)
+        stats.failure(target.ts_name)
 
-    sys.stdout.write("%s%-15s %s %s\n" % (color, target.label, target.url,
-                                           TermColor.ENDC))
+    sys.stdout.write("%s%-15s %s %s %s\n" % (color, target.label, target.url,
+                                          TermColor.ENDC, extra))
     sys.stdout.flush()
 
 
@@ -43,6 +45,9 @@ def init_worker():
 
 def main():
     targets = get_targets()
+    for target in targets:
+        sys.stdout.write("%s%-15s %s %s\n" % (TermColor.WARNING, target.label, target.url, TermColor.ENDC))
+
     if targets:
         p = Pool(processes=20, initializer=init_worker)
         while True:
