@@ -124,6 +124,11 @@ class Celery(Target):
         self.query = parse.parse_qs(o.query)
         self.fragment = o.fragment
 
+    @property
+    def url(self):
+        address = re.sub('.*@', '******@', self.netloc)
+        return "%s://%s%s" % (self.query['broker'][0], address, self.path)
+
     @cached_property
     def broker(self):
         return "%s://%s%s" % (self.query['broker'][0], self.netloc, self.path)
