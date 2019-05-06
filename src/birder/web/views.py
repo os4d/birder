@@ -6,6 +6,7 @@ from time import strftime, strptime
 
 from flask import make_response, render_template, request, redirect, session, Blueprint
 
+from birder.logging import logger
 from ..config import targets
 from ..monitor.tsdb import stats, client, units
 from .app import app, basic_auth, cache, template_dir
@@ -34,7 +35,6 @@ def login():
 @bp.route('/logout/')
 @basic_auth.logout
 def logout():
-    session['user'] = ""
     return "", 401
 
 
