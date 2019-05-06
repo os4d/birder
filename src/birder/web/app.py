@@ -20,6 +20,6 @@ cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 session = Session(app)
 
 from . import views  # isort:skip
-from . import template_utils  # isort:skip
+from . import template_utils  # noqa isort:skip
 
 app.register_blueprint(views.bp, url_prefix=app.config['URL_PREFIX'])

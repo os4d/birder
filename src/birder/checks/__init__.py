@@ -1,5 +1,6 @@
 import os
 import re
+from urllib import parse
 
 import socket
 from contextlib import closing
@@ -9,9 +10,11 @@ from urllib.parse import urlparse
 import psycopg2
 import requests
 from celery.app.control import Control
+from celery import Celery as CeleryApp
 from kombu import Connection
 from redis import Redis as RedisClient
 from slugify import slugify
+from werkzeug.utils import cached_property
 
 
 def labelize(varname):
@@ -111,23 +114,27 @@ Rabbit = RabbitMQ = Kombu = Amqp
 
 
 class Celery(Target):
+    def parse(self):
+        self.conn = self.init_string
+        o = urlparse(self.conn)
+        self.scheme = o.scheme.lower()
+        self.path = o.path
+        self.netloc = o.netloc
+        self.params = o.params
+        self.query = parse.parse_qs(o.query)
+        self.fragment = o.fragment
+
+    @cached_property
+    def broker(self):
+        return "%s://%s%s" % (self.query['broker'][0], self.netloc, self.path)
+
     def check(self):
-        ERROR_KEY = "ERROR"
-        try:
-            c = Control()
-            insp = c.inspect()
-            d = insp.stats()
-            if not d:
-                d = {ERROR_KEY: 'No running Celery workers were found.'}
-        except IOError as e:
-            from errno import errorcode
-            msg = "Error connecting to the backend: " + str(e)
-            if len(e.args) > 0 and errorcode.get(e.args[0]) == 'ECONNREFUSED':
-                msg += ' Check that the RabbitMQ server is running.'
-            d = {ERROR_KEY: msg}
-        except ImportError as e:
-            d = {ERROR_KEY: str(e)}
-        return d
+        app = CeleryApp('birder', loglevel='info', broker=self.broker)
+        c = Control(app)
+        insp = c.inspect(timeout=1.1)
+        d = insp.stats()
+        # d = insp.ping()
+        return bool(d)
 
 
 class TCP(Target):
