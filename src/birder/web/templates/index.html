@@ -1,0 +1,23 @@
+{% extends "_base.html" %}
+{% block page %}
+    <div class="container mt-5">
+        <div class="row">
+            {% for entry in services %}
+                <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
+                    <div class="card h-100">
+                        {% if entry.1 %}
+                            <img class="card-img-top status text-center" src="/static/images/danger.png" alt="">
+                        {% else %}
+                            <img class="card-img-top status text-center" src="/static/images/ok.png" alt="">
+                        {% endif %}
+                        <div class="card-body">
+                            <h4 class="card-title text-center">{{ entry.0.label }}</h4>
+                            <p class="card-text">&nbsp;</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+

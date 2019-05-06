@@ -1,0 +1,149 @@
+{% extends "_base.html" %}
+{% block page %}
+    <div class="row">
+        <div class="sidebar">
+            <div class="sticky p-5">
+                {% for entry in urls %}
+                    <h4>
+                        <img class="icon" src="{{ url_for('static', filename="images/" + entry.logo ) }}">
+                        <a class="aaa" href="#C{{ entry.ts_name }}">{{ entry.label }}</a></h4>
+
+                {% endfor %}
+            </div>
+        </div>
+        <div class="container charts">
+            {% for entry in urls %}
+                <h3 id="C{{ entry.ts_name }}">{{ entry.label }}</h3>
+                {% if display_urls %}
+                    <small>
+                        {% if entry.link %}
+                            <a href="{{ entry.link }}">{{ entry.url }}</a>
+                        {% else %}
+                            {{ entry.url }}
+                        {% endif %}
+                    </small>
+                {% endif %}
+                <div class="row col-12 p-3 m-1">
+                    <div style="width:1000px">
+                        <canvas id="{{ entry.ts_name }}"></canvas>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/jquery.scrollTo.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/charts.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/moment-timezone.min.js') }}"></script>
+
+    <script>
+        $(".aaa").click(function (e) {
+            e.preventDefault();
+            var linkId = $(this).attr('href');
+            $.scrollTo($(linkId).offset().top - 60, $(linkId).offset().left);
+            return false;
+        });
+        var color = Chart.helpers.color;
+        var okColor = color(window.chartColors.green).alpha(0.5).rgbString();
+        var errorColor = color(window.chartColors.red).alpha(0.5).rgbString();
+        var cfg = {
+            data: {
+                datasets: [{
+                    backgroundColor: okColor,
+                    borderColor: okColor,
+                    steppedLine: true,
+                    data: [],
+                    type: 'line',
+                    pointRadius: 0,
+                    lineTension: 0,
+                    borderWidth: 2,
+                    fill: "start"
+
+                },
+                    {
+                        backgroundColor: errorColor,
+                        borderColor: errorColor,
+                        steppedLine: true,
+                        data: [],
+                        type: 'line',
+                        pointRadius: 0,
+                        lineTension: 0,
+                        borderWidth: 2,
+                        fill: "start"
+
+                    }]
+            },
+            options: {
+                legend: false,
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            {#unit: 'hour',#}
+                            displayFormats: {
+                                minute: 'HH:mm',
+                                hour: 'dddd DD'
+                            }
+                        },
+                        distribution: 'series',
+                        ticks: {
+                            autoSkip: true,
+                            maxTicksLimit: 8
+
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            display: false,
+                            stepSize: 1,
+                            min: 0,
+                            max: 1
+                        }
+                    }]
+                },
+                tooltips: {
+                    intersect: false,
+                    mode: 'index',
+                    callbacks: {
+                        label: function (tooltipItem, myData) {
+                            var label = myData.datasets[tooltipItem.datasetIndex].label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += parseFloat(tooltipItem.value).toFixed(2);
+                            return label;
+                        }
+                    }
+                }
+            }
+        };
+        var charts = {};
+        var ctxs = {};
+        var chartID;
+
+        {% for entry in urls %}
+            chartID = "{{entry.ts_name}}";
+            ctxs[chartID] = document.getElementById(chartID).getContext('2d');
+            ctxs[chartID].canvas.width = 500;
+            ctxs[chartID].canvas.height = 100;
+            charts[chartID] = new Chart(ctxs[chartID], cfg);
+
+            var update_{{entry.ts_name}} = function () {
+                $.get('/data/{{entry.ts_name}}/{{ granularity }}/')
+                    .done(function (data) {
+                        charts["{{entry.ts_name}}"].config.data.datasets[0].data = data.ok;
+                        charts["{{entry.ts_name}}"].config.data.datasets[1].data = data.fails;
+                        charts["{{entry.ts_name}}"].update();
+                    })
+            };
+            update_{{entry.ts_name}}();
+            setInterval(update_{{entry.ts_name}}, 60 * 1000);
+
+        {% endfor %}
+    </script>
+
+
+{% endblock %}

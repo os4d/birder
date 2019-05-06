@@ -1,0 +1,8 @@
+*.sqlite3
+~*
+.*
+*.egg-info
+!.gitignore
+!.dockerignore
+!.bumpversion.cfg
+docker/birder*
