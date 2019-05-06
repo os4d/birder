@@ -53,8 +53,8 @@ local:
 release:
 	pass docker/saxix | docker login -u saxix --password-stdin
 	docker tag ${DOCKER_IMAGE_NAME}:${VERSION} ${DOCKER_IMAGE_NAME}:latest
+	docker push ${DOCKER_IMAGE_NAME}:${VERSION}
 	docker push ${DOCKER_IMAGE_NAME}:latest
-#	docker push ${DOCKER_IMAGE_NAME}:${VERSION}
 
 deploy:
 	lazo rancher --insecure upgrade bitcaster:sm os4d/birder:latest
