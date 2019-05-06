@@ -6,11 +6,12 @@ from .checks import Target, Factory
 
 def get_targets(ctx=os.environ) -> [Target]:
     targets = []
-    for k, v in ctx.items():
-        m = re.match("^MONITOR(?P<order>[0-9]*)_", k)
-        if m:
-            targets.append(Factory.from_envvar(k))
-    return sorted(targets, key=lambda i: i.order)
+    names = sorted([k for k,v in ctx.items() if k.startswith('MONITOR')])
+    for i, varname in enumerate(names):
+        m = Factory.from_envvar(varname)
+        m.order = i
+        targets.append(m)
+    return targets
 
 
 targets = get_targets()

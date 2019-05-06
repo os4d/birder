@@ -66,12 +66,15 @@ def data(hkey, granularity):
 @bp.route('/<granularity>/')
 def chart(granularity):
     if granularity in app.config['GRANULARITIES']:
+        refresh = 0
+        if granularity == '60m':
+            refresh = app.config['REFRESH_INTERVAL']
         r = make_response(render_template('chart.html',
                                           urls=targets,
                                           granularity=granularity,
                                           page=granularity,
                                           unit=units[granularity],
-                                          refresh=0,
+                                          refresh=refresh,
                                           ))
         return r
     return "", 404

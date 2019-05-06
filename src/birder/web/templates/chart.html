@@ -5,10 +5,18 @@
             <div class="sticky p-5 menu">
                 {% for entry in urls %}
                     <h4>
-                        <img class="icon" src="{{config.URL_PREFIX}}/static/images/{{ entry.logo }}">
+                        <img class="icon" src="{{ config.URL_PREFIX }}/static/images/{{ entry.logo }}">
                         <a class="menu-item" href="#C{{ entry.ts_name }}">{{ entry.label }}</a></h4>
 
                 {% endfor %}
+                <div class="m-3"></div>
+                Auto Refresh <input type="checkbox" {% if refresh == 0 %}disabled="disabled"{% endif %}
+                               id="auto-refresh"
+                               data-onstyle="success"
+                               data-offstyle="primary"
+                               data-toggle="toggle"
+                               data-size="small"
+                               data-on="On" data-off="Off">
             </div>
         </div>
         <div class="container charts" id="content">
@@ -24,8 +32,20 @@
                     </small>
                 {% endif %}
                 <div class="row col-12 p-3 m-1">
-                    <div style="width:1000px">
-                        <canvas id="{{ entry.ts_name }}"></canvas>
+                    <div id="chart-{{ entry.ts_name }}-spinner">
+
+
+                        <div class="d-flex justify-content-center">
+                            <div class="spinner-border" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="d-none" id="chart-{{ entry.ts_name }}">
+                        <div style="width:1000px">
+                            <canvas id="{{ entry.ts_name }}"></canvas>
+                        </div>
                     </div>
                 </div>
             {% endfor %}
@@ -35,9 +55,9 @@
 
 {% block scripts %}
     {{ super() }}
-    <script src="{{config.URL_PREFIX}}/static/js/jquery.scrollTo.min.js"></script>
-    <script src="{{config.URL_PREFIX}}/static/js/charts.min.js"></script>
-    <script src="{{config.URL_PREFIX}}/static/js/moment-timezone.min.js"></script>
+    <script src="{{ config.URL_PREFIX }}/static/js/jquery.scrollTo.min.js"></script>
+    <script src="{{ config.URL_PREFIX }}/static/js/charts.min.js"></script>
+    <script src="{{ config.URL_PREFIX }}/static/js/moment-timezone.min.js"></script>
 
     <script>
         $.extend($.scrollTo.defaults, {
@@ -155,13 +175,25 @@
                         charts["{{entry.ts_name}}"].config.data.datasets[0].data = data.ok;
                         charts["{{entry.ts_name}}"].config.data.datasets[1].data = data.fails;
                         charts["{{entry.ts_name}}"].update();
+                        $("#chart-{{ entry.ts_name }}").removeClass("d-none").show();
                     })
             };
             update_{{entry.ts_name}}();
-            {% if refresh %}
-                setInterval(update_{{entry.ts_name}}, {{ refresh }} * 1000);
-            {% endif %}
         {% endfor %}
+            {% if refresh %}
+                $('#auto-refresh').change(function () {
+                    if ( $(this).prop('checked') ){
+                        console.log('auto-refresh ON');
+                        {% for entry in urls %}
+                        var interval_{{entry.ts_name}} = setInterval(update_{{entry.ts_name}}, {{ refresh }} * 1000);{% endfor %}
+                    } else{
+                        // clearinterval
+                        console.log('auto-refresh OFF');
+                        {% for entry in urls %}
+                        clearInterval(interval_{{entry.ts_name}});{% endfor %}
+                    }
+                });
+            {% endif %}
     </script>
 
 

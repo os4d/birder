@@ -22,6 +22,9 @@
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="msapplication-config" content="{{ config.URL_PREFIX }}/static/images/favicon/browserconfig.xml">
     <meta name="theme-color" content="#ffffff">
+
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+
 {% endblock %}
 {% block body %}
     {% block navbar %}
@@ -78,6 +81,7 @@
     {% block scripts %}
         {{ super() }}
         <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+        <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
         <script>
             $('#logout').click(function (e) {

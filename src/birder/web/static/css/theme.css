@@ -101,3 +101,18 @@ footer img.logo {
     margin-left: auto;
     margin-right: auto;
 }
+
+
+.btn-primary:not(:disabled):not(.disabled).active,
+.btn-primary:not(:disabled):not(.disabled):active,
+.show>.btn-primary.dropdown-toggle {
+    color: black;
+    background-color: #acacac;
+    border-color: #808080;
+}
+
+.btn.toggle:disabled .toggle-on{
+    color: red;
+    background-color: #0062cc;
+    border-color: #005cbf;
+}

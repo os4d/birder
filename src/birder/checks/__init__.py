@@ -26,9 +26,8 @@ class Target:
         self.name = name
         self.init_string = init_string
 
-        m = re.match("^MONITOR(?P<order>[0-9]*)_(?P<name>.*)", self.name)
-        self.order = int(m.group('order') or 0)
-        self.label = labelize(m.group('name'))
+        self.order = next(self._ids)
+        self.label = labelize(self.name.split('_', 1)[1])
         self.ts_name = slugify(self.name, separator='_', decimal=False)
 
         self.conn = ""
@@ -40,12 +39,11 @@ class Target:
         self.fragment = ""
 
         self.parse()
-        self.id = next(self._ids)
 
     def parse(self):
         self.conn = self.init_string
         o = urlparse(self.conn)
-        self.scheme = o.scheme
+        self.scheme = o.scheme.lower()
         self.path = o.path
         self.netloc = o.netloc
         self.params = o.params
@@ -88,10 +86,11 @@ PostGis = Postgres
 
 class Http(Target):
     icon = "http.png"
+    status_success = [200]
 
     def check(self):
-        res = requests.get(self.conn, timeout=0.5)
-        return res.status_code == 200
+        res = requests.get(self.conn, timeout=1)
+        return res.status_code in self.status_success
 
     @property
     def link(self):
@@ -159,5 +158,5 @@ class Factory:
     @classmethod
     def from_envvar(cls, varname):
         conn = os.environ[varname]
-        o = urlparse(conn)
+        o = urlparse(conn.lower())
         return cls.PROTOCOLS[o.scheme](varname, conn)
