@@ -1,4 +1,6 @@
 import os
+import re
+
 import socket
 from contextlib import closing
 from itertools import count
@@ -51,7 +53,8 @@ class Target:
 
     @property
     def url(self):
-        return "%s://%s" % (self.scheme, self.netloc)
+        address = re.sub('.*@', '******@', self.netloc)
+        return "%s://%s" % (self.scheme, address)
 
     @property
     def logo(self):
