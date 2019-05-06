@@ -6,13 +6,15 @@ from flask_bootstrap import Bootstrap
 from flask_caching import Cache
 from flask_session import Session
 
+from birder.config import Config
 from .auth import Auth
 
 here = os.path.dirname(__file__)
 
 template_dir = os.path.abspath(os.path.join(here, 'templates'))
 static_dir = os.path.abspath(os.path.join(here, 'static'))
-app = Flask("birder", template_folder=template_dir, static_folder=static_dir)
+app = Flask("birder", template_folder=template_dir, static_folder=static_dir,
+            static_url_path="%s/static" % Config.URL_PREFIX)
 
 app.config.from_object('birder.config.Config')
 

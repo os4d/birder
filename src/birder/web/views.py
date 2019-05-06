@@ -28,7 +28,7 @@ bp = Blueprint('birder', __name__, template_folder=template_dir)
 @bp.route('/login/')
 @basic_auth.required
 def login():
-    return redirect("/")
+    return redirect( "%s/" % app.config['URL_PREFIX'])
 
 
 @bp.route('/logout/')

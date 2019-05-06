@@ -49,12 +49,12 @@ class Config:
     SITE_TITLE = os.environ.get('SITE_TITLE', 'Birder')
     GRANULARITIES = parse_list(os.environ.get('GRANULARITIES'), ("60m", "24h", "7d", "30d"))
     REFRESH_INTERVAL = parse_int(os.environ.get('REFRESH_INTERVAL'), 60)
-    POLLING_INTERVAL = parse_int(os.environ.get('POLLING_INTERVAL'), 60)
+    POLLING_INTERVAL = parse_int(os.environ.get('POLLING_INTERVAL'), 58)
     DISPLAY_URLS = parse_bool(os.environ.get('DISPLAY_URLS', True))
     ADMINS = parse_users(os.environ.get('ADMINS'))
 
     BOOTSTRAP_USE_MINIFIED = True
-    BOOTSTRAP_SERVE_LOCAL = True
+    BOOTSTRAP_SERVE_LOCAL = parse_bool(os.environ.get('BOOTSTRAP_SERVE_LOCAL', ""))
     BOOTSTRAP_QUERYSTRING_REVVING = True
 
     SESSION_TYPE = "redis"
