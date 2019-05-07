@@ -15,6 +15,7 @@ app = Flask("birder", template_folder=template_dir, static_folder=static_dir,
             static_url_path="%s/static" % Config.URL_PREFIX)
 
 app.config.from_object('birder.config.Config')
+
 bootstrap = Bootstrap(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 session = Session(app)

@@ -95,31 +95,26 @@
                 scales: {
                     xAxes: [{
                         type: 'time',
+                        display: true,
                         unit: '{{ unit }}',
                         unitStepSize: 1,
+                        gridLines:{
+                            drawTicks: true
+                        },
                         time: {
+                            format: 'MM/DD/YYYY HH:mm',
                             displayFormats: {
-                                {#'millisecond': 'MMM DD',#}
-                                {#'second': 'MMM DD',#}
-                                {#'minute': 'MMM DD',#}
-                                {#'hour': 'MMM DD',#}
-                                {#'day': 'MMM DD',#}
-                                {#'week': 'MMM DD',#}
-                                {#'month': 'MMM DD',#}
-                                {#'quarter': 'MMM DD',#}
-                                {#'year': 'MMM DD', #}
-                                {#minute: 'HH:mm',#}
                                 minute: 'HH:mm',
                                 hour: 'HH:mm',
-                                day: 'dddd DD',
-                                week: 'dddd DD',
-                                {#hour: 'dddd DD'#}
+                                day: 'ddd DD',
+                                week: 'ddd DD',
                             }
                         },
                         distribution: 'series',
                         ticks: {
+                            {#source: "data",#}
                             autoSkip: true,
-                            maxTicksLimit: 8
+                            {#maxTicksLimit: 8#}
 
                         }
                     }],
@@ -133,6 +128,7 @@
                     }]
                 },
                 tooltips: {
+                    enabled: false,
                     intersect: false,
                     mode: 'index',
                     callbacks: {

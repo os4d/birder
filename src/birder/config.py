@@ -59,7 +59,14 @@ class Config:
     BOOTSTRAP_QUERYSTRING_REVVING = True
 
     SESSION_TYPE = "redis"
-    SESSION_PERMANENT = False
+    SESSION_PERMANENT = parse_bool(os.environ.get('SESSION_PERMANENT', True))
+    PERMANENT_SESSION_LIFETIME = parse_int(os.environ.get('PERMANENT_SESSION_LIFETIME'), 60 * 60)
+
+    SESSION_COOKIE_HTTPONLY = parse_bool(os.environ.get('SESSION_COOKIE_HTTPONLY', True))
+    SESSION_COOKIE_SECURE = parse_bool(os.environ.get('SESSION_COOKIE_SECURE', False))
+    SESSION_COOKIE_NAME = os.environ.get('SESSION_COOKIE_NAME', 'sesion')
+    SESSION_COOKIE_DOMAIN = os.environ.get('SESSION_COOKIE_NAME', None)
+    SESSION_COOKIE_PATH = os.environ.get('SESSION_COOKIE_NAME', '/')
 
     CACHE_TYPE = "redis"
     CACHE_KEY_PREFIX = "cache:"
