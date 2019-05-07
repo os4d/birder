@@ -1,7 +1,8 @@
 from datetime import datetime as dt
 from json import dumps
 
-from flask import Blueprint, make_response, redirect, render_template, request, session, flash
+from flask import (Blueprint, flash, make_response, redirect, render_template,
+                   request, session)
 
 from ..config import targets
 from ..monitor.tsdb import client, stats, units

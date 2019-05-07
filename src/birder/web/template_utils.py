@@ -1,4 +1,4 @@
-from flask import session, get_flashed_messages
+from flask import get_flashed_messages, session
 from slugify import slugify
 
 import birder

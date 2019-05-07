@@ -1,17 +1,16 @@
 import os
 import re
-from urllib import parse
-
-import pymysql
 import socket
 from contextlib import closing
 from itertools import count
+from urllib import parse
 from urllib.parse import urlparse
 
 import psycopg2
+import pymysql
 import requests
-from celery.app.control import Control
 from celery import Celery as CeleryApp
+from celery.app.control import Control
 from kombu import Connection
 from redis import Redis as RedisClient
 from slugify import slugify
@@ -58,9 +57,6 @@ class Target:
     def link(self):
         return ""
 
-    def check(self):
-        pass
-
 
 class Redis(Target):
     def check(self):
@@ -69,17 +65,23 @@ class Redis(Target):
         return True
 
 
-class MySQL(Target):
+class DbConnParser:
+    default_port = 0
+    default_host = '127.0.0.1'
 
     @cached_property
     def conn_kwargs(self):
-        kwargs = dict(host=self.conn.netloc,
-                      # port=self.conn.port,
+        kwargs = dict(host=self.conn.hostname or self.default_host,
+                      port=self.conn.port or self.default_port,
                       user=self.conn.username,
                       password=self.conn.password,
-                      db=self.conn.path.replace('/', ''))
+                      database=self.conn.path.replace('/', ''))
         kwargs.update(**self.query)
         return kwargs
+
+
+class MySQL(DbConnParser, Target):
+    default_port = 3306
 
     def check(self):
         conn = pymysql.connect(**self.conn_kwargs,
@@ -89,19 +91,10 @@ class MySQL(Target):
         return True
 
 
-class Postgres(Target):
-    @cached_property
-    def conn_kwargs(self):
-        kwargs = dict(host=self.conn.netloc,
-                      # port=self.conn.port,
-                      user=self.conn.username,
-                      password=self.conn.password,
-                      database=self.conn.path.replace('/', ''))
-        kwargs.update(**self.query)
-        return kwargs
+class Postgres(DbConnParser, Target):
+    default_port = 5432
 
     def check(self):
-        # conn = self.conn.replace('postgis://', 'postgres://')
         conn = psycopg2.connect(**self.conn_kwargs,
                                 connect_timeout=1)
         cursor = conn.cursor()

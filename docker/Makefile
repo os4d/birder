@@ -47,6 +47,7 @@ build:
 
 
 release:
+	docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
 	docker tag ${DOCKER_IMAGE_NAME}:${VERSION} ${DOCKER_IMAGE_NAME}:latest
 	docker push ${DOCKER_IMAGE_NAME}:${VERSION}
 	docker push ${DOCKER_IMAGE_NAME}:latest

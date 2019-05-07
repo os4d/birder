@@ -27,6 +27,7 @@ def monitor(target: Target):
     except KeyboardInterrupt:
         return
     except BaseException as e:
+        raise
         color = TermColor.FAIL
         extra = str(e)
         stats.failure(target.ts_name)
