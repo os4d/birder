@@ -13,6 +13,7 @@ exclude .isort.cfg
 exclude .tx
 exclude ~*
 exclude docker
+exclude *.xfc
 
 exclude .pytest_cache
 exclude .demo

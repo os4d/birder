@@ -76,5 +76,6 @@ class Config:
     APPLICATION_ROOT = os.environ.get('APPLICATION_ROOT', '')
     URL_PREFIX = os.environ.get('URL_PREFIX', '')
 
+
 if not Config.SESSION_COOKIE_DOMAIN:
     del Config.SESSION_COOKIE_DOMAIN

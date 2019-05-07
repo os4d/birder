@@ -17,11 +17,16 @@ Supported protocols/servers
  - Postgres/Postgis 
  - Redis
  - Celery
+ - MySQL
+ - TCP (raw socket)
 
 
 Configuration
 -------------
 
+   - SECRET_KEY = **MUST BE SET**
+   
+   - SERVER_NAME = 
    - SITE_TITLE = 'Birder'
    - GRANULARITIES = "60m,24h,7d,30d"
    - REFRESH_INTERVAL = 60
@@ -34,7 +39,7 @@ Configuration
    - BOOTSTRAP_SERVE_LOCAL = True
    - BOOTSTRAP_QUERYSTRING_REVVING = True
    
-
+   
    - SESSION_COOKIE_HTTPONLY = True
    - SESSION_COOKIE_SECURE = False
    - SESSION_COOKIE_NAME = "session"

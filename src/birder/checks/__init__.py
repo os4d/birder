@@ -2,6 +2,7 @@ import os
 import re
 from urllib import parse
 
+import pymysql
 import socket
 from contextlib import closing
 from itertools import count
@@ -22,6 +23,11 @@ def labelize(varname):
     return token.title()
 
 
+def parse_qs(string: str):
+    initial = parse.parse_qs(string)
+    return {k: v[0] for k, v in initial.items()}
+
+
 class Target:
     _ids = count(0)
     icon = ""
@@ -33,37 +39,22 @@ class Target:
         self.order = next(self._ids)
         self.label = labelize(self.name.split('_', 1)[1])
         self.ts_name = slugify(self.init_string, separator='_', decimal=False)
-
-        self.conn = ""
-        self.scheme = ""
-        self.path = ""
-        self.netloc = ""
-        self.params = ""
-        self.query = ""
-        self.fragment = ""
-
         self.parse()
 
     def parse(self):
-        self.conn = self.init_string
-        o = urlparse(self.conn)
-        self.scheme = o.scheme.lower()
-        self.path = o.path
-        self.netloc = o.netloc
-        self.params = o.params
-        self.query = o.query
-        self.fragment = o.fragment
+        self.conn = urlparse(self.init_string)
+        self.query = parse_qs(self.conn.query)
 
-    @property
+    @cached_property
     def url(self):
-        address = re.sub('.*@', '******@', self.netloc)
-        return "%s://%s" % (self.scheme, address)
+        address = re.sub('.*@', '******@', self.conn.netloc)
+        return "%s://%s" % (self.conn.scheme, address)
 
-    @property
+    @cached_property
     def logo(self):
-        return self.icon or ("%s.png" % self.scheme)
+        return self.icon or ("%s.png" % self.conn.scheme)
 
-    @property
+    @cached_property
     def link(self):
         return ""
 
@@ -73,17 +64,48 @@ class Target:
 
 class Redis(Target):
     def check(self):
-        client = RedisClient.from_url(self.conn)
+        client = RedisClient.from_url(self.init_string)
         client.ping()
         return True
 
 
-class Postgres(Target):
+class MySQL(Target):
+
+    @cached_property
+    def conn_kwargs(self):
+        kwargs = dict(host=self.conn.netloc,
+                      # port=self.conn.port,
+                      user=self.conn.username,
+                      password=self.conn.password,
+                      db=self.conn.path.replace('/', ''))
+        kwargs.update(**self.query)
+        return kwargs
+
     def check(self):
-        conn = self.conn.replace('postgis://', 'postgres://')
-        conn = psycopg2.connect(conn, connect_timeout=1)
+        conn = pymysql.connect(**self.conn_kwargs,
+                               cursorclass=pymysql.cursors.DictCursor)
         cursor = conn.cursor()
-        cursor.execute('select 1')
+        cursor.execute('SELECT 1 FROM DUAL;')
+        return True
+
+
+class Postgres(Target):
+    @cached_property
+    def conn_kwargs(self):
+        kwargs = dict(host=self.conn.netloc,
+                      # port=self.conn.port,
+                      user=self.conn.username,
+                      password=self.conn.password,
+                      database=self.conn.path.replace('/', ''))
+        kwargs.update(**self.query)
+        return kwargs
+
+    def check(self):
+        # conn = self.conn.replace('postgis://', 'postgres://')
+        conn = psycopg2.connect(**self.conn_kwargs,
+                                connect_timeout=1)
+        cursor = conn.cursor()
+        cursor.execute('SELECT 1')
         return True
 
 
@@ -95,7 +117,8 @@ class Http(Target):
     status_success = [200]
 
     def check(self):
-        res = requests.get(self.conn, timeout=1)
+        address = "%s://%s" % (self.conn.scheme, self.conn.netloc)
+        res = requests.get(address, timeout=1)
         return res.status_code in self.status_success
 
     @property
@@ -114,24 +137,24 @@ Rabbit = RabbitMQ = Kombu = Amqp
 
 
 class Celery(Target):
-    def parse(self):
-        self.conn = self.init_string
-        o = urlparse(self.conn)
-        self.scheme = o.scheme.lower()
-        self.path = o.path
-        self.netloc = o.netloc
-        self.params = o.params
-        self.query = parse.parse_qs(o.query)
-        self.fragment = o.fragment
+    # def parse(self):
+    #     self.conn = self.init_string
+    #     o = urlparse(self.conn)
+    #     self.scheme = o.scheme.lower()
+    #     self.path = o.path
+    #     self.netloc = o.netloc
+    #     self.params = o.params
+    #     self.query = parse_qs(o.query)
+    #     self.fragment = o.fragment
 
     @property
     def url(self):
-        address = re.sub('.*@', '******@', self.netloc)
-        return "%s://%s%s" % (self.query['broker'][0], address, self.path)
+        address = re.sub('.*@', '******@', self.conn.netloc)
+        return "%s://%s/%s" % (self.query['broker'], address, self.conn.path.replace('/', ''))
 
     @cached_property
     def broker(self):
-        return "%s://%s%s" % (self.query['broker'][0], self.netloc, self.path)
+        return "%s://%s/%s" % (self.query['broker'], self.conn.netloc, self.conn.path.replace('/', ''))
 
     def check(self):
         app = CeleryApp('birder', loglevel='info', broker=self.broker)
@@ -148,12 +171,13 @@ class TCP(Target):
     def check(self):
         with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
             socket.setdefaulttimeout(2.0)  # seconds (float)
-            result = sock.connect_ex((self.ip, self.port))
+            ip, port = self.conn.netloc.split(':')
+            result = sock.connect_ex((ip, int(port)))
             return result == 0
 
     @property
     def ip(self):
-        return self.netloc
+        return self.conn.netloc
 
     @property
     def port(self):
@@ -167,7 +191,9 @@ class Factory:
                  'http': Http,
                  'https': Http,
                  'amqp': Rabbit,
-                 'celery': Celery
+                 'celery': Celery,
+                 'mysql': MySQL,
+                 'tcp': TCP
                  }
 
     @classmethod
