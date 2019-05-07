@@ -1,4 +1,4 @@
-from flask import session
+from flask import session, get_flashed_messages
 from slugify import slugify
 
 import birder
@@ -22,5 +22,6 @@ def globals():
     return dict(
         version=birder.VERSION,
         user=session.get('user'),
-        basic_auth=bool(app.config.get('ADMINS'))
+        basic_auth=bool(app.config.get('ADMINS')),
+        messages=get_flashed_messages(True)
     )

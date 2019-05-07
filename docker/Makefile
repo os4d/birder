@@ -1,5 +1,4 @@
 DEVELOP?=0
-DOCKER_PASS?=
 DOCKER_USER?=
 VERSION?=0.14.0
 BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
@@ -40,27 +39,17 @@ build:
 	 		--name=${CONTAINER_NAME} \
 			-p 5000:5000 \
 			-e MONITORa_BIRDER=http://localhost:5000 \
-			-e MONITORb_DB=postgis://postgres:@192.168.66.66:6379/aaa \
 			-e ADMINS=sax:123 \
 			-v /tmp/~birder:/var/db \
 			${RUN_OPTIONS} \
 			${DOCKER_IMAGE} \
 			${CMD}
 
-local:
-	RUN_OPTIONS="-v ${PWD}/..:/code -e PYTHONPATH=/code -it" \
-	CMD="/bin/bash" \
-	$(MAKE) .run
 
 release:
-	pass docker/saxix | docker login -u saxix --password-stdin
 	docker tag ${DOCKER_IMAGE_NAME}:${VERSION} ${DOCKER_IMAGE_NAME}:latest
 	docker push ${DOCKER_IMAGE_NAME}:${VERSION}
 	docker push ${DOCKER_IMAGE_NAME}:latest
-
-deploy:
-	lazo rancher --insecure upgrade bitcaster:sm os4d/birder:latest
-#	$(MAKE) bump
 
 run:
 	$(MAKE) .run

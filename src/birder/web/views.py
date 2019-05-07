@@ -1,7 +1,7 @@
 from datetime import datetime as dt
 from json import dumps
 
-from flask import Blueprint, make_response, redirect, render_template, request, session
+from flask import Blueprint, make_response, redirect, render_template, request, session, flash
 
 from ..config import targets
 from ..monitor.tsdb import client, stats, units
@@ -28,6 +28,9 @@ def login():
         ok = app.config["ADMINS"].get(username) == request.form['password']
         if ok:
             session['user'] = request.form['username']
+            flash('You were successfully logged in', 'success')
+        else:
+            flash('Authentication failed', 'danger')
 
     return redirect(referrer)
 
@@ -36,6 +39,7 @@ def login():
 def logout():
     referrer = request.headers.get("Referer", "%s/" % app.config['URL_PREFIX'])
     session['user'] = ""
+    flash('You were successfully logged out', 'warning')
     return redirect(referrer)
 
 
