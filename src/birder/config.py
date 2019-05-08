@@ -1,14 +1,16 @@
 import os
+from functools import lru_cache
 
 from .checks import Factory, Target
+from .logging import logger
 
 
+@lru_cache(1)
 def get_targets(ctx=os.environ) -> [Target]:
     targets = []
     names = sorted([k for k, v in ctx.items() if k.startswith('MONITOR')])
-    for i, varname in enumerate(names):
+    for varname in names:
         m = Factory.from_envvar(varname)
-        m.order = i
         targets.append(m)
     return targets
 

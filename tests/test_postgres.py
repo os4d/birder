@@ -29,3 +29,13 @@ def test_pg3():
                                  database='db1',
                                  port=5432,
                                  charset='utf8mb4')
+
+
+
+def test_pg4():
+    c = Postgres('MONITOR_PG', 'postgres://postgres:ppaasswwoorrdd@db:5432/bitcaster')
+    assert c.conn_kwargs == dict(host="db",
+                                 user='postgres',
+                                 password='ppaasswwoorrdd',
+                                 database='bitcaster',
+                                 port=5432)

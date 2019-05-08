@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+from flask.logging import default_handler
 from flask_bootstrap import Bootstrap
 from flask_caching import Cache
 
@@ -22,3 +23,4 @@ from . import views  # isort:skip
 from . import template_utils  # noqa isort:skip
 
 app.register_blueprint(views.bp, url_prefix=app.config['URL_PREFIX'])
+app.logger.removeHandler(default_handler)

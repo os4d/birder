@@ -1,64 +1,122 @@
+import os
 import signal
 import sys
+import time
 from multiprocessing.pool import Pool
-from time import sleep
 
-from ..config import Config, Target, get_targets
+import click
+
+import birder
+from birder.checks import Factory
+
+from ..config import Config, Target, get_targets, targets
 from .tsdb import stats
+from ..logging import logger
 
 
-class TermColor:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-
-
-def monitor(target: Target):
-    extra = ""
+def monitor(target: Target, config: dict):
     try:
-        color = TermColor.OKGREEN
-        assert target.check()
+        color = "green"
+        extra = "Ok"
+        assert target.check(**config)
         stats.success(target.ts_name)
     except KeyboardInterrupt:
         return
     except BaseException as e:
-        raise
-        color = TermColor.FAIL
+        color = "red"
         extra = str(e)
         stats.failure(target.ts_name)
-
-    sys.stdout.write("%s%-15s %s %s %s\n" % (color, target.label, target.url,
-                                          TermColor.ENDC, extra))
-    sys.stdout.flush()
+    if config.get('echo'):
+        click.secho("%-15s %s %s" % (target.label, target.url, extra), fg=color)
 
 
 def init_worker():
     signal.signal(signal.SIGINT, signal.SIG_IGN)
 
 
-def main():
-    targets = get_targets()
+@click.group()
+@click.version_option(version=birder.VERSION)
+@click.pass_context
+def cli(ctx, **kwargs):
+    pass
+
+
+@cli.command()
+def list(**kwargs):
+    # targets = get_targets()
+    click.secho("%d targets fount" % len(targets), bold=True)
+
     for target in targets:
-        sys.stdout.write("%s%-15s %s %s\n" % (TermColor.WARNING, target.label, target.url, TermColor.ENDC))
+        click.secho("  %3d %-15s %s" % (target.order, target.label, target.url))
+    click.echo("")
+
+
+@cli.command('check-config')
+@click.pass_context
+def check_config(ctx):
+    # targets = get_targets()
+    click.secho("%d targets fount" % len(targets), bold=True)
+
+    for target in targets:
+        click.echo("  %3d %-15s %s" % (target.order, target.label, target.url))
+    click.echo("")
+
+
+@cli.command()
+@click.argument('target', nargs=1)
+@click.option('-f', '--fail', is_flag=True)
+@click.option('-t', '--timeout', type=int, default=5)
+@click.pass_context
+def check(ctx, target, fail, timeout):
+    if target.isdigit():
+        # targets = get_targets()
+        t = targets[int(target)]
+    elif ':' in target:
+        t = Factory.from_conn_string('', target)
+    else:
+        # targets = get_targets()
+        t = next(filter(lambda x: x.label.lower() == target, targets))
+
+    click.secho("Checking %s %s " % (t.label, t.url), nl=False)
+
+    try:
+        t.check(timeout=timeout)
+        click.secho('Ok', fg='green')
+    except Exception as e:
+        click.secho('Fail %s' % e, fg='red')
+
+
+@cli.command()
+@click.option('-q', '--quiet', default=False, is_flag=True)
+@click.option('-p', '--processes', default=os.cpu_count() or 1)
+@click.option('-s', '--sleep', default=Config.POLLING_INTERVAL)
+@click.option('-o', '--once', is_flag=True)
+@click.option('-t', '--timeout', type=int, default=5)
+@click.pass_context
+def run(ctx, sleep, processes, quiet, once, timeout, **kwargs):
+    # targets = get_targets()
+    if not quiet:
+        ctx.invoke(list)
 
     if targets:
-        p = Pool(processes=20, initializer=init_worker)
+        config = {'echo': not quiet,
+                  'timeout': timeout}
+        params = [(t, config) for t in targets]
+
+        p = Pool(processes=processes, initializer=init_worker)
         while True:
             try:
-                p.map_async(monitor, targets).get(9999999)
-                sleep(Config.POLLING_INTERVAL)
+                p.starmap_async(monitor, params).get(9999999)
+                time.sleep(Config.POLLING_INTERVAL)
             except (KeyboardInterrupt, SystemExit):
                 break
+            if once:
+                break
     else:
-        sys.stderr.write('ERROR: No urls defined\n')
-        sys.stderr.write('MONITOR<order>_<label>=<conn_url>\n')
+        click.secho('ERROR: No urls defined', fg="red")
+        click.secho('MONITOR<order>_<label>=<conn_url>', fg="red")
         sys.exit(1)
 
 
-if __name__ == '__main__':
-    main()
+def main():  # pragma: no cover
+    cli(prog_name=birder.NAME, obj={}, max_content_width=100)

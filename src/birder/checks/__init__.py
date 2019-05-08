@@ -1,5 +1,8 @@
 import os
 import re
+import sys
+import traceback
+
 import socket
 from contextlib import closing
 from itertools import count
@@ -28,20 +31,35 @@ def parse_qs(string: str):
 
 
 class Target:
-    _ids = count(0)
+    _ids = count(1)
     icon = ""
+    conn = None
 
-    def __init__(self, name, init_string):
+    def __init__(self, name, init_string, timeout=5):
         self.name = name
         self.init_string = init_string
-
+        self.timeout = timeout
         self.order = next(self._ids)
-        self.label = labelize(self.name.split('_', 1)[1])
+        self.label = labelize(name)
         self.ts_name = slugify(self.init_string, separator='_', decimal=False)
-        self.parse()
+        try:
+            self.parse(self.init_string)
+        except Exception as e:
+            raise Exception("Error parsing connection string '%s' for '%s': %s " % (init_string, name, e)) from e
 
-    def parse(self):
-        self.conn = urlparse(self.init_string)
+    def _assert(self, condition, msg="", *args, **kwargs):
+        if not condition:
+            if not msg:
+                try:
+                    raise AssertionError
+                except AssertionError:
+                    f = sys.exc_info()[2].tb_frame.f_back
+                stck = traceback.extract_stack(f)
+                msg = str(stck[-1][-1])
+            raise Exception(msg)
+
+    def parse(self, arg):
+        self.conn = urlparse(arg)
         self.query = parse_qs(self.conn.query)
 
     @cached_property
@@ -57,9 +75,12 @@ class Target:
     def link(self):
         return ""
 
+    def check(self, **config):
+        raise NotImplementedError
+
 
 class Redis(Target):
-    def check(self):
+    def check(self, **config):
         client = RedisClient.from_url(self.init_string)
         client.ping()
         return True
@@ -83,7 +104,7 @@ class DbConnParser:
 class MySQL(DbConnParser, Target):
     default_port = 3306
 
-    def check(self):
+    def check(self, **config):
         conn = pymysql.connect(**self.conn_kwargs,
                                cursorclass=pymysql.cursors.DictCursor)
         cursor = conn.cursor()
@@ -94,9 +115,11 @@ class MySQL(DbConnParser, Target):
 class Postgres(DbConnParser, Target):
     default_port = 5432
 
-    def check(self):
+    def check(self, **config):
+        timeout = config.get('timeout', self.timeout)
+
         conn = psycopg2.connect(**self.conn_kwargs,
-                                connect_timeout=1)
+                                connect_timeout=timeout)
         cursor = conn.cursor()
         cursor.execute('SELECT 1')
         return True
@@ -108,11 +131,33 @@ PostGis = Postgres
 class Http(Target):
     icon = "http.png"
     status_success = [200]
+    match = None
 
-    def check(self):
+    def _parse_status(self, value):
+        self.status_success = list(map(int, value.split(',')))
+
+    def _parse_match(self, value):
+        self.match = value
+
+    def parse(self, arg):
+        parts = arg.split('|')
+        if len(parts) > 1:
+            for entry in parts:
+                key, val = entry.split('=')
+                handler = getattr(self, '_parse_%s' % key, None)
+                if handler:
+                    handler(val)
+
+        super().parse(parts[0])
+
+    def check(self, **config):
+        timeout = config.get('timeout', self.timeout)
         address = "%s://%s" % (self.conn.scheme, self.conn.netloc)
-        res = requests.get(address, timeout=1)
-        return res.status_code in self.status_success
+        res = requests.get(address, timeout=timeout)
+        self._assert(res.status_code in self.status_success, 'Invalid status code')
+        if self.match:
+            self._assert(str(self.match) in str(res.content), 'Cannot find %s' % self.match)
+        return True
 
     @property
     def link(self):
@@ -120,7 +165,7 @@ class Http(Target):
 
 
 class Amqp(Target):
-    def check(self):
+    def check(self, **config):
         conn = Connection(self.conn)
         conn.ensure_connection(max_retries=1)
         return True
@@ -130,16 +175,6 @@ Rabbit = RabbitMQ = Kombu = Amqp
 
 
 class Celery(Target):
-    # def parse(self):
-    #     self.conn = self.init_string
-    #     o = urlparse(self.conn)
-    #     self.scheme = o.scheme.lower()
-    #     self.path = o.path
-    #     self.netloc = o.netloc
-    #     self.params = o.params
-    #     self.query = parse_qs(o.query)
-    #     self.fragment = o.fragment
-
     @property
     def url(self):
         address = re.sub('.*@', '******@', self.conn.netloc)
@@ -149,32 +184,30 @@ class Celery(Target):
     def broker(self):
         return "%s://%s/%s" % (self.query['broker'], self.conn.netloc, self.conn.path.replace('/', ''))
 
-    def check(self):
+    def check(self, **config):
+        timeout = config.get('timeout', self.timeout)
+
         app = CeleryApp('birder', loglevel='info', broker=self.broker)
         c = Control(app)
-        insp = c.inspect(timeout=1.1)
-        d = insp.stats()
-        # d = insp.ping()
+        insp = c.inspect(timeout=timeout)
+        # d = insp.stats()
+        d = insp.ping()
         return bool(d)
 
 
 class TCP(Target):
     default_port = 7
 
-    def check(self):
-        with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
-            socket.setdefaulttimeout(2.0)  # seconds (float)
-            ip, port = self.conn.netloc.split(':')
-            result = sock.connect_ex((ip, int(port)))
-            return result == 0
-
-    @property
-    def ip(self):
-        return self.conn.netloc
-
-    @property
+    @cached_property
     def port(self):
-        return self.default_port
+        return self.conn.port or self.default_port
+
+    def check(self, **config):
+        timeout = config.get('timeout', self.timeout)
+        with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
+            socket.setdefaulttimeout(timeout)  # seconds (float)
+            result = sock.connect_ex((self.conn.hostname, self.port))
+            self._assert(result == 0, str(result))
 
 
 class Factory:
@@ -190,7 +223,11 @@ class Factory:
                  }
 
     @classmethod
+    def from_conn_string(cls, name, conn):
+        o = urlparse(conn.lower())
+        return cls.PROTOCOLS[o.scheme](name, conn)
+
+    @classmethod
     def from_envvar(cls, varname):
         conn = os.environ[varname]
-        o = urlparse(conn.lower())
-        return cls.PROTOCOLS[o.scheme](varname, conn)
+        return cls.from_conn_string(varname.split('_', 1)[1], conn)

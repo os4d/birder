@@ -1,16 +1,32 @@
 import logging
+from logging import config
 
-logging.basicConfig(level=logging.DEBUG)
+config.dictConfig({
+    'version': 1,
+    'formatters': {'default': {
+        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    }},
+    'handlers': {
+        'wsgi': {
+            'class': 'logging.StreamHandler',
+            'stream': 'ext://flask.logging.wsgi_errors_stream',
+            'formatter': 'default'
+        },
+    },
 
-root = logging.getLogger('')
-
+    'root': {
+        'level': 'INFO',
+        'handlers': ['wsgi']
+    },
+    'loggers': {
+        'werkzeug': {
+            'class': 'logging.StreamHandler',
+            'level': logging.ERROR
+        },
+        'requests': {
+            'class': 'logging.StreamHandler',
+            'level': logging.ERROR
+        },
+    }
+})
 logger = logging.getLogger('birder')
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-ch = logging.StreamHandler()
-ch.setLevel(logging.ERROR)
-ch.setFormatter(formatter)
-
-root.setLevel(logging.ERROR)
-logger.setLevel(logging.INFO)
-logger.addHandler(ch)

@@ -38,6 +38,7 @@ build:
 	 		--rm \
 	 		--name=${CONTAINER_NAME} \
 			-p 5000:5000 \
+			-e "TERM=xterm-256color" \
 			-e MONITORa_BIRDER=http://localhost:5000 \
 			-e ADMINS=sax:123 \
 			-v /tmp/~birder:/var/db \
