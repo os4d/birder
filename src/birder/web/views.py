@@ -4,7 +4,7 @@ from json import dumps
 from flask import (Blueprint, flash, make_response, redirect, render_template,
                    request, session)
 
-from ..config import targets
+from ..config import get_targets
 from ..monitor.tsdb import client, stats, units
 from .app import app, template_dir
 
@@ -13,8 +13,8 @@ def jsonify(**kwargs):
     response = make_response(dumps(kwargs))
     response.headers['Content-Type'] = 'application/json; charset=utf-8'
     response.headers['mimetype'] = 'application/json'
-    response.last_modified = dt.utcnow()
-    response.add_etag()
+    # response.last_modified = dt.utcnow()
+    # response.add_etag()
     return response
 
 
@@ -47,7 +47,7 @@ def logout():
 @bp.route('/')
 def home():
     services = []
-    for target in targets:
+    for target in get_targets():
         services.append((target, client.get(target.ts_name)))
     r = make_response(render_template('index.html', services=services))
     return r
@@ -69,18 +69,23 @@ def data(hkey, granularity):
     return "", 404
 
 
+chart_config = {
+    '60m': {'refresh': app.config['REFRESH_INTERVAL'], 'format': 'HH:mm'},
+    '24h': {'refresh': 0, 'format': 'HH:mm'},
+    '7d': {'refresh': 0, 'format': 'MMM, ddd DD'},
+    '30d': {'refresh': 0, 'format': ' MMM, ddd DD'},
+}
+
+
 @bp.route('/<granularity>/')
 def chart(granularity):
     if granularity in app.config['GRANULARITIES']:
-        refresh = 0
-        if granularity == '60m':
-            refresh = app.config['REFRESH_INTERVAL']
         r = make_response(render_template('chart.html',
-                                          urls=targets,
+                                          urls=get_targets(),
                                           granularity=granularity,
                                           page=granularity,
                                           unit=units[granularity],
-                                          refresh=refresh,
+                                          **chart_config[granularity]
                                           ))
         return r
     return "", 404

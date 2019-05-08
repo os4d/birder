@@ -11,12 +11,12 @@
                 {% endfor %}
                 <div class="m-3"></div>
                 Auto Refresh <input type="checkbox" {% if refresh == 0 %}disabled="disabled"{% endif %}
-                               id="auto-refresh"
-                               data-onstyle="success"
-                               data-offstyle="primary"
-                               data-toggle="toggle"
-                               data-size="small"
-                               data-on="On" data-off="Off">
+                                    id="auto-refresh"
+                                    data-onstyle="success"
+                                    data-offstyle="primary"
+                                    data-toggle="toggle"
+                                    data-size="small"
+                                    data-on="On" data-off="Off">
             </div>
         </div>
         <div class="container charts" id="content">
@@ -74,7 +74,7 @@
                     pointRadius: 0,
                     lineTension: 0,
                     borderWidth: 2,
-                    fill: "start"
+                    {#fill: "start"#}
 
                 },
                     {
@@ -86,36 +86,39 @@
                         pointRadius: 0,
                         lineTension: 0,
                         borderWidth: 2,
-                        fill: "start"
+                        {#fill: "start"#}
 
-                    }]
+                    }
+                ]
             },
             options: {
                 legend: false,
                 scales: {
                     xAxes: [{
                         type: 'time',
+                        {#distribution: 'series',#}
                         display: true,
                         unit: '{{ unit }}',
-                        unitStepSize: 1,
-                        gridLines:{
-                            drawTicks: true
-                        },
+                        {#unitStepSize: 1,#}
+                        {#gridLines:{#}
+                        {#    drawTicks: true#}
+                        {# },#}
                         time: {
                             displayFormats: {
-                                minute: 'HH:mm',
-                                hour: 'HH:mm',
-                                day: 'ddd DD',
-                                week: 'ddd DD',
+                                second: '{{ format }}',
+                                minute: '{{ format }}',
+                                hour: '{{ format }}',
+                                {#hour: 'ddd DD',#}
+                                day: '{{ format }}',
+                                week: '{{ format }}',
                             }
                         },
-                        distribution: 'series',
-                        ticks: {
-                            {#source: "data",#}
-                            autoSkip: true,
-                            {#maxTicksLimit: 8#}
-
-                        }
+                        {#ticks: {#}
+                        {#    source: "data",#}
+                        {#    autoSkip: true,#}
+                        {#    maxTicksLimit: 30#}
+                        {##}
+                        {#                        }#}
                     }],
                     yAxes: [{
                         ticks: {
@@ -157,27 +160,28 @@
             var update_{{entry.ts_name}} = function () {
                 $.get('{{config.URL_PREFIX}}/data/{{entry.ts_name}}/{{ granularity }}/')
                     .done(function (data) {
-                        charts["{{entry.ts_name}}"].config.data.datasets[0].data = data.ok;
                         charts["{{entry.ts_name}}"].config.data.datasets[1].data = data.fails;
+                        charts["{{entry.ts_name}}"].config.data.datasets[0].data = data.ok;
                         charts["{{entry.ts_name}}"].update();
                     })
             };
             update_{{entry.ts_name}}();
         {% endfor %}
-            {% if refresh %}
-                $('#auto-refresh').change(function () {
-                    if ( $(this).prop('checked') ){
-                        console.log('auto-refresh ON');
-                        {% for entry in urls %}
-                        var interval_{{entry.ts_name}} = setInterval(update_{{entry.ts_name}}, {{ refresh }} * 1000);{% endfor %}
-                    } else{
-                        // clearinterval
-                        console.log('auto-refresh OFF');
-                        {% for entry in urls %}
+        {% if refresh %}
+            $('#auto-refresh').change(function () {
+                if ($(this).prop('checked')) {
+                    console.log('auto-refresh ON');
+                    {% for entry in urls %}
+                        var interval_{{entry.ts_name}} = setInterval(update_{{entry.ts_name}}, {{ refresh }} * 1000)
+                        ;{% endfor %}
+                } else {
+                    // clearinterval
+                    console.log('auto-refresh OFF');
+                    {% for entry in urls %}
                         clearInterval(interval_{{entry.ts_name}});{% endfor %}
-                    }
-                });
-            {% endif %}
+                }
+            });
+        {% endif %}
     </script>
 
 

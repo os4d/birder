@@ -47,6 +47,9 @@ class Target:
         except Exception as e:
             raise Exception("Error parsing connection string '%s' for '%s': %s " % (init_string, name, e)) from e
 
+    def info(self):
+        return """{0.name} {0.label}""".format(self)
+
     def _assert(self, condition, msg="", *args, **kwargs):
         if not condition:
             if not msg:
@@ -80,8 +83,17 @@ class Target:
 
 
 class Redis(Target):
+    default_port = 6379
+    default_host = '127.0.0.1'
+
     def check(self, **config):
-        client = RedisClient.from_url(self.init_string)
+        timeout = config.get('timeout', self.timeout)
+        client = RedisClient(host=self.conn.hostname or self.default_host,
+                             port=self.conn.port or self.default_port,
+                             password=self.conn.password,
+                             db=self.conn.path.replace('/', ''),
+                             socket_connect_timeout=timeout,
+                             socket_timeout=timeout)
         client.ping()
         return True
 
@@ -142,7 +154,7 @@ class Http(Target):
     def parse(self, arg):
         parts = arg.split('|')
         if len(parts) > 1:
-            for entry in parts:
+            for entry in parts[1:]:
                 key, val = entry.split('=')
                 handler = getattr(self, '_parse_%s' % key, None)
                 if handler:
@@ -190,8 +202,8 @@ class Celery(Target):
         app = CeleryApp('birder', loglevel='info', broker=self.broker)
         c = Control(app)
         insp = c.inspect(timeout=timeout)
-        # d = insp.stats()
-        d = insp.ping()
+        d = insp.stats()
+        # d = insp.ping()
         return bool(d)
 
 

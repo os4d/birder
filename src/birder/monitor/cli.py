@@ -1,17 +1,35 @@
 import os
+import random
+
+from datetime import timedelta
+
 import signal
 import sys
 import time
+from celery.utils.collections import OrderedDict
 from multiprocessing.pool import Pool
 
 import click
+from redis_timeseries import tz_now
 
 import birder
 from birder.checks import Factory
 
-from ..config import Config, Target, get_targets, targets
+from ..config import Config, Target, get_targets
 from .tsdb import stats
 from ..logging import logger
+
+
+def _get_target(arg):
+    if arg.isdigit():
+        targets = get_targets()
+        t = targets[int(arg)]
+    elif ':' in arg:
+        t = Factory.from_conn_string('', arg)
+    else:
+        targets = get_targets()
+        t = next(filter(lambda x: x.label.lower() == arg, targets))
+    return t
 
 
 def monitor(target: Target, config: dict):
@@ -27,7 +45,7 @@ def monitor(target: Target, config: dict):
         extra = str(e)
         stats.failure(target.ts_name)
     if config.get('echo'):
-        click.secho("%-15s %s %s" % (target.label, target.url, extra), fg=color)
+        click.secho("{0:<15} {1} {2}".format(target.label, target.url, extra), fg=color)
 
 
 def init_worker():
@@ -42,24 +60,64 @@ def cli(ctx, **kwargs):
 
 
 @cli.command()
+def sample(**kwargs):
+    delta = timedelta(days=31)
+    targets = get_targets()
+    start = tz_now() - delta
+    points = round(delta.total_seconds() / 60)
+    incr = timedelta(seconds=60)
+    for point in range(1, points):
+        dt = start + (incr * point)
+        for t in targets[:1]:
+            value = bool(random.getrandbits(1))
+            stats.hset("%s:s" % t.ts_name, int(value), dt)
+            stats.hset("%s:f" % t.ts_name, int(not value), dt)
+
+@cli.command()
 def list(**kwargs):
-    # targets = get_targets()
-    click.secho("%d targets fount" % len(targets), bold=True)
+    targets = get_targets()
+    click.secho("{} targets found".format(len(targets)), bold=True)
 
     for target in targets:
-        click.secho("  %3d %-15s %s" % (target.order, target.label, target.url))
+        click.secho("  {0:3} {1:<15} {2}".format(target.order, target.label, target.url))
     click.echo("")
 
 
-@cli.command('check-config')
+@cli.command()
+@click.argument('target', nargs=1)
 @click.pass_context
-def check_config(ctx):
-    # targets = get_targets()
-    click.secho("%d targets fount" % len(targets), bold=True)
+def inspect(ctx, target):
+    try:
+        t = _get_target(target)
+    except StopIteration:
+        ctx.fail("Invalid check '{}'".format(target))
 
-    for target in targets:
-        click.echo("  %3d %-15s %s" % (target.order, target.label, target.url))
+    click.secho("{0:<3} {1:<15} {2}".format(t.order, t.label, t.url))
+    success, failures = stats.get_data(t.ts_name, '60m')
+    success, failures = stats.get_data(t.ts_name, '60m')
+    for date, value in success:
+        if value:
+            click.echo(date.strftime('%Y-%m-%d %H:%M '), nl=False)
+            click.secho("Ok", fg='green')
+    for date, value in failures:
+        if value:
+            click.echo(date.strftime('%Y-%m-%d %H:%M '), nl=False)
+            click.secho("Fail", fg='red')
+
     click.echo("")
+
+
+@cli.command()
+@click.argument('target', nargs=1)
+@click.pass_context
+def clear(ctx, target):
+    try:
+        t = _get_target(target)
+    except StopIteration:
+        ctx.fail("Invalid check '{}'".format(target))
+
+    click.secho("{0:<3} {1:<15} {2}".format(t.order, t.label, t.url))
+    stats.zap(t.ts_name)
 
 
 @cli.command()
@@ -68,16 +126,12 @@ def check_config(ctx):
 @click.option('-t', '--timeout', type=int, default=5)
 @click.pass_context
 def check(ctx, target, fail, timeout):
-    if target.isdigit():
-        # targets = get_targets()
-        t = targets[int(target)]
-    elif ':' in target:
-        t = Factory.from_conn_string('', target)
-    else:
-        # targets = get_targets()
-        t = next(filter(lambda x: x.label.lower() == target, targets))
+    try:
+        t = _get_target(target)
+    except StopIteration:
+        ctx.fail("Invalid check '{}'".format(target))
 
-    click.secho("Checking %s %s " % (t.label, t.url), nl=False)
+    click.secho("Checking {1:<10} {0:>10} {2}".format(t.label, t.__class__.__name__, t.url), nl=False)
 
     try:
         t.check(timeout=timeout)
@@ -88,13 +142,13 @@ def check(ctx, target, fail, timeout):
 
 @cli.command()
 @click.option('-q', '--quiet', default=False, is_flag=True)
-@click.option('-p', '--processes', default=os.cpu_count() or 1)
+@click.option('-p', '--processes', default=(os.cpu_count() * 2) or 1)
 @click.option('-s', '--sleep', default=Config.POLLING_INTERVAL)
 @click.option('-o', '--once', is_flag=True)
 @click.option('-t', '--timeout', type=int, default=5)
 @click.pass_context
 def run(ctx, sleep, processes, quiet, once, timeout, **kwargs):
-    # targets = get_targets()
+    targets = get_targets()
     if not quiet:
         ctx.invoke(list)
 

@@ -7,11 +7,20 @@ from redis_timeseries import TimeSeries, days, hours, minutes
 
 
 class TS(TimeSeries):
-    def get_data(self, key, granularity):
-        count = int(re.sub('[a-z]*', '', granularity))
-        successs = self.get_buckets("%s:s" % key, granularity, count)
+    def zap(self, key):
+        pipe = self.client.pipeline()
+        pipe.expire("%s:s" % key, -1)
+        pipe.expire("%s:f" % key, -1)
+        pipe.execute()
+
+    def get_data(self, key, granularity, all=False):
+        if all:
+            count = -1
+        else:
+            count = int(re.sub('[a-z]*', '', granularity))
+        success = self.get_buckets("%s:s" % key, granularity, count)
         failures = self.get_buckets("%s:f" % key, granularity, count)
-        return [successs, failures]
+        return [success, failures]
 
     def get_buckets(self, key, granularity, count, timestamp=None):
         if count == -1:
@@ -37,7 +46,7 @@ class TS(TimeSeries):
             hkey = self.get_key(key, timestamp, granularity)
             bucket = self._round_time(timestamp, props['duration'])
 
-            pipe.hset(hkey, bucket, 1)
+            pipe.hset(hkey, bucket, value)
             pipe.expire(hkey, props['ttl'])
 
         if execute:
