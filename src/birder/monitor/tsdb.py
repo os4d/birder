@@ -32,6 +32,7 @@ class TS(TimeSeries):
             bucket = self._round_time(timestamp, props['duration'])
             pipe.hsetnx(hkey, bucket, -1)
             pipe.expire(hkey, props['ttl'])
+        pipe.delete(key)
 
         if execute:
             pipe.execute()
@@ -39,6 +40,7 @@ class TS(TimeSeries):
 
     def increase(self, key, amount, timestamp=None, execute=True):
         super().increase(key, amount, timestamp, execute=False)
+        self.chain.set(key, 1)
         self.chain.execute()
 
     def hset(self, key, value, timestamp=None, execute=True):

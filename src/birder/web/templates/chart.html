@@ -15,7 +15,7 @@
 
                 {% endfor %}
                 <div class="m-3"></div>
-                {% if config.REFRESH_INTERVAL %}
+                {% if refresh %}
                     Auto Refresh <input type="checkbox" {% if refresh == 0 %}disabled="disabled"{% endif %}
                                         id="auto-refresh"
                                         data-onstyle="success"
@@ -38,7 +38,7 @@
                             {% else %}
                                 {{ entry.url }}
                             {% endif %}
-                            <a target="_blank" href="{{ config.URL_PREFIX }}/data/{{ entry.ts_name }}/{{ granularity }}/">data</a>
+                            - <a target="_blank" href="{{ config.URL_PREFIX }}/data/{{ entry.ts_name }}/{{ granularity }}/">data</a>
                         </small>
                     {% endif %}
                     {#                    <div>#}
@@ -92,10 +92,10 @@
                 colLimit: 1,
                 domain: 'day',
                 domainGutter: 10,
-                domainLabelFormat: "%A, %d %B",
                 range: 1,
                 start: today.toDate(),
                 subDomain: 'x_hour',
+                domainLabelFormat: "%a, %d %B",
                 subDomainDateFormat: "%H:%M",
             },
             'w': {
@@ -103,10 +103,10 @@
                 colLimit: 6,
                 domain: 'day',
                 domainGutter: 15,
-                domainLabelFormat: "%A, %d %B",
                 range: 7,
                 start: thisWeek.toDate(),
                 subDomain: 'x_hour',
+                domainLabelFormat: "%a, %d %B",
                 subDomainDateFormat: "%H:%M",
             },
             'm': {
@@ -155,10 +155,6 @@
             itemName: ['error', 'errors'],
             noData: 'n/a',
             success: 'ok',
-            {#subDomainTitleFormat: {#}
-            {#    empty: '{date}',#}
-            {#    filled: '{date}'#}
-            {# },#}
             displayErrors: function (value) {
                 return value
             },
@@ -203,15 +199,14 @@
                 previousSelector: "#previous{{ entry.ts_name }}"
 
             });
-            cal.graphDim.height = 0; // bug in cal-heatmap
+            cal.graphDim.height = 0;
             cal.init(localCfg);
             charts['{{entry.ts_name}}'] = {
                 chart: cal,
                 data: localCfg.data,
             };
         {% endfor %}
-        {% if config.REFRESH_INTERVAL %}
-            var REFRESH_INTERVAL = {{ config.REFRESH_INTERVAL }} * 1000;
+        {% if refresh %}
             var updateChart = function () {
                 $('#lastUpdate').html(moment().format('MM/DD/YYYY HH:mm'));
                 for (var entry in charts) {
@@ -221,14 +216,9 @@
             };
             $('#auto-refresh').change(function () {
                 if ($(this).prop('checked')) {
-                    console.log('auto-refresh ON');
-                    interval = setInterval(updateChart, REFRESH_INTERVAL)
+                    interval = setInterval(updateChart, {{ refresh }})
                 } else {
-                    // clearinterval
-                    console.log('auto-refresh OFF');
-                    for (var entry in charts) {
-                        clearInterval(interval)
-                    }
+                    clearInterval(interval)
                 }
             });
         {% endif %}

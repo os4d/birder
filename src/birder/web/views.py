@@ -109,9 +109,14 @@ def scan(hkey, granularity):
 @bp.route('/<granularity>/')
 def chart(granularity):
     red = Color("#ff8a76")
+    if granularity == 'h':
+        refresh = app.config['REFRESH_INTERVAL'] * 1000
+    else:
+        refresh = 0
 
     if granularity in app.config['GRANULARITIES']:
         r = make_response(render_template('chart.html',
+                                          refresh=refresh,
                                           urls=get_targets(),
                                           granularity=granularity,
                                           colors=[(i, c.hex) for i, c in enumerate(red.range_to(Color("red"), 10), 2)],
