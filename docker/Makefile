@@ -1,6 +1,6 @@
 DEVELOP?=0
 DOCKER_USER?=
-VERSION?=0.18.0
+VERSION?=0.19.0
 BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 # below vars are used internally
 BUILD_OPTIONS?=--squash
