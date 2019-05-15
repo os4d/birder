@@ -1,13 +1,13 @@
 import datetime
 import json
 
+from colour import Color
 from flask import (Blueprint, flash, make_response, redirect, render_template,
                    request, session)
 
 from ..config import get_targets
-from ..monitor.tsdb import client, stats, get_limit
+from ..monitor.tsdb import client, stats
 from .app import app, template_dir
-from colour import Color
 
 
 class Encoder(json.JSONEncoder):
@@ -68,16 +68,6 @@ def about():
     return r
 
 
-def get_value(source):
-    return source
-    ret = None
-    if source < 0:
-        ret = 0
-    elif source >= 1:
-        ret = source
-    return ret
-
-
 @bp.route('/data/<hkey>/<granularity>/', methods=['GET', 'OPTIONS'])
 def data(hkey, granularity):
     if granularity in app.config['GRANULARITIES']:
@@ -98,7 +88,6 @@ def data(hkey, granularity):
 @bp.route('/scan/<hkey>/<granularity>/', methods=['GET', 'OPTIONS'])
 def scan(hkey, granularity):
     if granularity in app.config['GRANULARITIES']:
-        # data = stats.get_data(hkey, granularity, -1)
         data = stats.scan_keys('24h', 5, '*')
         ret = {'datapoints': len(data),
                'data': data}

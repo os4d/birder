@@ -1,12 +1,9 @@
 import os
 import random
-
-from datetime import timedelta
-
 import signal
 import sys
 import time
-from celery.utils.collections import OrderedDict
+from datetime import timedelta
 from multiprocessing.pool import Pool
 
 import click
@@ -17,7 +14,6 @@ from birder.checks import Factory
 
 from ..config import Config, Target, get_targets
 from .tsdb import stats
-from ..logging import logger
 
 
 def _get_target(arg):
@@ -45,7 +41,10 @@ def monitor(target: Target, config: dict):
         extra = str(e)
         stats.increase(target.ts_name, 1)
     if config.get('echo'):
-        click.secho("{0:<15} {1} {2}".format(target.label, target.url, extra), fg=color)
+        dt = tz_now().strftime('%H:%M:%S')
+        click.secho("{0:<6} {1:<15} {2} {3}".format(dt,
+                                                    target.label,
+                                                    target.url, extra), fg=color)
 
 
 def init_worker():
@@ -64,7 +63,7 @@ def sample(**kwargs):
     targets = get_targets()
     end = tz_now()
     delta = timedelta(days=2)
-    start =  end - delta
+    start = end - delta
     incr = timedelta(minutes=1)
     for t in targets:
         moment = start
@@ -74,19 +73,7 @@ def sample(**kwargs):
             stats.increase(t.ts_name, value, moment)
             moment = moment + incr
             click.echo("%s %s" % (moment, value))
-            # click.echo("%s %s" % (moment, str(stats.get_buckets(t.ts_name, '60m', 2))))
-    #
-    # points = round(delta.total_seconds() / 60)
-    # for point in range(1, points):
-    #     dt = start + (incr * point)
-    #     for t in targets:
-    #         # value = int(random.getrandbits(1))
-    #         # stats.hset("%s:s" % t.ts_name, int(value), dt)
-    #         # stats.hset("%s:f" % t.ts_name, int(not value), dt)
-    #
-    #         value = random.randint(1, 50)
-    #         # stats.hset(t.ts_name, value, dt)
-    #         stats.increase(t.ts_name, value, dt)
+
 
 @cli.command()
 def list(**kwargs):
@@ -142,20 +129,11 @@ def force(ctx, target, fail, timeout):
     except StopIteration:
         ctx.fail("Invalid check '{}'".format(target))
     ctx.invoke(monitor, t, {'echo': True})
-    # click.secho("Checking {1:<10} {0:>10} {2}".format(t.label, t.__class__.__name__, t.url), nl=False)
-    #
-    # try:
-    #     t.check(timeout=timeout)
-    #     click.secho('Ok', fg='green')
-    #     stats.success(t.ts_name)
-    # except Exception as e:
-    #     stats.increase(t.ts_name, 1)
-    #     click.secho('Fail %s' % e, fg='red')
-    #
+
 
 @cli.command()
 @click.option('-q', '--quiet', default=False, is_flag=True)
-@click.option('-p', '--processes', default=(os.cpu_count() * 2) or 1)
+@click.option('-p', '--processes', default=(os.cpu_count() * 2) or 1, envvar='BIRDER_PROCESSES')
 @click.option('-s', '--sleep', default=Config.POLLING_INTERVAL)
 @click.option('-o', '--once', is_flag=True)
 @click.option('-t', '--timeout', type=int, default=5)
@@ -164,7 +142,7 @@ def run(ctx, sleep, processes, quiet, once, timeout, **kwargs):
     targets = get_targets()
     if not quiet:
         ctx.invoke(list)
-
+    click.secho('Running %s processes.' % processes)
     if targets:
         config = {'echo': not quiet,
                   'timeout': timeout}

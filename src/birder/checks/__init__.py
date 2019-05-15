@@ -1,9 +1,8 @@
 import os
 import re
+import socket
 import sys
 import traceback
-
-import socket
 from contextlib import closing
 from itertools import count
 from urllib import parse

@@ -2,7 +2,7 @@ import os
 from functools import lru_cache
 
 from .checks import Factory, Target
-from .logging import logger
+from .logging import logger  # noqa
 
 
 @lru_cache(1)

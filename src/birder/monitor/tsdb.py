@@ -1,13 +1,8 @@
-import re
 from collections import OrderedDict
 
 import pytz
 import redis
 from redis_timeseries import TimeSeries, days, hours, minutes
-
-
-def get_limit(granularity):
-    return {'60m': 120}
 
 
 class TS(TimeSeries):
