@@ -47,7 +47,7 @@ def parse_users(value):
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY')
     SITE_TITLE = os.environ.get('SITE_TITLE', 'Birder')
-    GRANULARITIES = parse_list(os.environ.get('GRANULARITIES'), ("60m", "24h", "7d", "30d"))
+    GRANULARITIES = parse_list(os.environ.get('GRANULARITIES'), ("h", "d", "w", "m", 'y'))
     REFRESH_INTERVAL = parse_int(os.environ.get('REFRESH_INTERVAL'), 60)
     POLLING_INTERVAL = parse_int(os.environ.get('POLLING_INTERVAL'), 60)
     DISPLAY_URLS = parse_bool(os.environ.get('DISPLAY_URLS', True))

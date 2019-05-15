@@ -26,6 +26,7 @@ celery = "*"
 pymysql = "*"
 flask-session = "*"
 click = "*"
+colour = "*"
 
 [requires]
 python_version = "3.7"

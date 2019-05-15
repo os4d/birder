@@ -6,21 +6,18 @@ import redis
 from redis_timeseries import TimeSeries, days, hours, minutes
 
 
+def get_limit(granularity):
+    return {'60m': 120}
+
+
 class TS(TimeSeries):
     def zap(self, key):
         pipe = self.client.pipeline()
-        pipe.expire("%s:s" % key, -1)
-        pipe.expire("%s:f" % key, -1)
+        pipe.expire(key, -1)
         pipe.execute()
 
-    def get_data(self, key, granularity, all=False):
-        if all:
-            count = -1
-        else:
-            count = int(re.sub('[a-z]*', '', granularity))
-        success = self.get_buckets("%s:s" % key, granularity, count)
-        failures = self.get_buckets("%s:f" % key, granularity, count)
-        return [success, failures]
+    def get_errors(self, key, granularity):
+        return self.get_buckets(key, granularity, -1)
 
     def get_buckets(self, key, granularity, count, timestamp=None):
         if count == -1:
@@ -28,15 +25,21 @@ class TS(TimeSeries):
             count = round((props['ttl'] / props['duration']))
         return super().get_buckets(key, granularity, count, timestamp)
 
-    def success(self, key):
-        pipe = self.hset("%s:s" % key, 1, execute=False)
-        pipe.delete(key)
-        pipe.execute()
+    def success(self, key, timestamp=None, execute=True):
+        pipe = self.client.pipeline() if execute else self.chain
+        for granularity, props in self.granularities.items():
+            hkey = self.get_key(key, timestamp, granularity)
+            bucket = self._round_time(timestamp, props['duration'])
+            pipe.hsetnx(hkey, bucket, -1)
+            pipe.expire(hkey, props['ttl'])
 
-    def failure(self, key):
-        pipe = self.hset("%s:f" % key, 1, execute=False)
-        pipe.set(key, 1)
-        pipe.execute()
+        if execute:
+            pipe.execute()
+        return pipe
+
+    def increase(self, key, amount, timestamp=None, execute=True):
+        super().increase(key, amount, timestamp, execute=False)
+        self.chain.execute()
 
     def hset(self, key, value, timestamp=None, execute=True):
         # type(pipe): Pipeline
@@ -45,7 +48,6 @@ class TS(TimeSeries):
         for granularity, props in self.granularities.items():
             hkey = self.get_key(key, timestamp, granularity)
             bucket = self._round_time(timestamp, props['duration'])
-
             pipe.hset(hkey, bucket, value)
             pipe.expire(hkey, props['ttl'])
 
@@ -54,17 +56,12 @@ class TS(TimeSeries):
         return pipe
 
 
-units = {
-    "60m": "minutes",
-    "24h": "hour",
-    "7d": "day",
-    "30d": "day"
-}
 granularities = OrderedDict([
-    ('60m', {'duration': minutes(1), 'ttl': hours(1)}),
-    ('24h', {'duration': hours(1), 'ttl': hours(24)}),
-    ('7d', {'duration': days(1), 'ttl': days(7)}),
-    ('30d', {'duration': days(1), 'ttl': days(30)}),
+    ('h', {'duration': minutes(1), 'ttl': minutes(60)}),
+    ('d', {'duration': minutes(1), 'ttl': hours(24)}),
+    ('w', {'duration': hours(1), 'ttl': days(7)}),
+    ('m', {'duration': days(1), 'ttl': days(30)}),
+    ('y', {'duration': days(1), 'ttl': days(365)}),
 ])
 
 client = redis.StrictRedis()

@@ -1,0 +1,192 @@
+{% extends "_base.html" %}
+{% block page %}
+    <div class="row">
+        <div class="sidebar">
+            <div class="sticky p-5 menu">
+                {% for entry in urls %}
+                    <h4>
+                        <img class="icon" src="{{ config.URL_PREFIX }}/static/images/{{ entry.logo }}?v={{ version }}">
+                        <a class="menu-item" href="#C{{ entry.ts_name }}">{{ entry.label }}</a></h4>
+
+                {% endfor %}
+                <div class="m-3"></div>
+                Auto Refresh <input type="checkbox" {% if refresh == 0 %}disabled="disabled"{% endif %}
+                                    id="auto-refresh"
+                                    data-onstyle="success"
+                                    data-offstyle="primary"
+                                    data-toggle="toggle"
+                                    data-size="small"
+                                    data-on="On" data-off="Off">
+            </div>
+        </div>
+        <div class="container charts" id="content">
+            {% for entry in urls %}
+                <h3 id="C{{ entry.ts_name }}">{{ entry.label }}</h3>
+                {% if user and config.DISPLAY_URLS %}
+                    <small>
+                        {% if entry.link %}
+                            <a href="{{ entry.link }}">{{ entry.url }}</a>
+                        {% else %}
+                            {{ entry.url }}
+                        {% endif %}
+                    </small>
+                {% endif %}
+                <div class="row col-12 p-3 m-1">
+                    <div id="chart-{{ entry.ts_name }}">
+                        <div style="width:1000px">
+                            <canvas id="{{ entry.ts_name }}"></canvas>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ config.URL_PREFIX }}/static/js/jquery.scrollTo.min.js"></script>
+    <script src="{{ config.URL_PREFIX }}/static/js/charts.min.js"></script>
+    <script src="{{ config.URL_PREFIX }}/static/js/moment-timezone.min.js"></script>
+
+    <script>
+        $.extend($.scrollTo.defaults, {
+            axis: 'y',
+            duration: 0
+        });
+        $(".menu-item").click(function (e) {
+            e.preventDefault();
+            var linkId = $(this).attr('href');
+            $.scrollTo($(linkId).offset().top - 65);
+            return false;
+        });
+        var color = Chart.helpers.color;
+        var okColor = color(window.chartColors.green).alpha(0.5).rgbString();
+        var errorColor = color(window.chartColors.red).alpha(0.5).rgbString();
+        var cfg = {
+            type :"bar",
+            data: {
+                datasets: [{
+                    backgroundColor: okColor,
+                    borderColor: okColor,
+                    steppedLine: false,
+                    data: [],
+                    {#type: 'bar',#}
+                    pointRadius: 0,
+                    lineTension: 0,
+                    borderWidth: 2,
+                    fill: false
+
+                },
+                    {
+                        backgroundColor: errorColor,
+                        borderColor: errorColor,
+                        {#type: 'line',#}
+                        steppedLine: false,
+                        data: [],
+                        pointRadius: 0,
+                        lineTension: 0,
+                        borderWidth: 2,
+                    fill: false
+
+                    }
+                ]
+            },
+            options: {
+                legend: false,
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        distribution: 'series',
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: '{{ unit }}'
+                        },
+                        unit: '{{ unit }}',
+                        {#unitStepSize: 1,#}
+                        {#gridLines:{#}
+                        {#    drawTicks: true#}
+                        {# },#}
+                        time: {
+                            displayFormats: {
+                                second: '{{ format }}',
+                                minute: '{{ format }}',
+                                hour: '{{ format }}',
+                                {#hour: 'ddd DD',#}
+                                day: '{{ format }}',
+                                week: '{{ format }}',
+                            }
+                        },
+                        ticks: {
+                            source: "data",
+                            autoSkip: true,
+                            maxTicksLimit: {{ datapoints }}
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            display: false,
+                            stepSize: 1,
+                            min: 0,
+                            max: 2
+                        }
+                    }]
+                }
+                {#tooltips: {#}
+                {#    enabled: false,#}
+                {#    intersect: false,#}
+                {#    mode: 'index',#}
+                {#    callbacks: {#}
+                {#        label: function (tooltipItem, myData) {#}
+                {#            var label = myData.datasets[tooltipItem.datasetIndex].label || '';#}
+                {#            if (label) {#}
+                {#                label += ': ';#}
+                {#            }#}
+                {#            label += parseFloat(tooltipItem.value).toFixed(2);#}
+                {#            return label;#}
+                {#        }#}
+                {#    }#}
+                {#}#}
+            }
+        };
+        var charts = {};
+        var ctxs = {};
+        var chartID;
+
+        {% for entry in urls %}
+            chartID = "{{entry.ts_name}}";
+            ctxs[chartID] = document.getElementById(chartID).getContext('2d');
+            ctxs[chartID].canvas.width = 500;
+            ctxs[chartID].canvas.height = 100;
+            charts[chartID] = new Chart(ctxs[chartID], cfg);
+
+            var update_{{entry.ts_name}} = function () {
+                $.get('{{config.URL_PREFIX}}/data/{{entry.ts_name}}/{{ granularity }}/')
+                    .done(function (data) {
+                        charts["{{entry.ts_name}}"].config.data.datasets[1].data = data.fails;
+                        charts["{{entry.ts_name}}"].config.data.datasets[0].data = data.ok;
+                        charts["{{entry.ts_name}}"].update();
+                    })
+            };
+            update_{{entry.ts_name}}();
+        {% endfor %}
+        {% if refresh %}
+            $('#auto-refresh').change(function () {
+                if ($(this).prop('checked')) {
+                    console.log('auto-refresh ON');
+                    {% for entry in urls %}
+                        var interval_{{entry.ts_name}} = setInterval(update_{{entry.ts_name}}, {{ refresh }} * 1000)
+                        ;{% endfor %}
+                } else {
+                    // clearinterval
+                    console.log('auto-refresh OFF');
+                    {% for entry in urls %}
+                        clearInterval(interval_{{entry.ts_name}});{% endfor %}
+                }
+            });
+        {% endif %}
+    </script>
+
+
+{% endblock %}

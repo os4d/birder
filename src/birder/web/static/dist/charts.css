@@ -1,0 +1,297 @@
+/* Cal-HeatMap CSS */
+
+.cal-heatmap-container {
+	display: block;
+}
+
+.cal-heatmap-container .graph
+{
+	font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
+}
+
+.cal-heatmap-container .graph-label
+{
+	fill: #999;
+	font-size: 10px
+}
+
+.cal-heatmap-container .graph, .cal-heatmap-container .graph-legend rect {
+	shape-rendering: crispedges
+}
+
+.cal-heatmap-container .graph-rect
+{
+	fill: #ededed
+}
+
+.cal-heatmap-container .graph-subdomain-group rect:hover
+{
+	stroke: #000;
+	stroke-width: 1px
+}
+
+.cal-heatmap-container .subdomain-text {
+	font-size: 8px;
+	fill: #999;
+	pointer-events: none
+}
+
+.cal-heatmap-container .hover_cursor:hover {
+	cursor: pointer
+}
+
+.cal-heatmap-container .qi {
+	background-color: #999;
+	fill: #999
+}
+
+/*
+Remove comment to apply this style to date with value equal to 0
+.q0
+{
+	background-color: #fff;
+	fill: #fff;
+	stroke: #ededed
+}
+*/
+
+.cal-heatmap-container .q1
+{
+	background-color: #dae289;
+	fill: #dae289
+}
+
+.cal-heatmap-container .q2
+{
+	background-color: #cedb9c;
+	fill: #9cc069
+}
+
+.cal-heatmap-container .q3
+{
+	background-color: #b5cf6b;
+	fill: #669d45
+}
+
+.cal-heatmap-container .q4
+{
+	background-color: #637939;
+	fill: #637939
+}
+
+.cal-heatmap-container .q5
+{
+	background-color: #3b6427;
+	fill: #3b6427
+}
+
+.cal-heatmap-container rect.highlight
+{
+	stroke:#444;
+	stroke-width:1
+}
+
+.cal-heatmap-container text.highlight
+{
+	fill: #444
+}
+
+.cal-heatmap-container rect.highlight-now
+{
+	stroke: red
+}
+
+.cal-heatmap-container text.highlight-now
+{
+	fill: red;
+	font-weight: 800
+}
+
+.cal-heatmap-container .domain-background {
+	fill: none;
+	shape-rendering: crispedges
+}
+
+.ch-tooltip {
+	padding: 10px;
+	background: #222;
+	color: #bbb;
+	font-size: 12px;
+	line-height: 1.4;
+	width: 140px;
+	position: absolute;
+	z-index: 99999;
+	text-align: center;
+	border-radius: 2px;
+	box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
+	display: none;
+	box-sizing: border-box;
+}
+
+.ch-tooltip::after{
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-color: transparent;
+	border-style: solid;
+	content: "";
+	padding: 0;
+	display: block;
+	bottom: -6px;
+	left: 50%;
+	margin-left: -6px;
+    border-width: 6px 6px 0;
+    border-top-color: #222;
+}
+
+#lastUpdate {
+  width: 100%;
+  font-size: 12px;
+  text-align: center; }
+
+.charts .cal-heatmap-container .domain-background {
+  background-color: white; }
+
+.charts .cal-heatmap-container .graph-label {
+  color: black !important;
+  fill: black !important; }
+
+.g-h .charts .cal-heatmap-container .graph-label, .g-d .charts .cal-heatmap-container .graph-label {
+  font-size: 20px; }
+
+.g-w .charts .cal-heatmap-container .graph-label {
+  font-size: 14px; }
+
+.charts .cal-heatmap-container text.subdomain-text {
+  color: black !important;
+  fill: black !important;
+  font-size: 12px; }
+
+.charts .cal-heatmap-container .graph-rect.q2 {
+  background-color: #ff8a76;
+  fill: #ff8a76; }
+
+.charts .cal-heatmap-container .graph-rect.q3 {
+  background-color: #ff7c69;
+  fill: #ff7c69; }
+
+.charts .cal-heatmap-container .graph-rect.q4 {
+  background-color: #ff6e5c;
+  fill: #ff6e5c; }
+
+.charts .cal-heatmap-container .graph-rect.q5 {
+  background-color: #ff604f;
+  fill: #ff604f; }
+
+.charts .cal-heatmap-container .graph-rect.q6 {
+  background-color: #ff5142;
+  fill: #ff5142; }
+
+.charts .cal-heatmap-container .graph-rect.q7 {
+  background-color: #ff4234;
+  fill: #ff4234; }
+
+.charts .cal-heatmap-container .graph-rect.q8 {
+  background-color: #ff3227;
+  fill: #ff3227; }
+
+.charts .cal-heatmap-container .graph-rect.q9 {
+  background-color: #ff221a;
+  fill: #ff221a; }
+
+.charts .cal-heatmap-container .graph-rect.q10 {
+  background-color: #ff110d;
+  fill: #ff110d; }
+
+.charts .cal-heatmap-container .graph-rect.q11 {
+  background-color: #f00;
+  fill: #f00; }
+
+.charts .cal-heatmap-container .future {
+  background-color: #ededed;
+  fill: #ededed; }
+
+/*! ========================================================================
+ * Bootstrap Toggle: bootstrap-toggle.css v2.2.0
+ * http://www.bootstraptoggle.com
+ * ========================================================================
+ * Copyright 2014 Min Hur, The New York Times Company
+ * Licensed under MIT
+ * ======================================================================== */
+
+
+.checkbox label .toggle,
+.checkbox-inline .toggle {
+	margin-left: -20px;
+	margin-right: 5px;
+}
+
+.toggle {
+	position: relative;
+	overflow: hidden;
+}
+.toggle input[type="checkbox"] {
+	display: none;
+}
+.toggle-group {
+	position: absolute;
+	width: 200%;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	transition: left 0.35s;
+	-webkit-transition: left 0.35s;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+}
+.toggle.off .toggle-group {
+	left: -100%;
+}
+.toggle-on {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 50%;
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+}
+.toggle-off {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 50%;
+	right: 0;
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+}
+.toggle-handle {
+	position: relative;
+	margin: 0 auto;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	height: 100%;
+	width: 0px;
+	border-width: 0 1px;
+}
+
+.toggle.btn { min-width: 59px; min-height: 34px; }
+.toggle-on.btn { padding-right: 24px; }
+.toggle-off.btn { padding-left: 24px; }
+
+.toggle.btn-lg { min-width: 79px; min-height: 45px; }
+.toggle-on.btn-lg { padding-right: 31px; }
+.toggle-off.btn-lg { padding-left: 31px; }
+.toggle-handle.btn-lg { width: 40px; }
+
+.toggle.btn-sm { min-width: 50px; min-height: 30px;}
+.toggle-on.btn-sm { padding-right: 20px; }
+.toggle-off.btn-sm { padding-left: 20px; }
+
+.toggle.btn-xs { min-width: 35px; min-height: 22px;}
+.toggle-on.btn-xs { padding-right: 12px; }
+.toggle-off.btn-xs { padding-left: 12px; }
+
+

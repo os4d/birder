@@ -1,4 +1,9 @@
 {% extends "_base.html" %}
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ config.URL_PREFIX }}/static/dist/charts.css?v={{ version }}">
+
+{% endblock %}
 {% block page %}
     <div class="row">
         <div class="sidebar">
@@ -10,44 +15,227 @@
 
                 {% endfor %}
                 <div class="m-3"></div>
-                Auto Refresh <input type="checkbox" {% if refresh == 0 %}disabled="disabled"{% endif %}
-                                    id="auto-refresh"
-                                    data-onstyle="success"
-                                    data-offstyle="primary"
-                                    data-toggle="toggle"
-                                    data-size="small"
-                                    data-on="On" data-off="Off">
+                {% if config.REFRESH_INTERVAL %}
+                    Auto Refresh <input type="checkbox" {% if refresh == 0 %}disabled="disabled"{% endif %}
+                                        id="auto-refresh"
+                                        data-onstyle="success"
+                                        data-offstyle="primary"
+                                        data-toggle="toggle"
+                                        data-size="small"
+                                        data-on="On" data-off="Off">
+                    <div id="lastUpdate"></div>
+                {% endif %}
             </div>
         </div>
-        <div class="container charts" id="content">
+        <div class="container g-{{ granularity }}" id="content">
             {% for entry in urls %}
-                <h3 id="C{{ entry.ts_name }}">{{ entry.label }}</h3>
-                {% if user and config.DISPLAY_URLS %}
-                    <small>
-                        {% if entry.link %}
-                            <a href="{{ entry.link }}">{{ entry.url }}</a>
-                        {% else %}
-                            {{ entry.url }}
-                        {% endif %}
-                    </small>
-                {% endif %}
-                <div class="row col-12 p-3 m-1">
-                    <div id="chart-{{ entry.ts_name }}">
-                        <div style="width:1000px">
-                            <canvas id="{{ entry.ts_name }}"></canvas>
-                        </div>
+                <div class="container charts h-10">
+                    <h3 id="C{{ entry.ts_name }}">{{ entry.label }}</h3>
+                    {% if user and config.DISPLAY_URLS %}
+                        <small>
+                            {% if entry.link %}
+                                <a href="{{ entry.link }}">{{ entry.url }}</a>
+                            {% else %}
+                                {{ entry.url }}
+                            {% endif %}
+                            <a target="_blank" href="/data/{{ entry.ts_name }}/{{ granularity }}/">data</a>
+                        </small>
+                    {% endif %}
+                    {#                    <div>#}
+                    {#                        <button id="previous{{ entry.ts_name }}" class="btn btn-sm btn-outline-dark"><</button>#}
+                    {#                        <button id="next{{ entry.ts_name }}" class="btn btn-sm btn-outline-dark">></button>#}
+                    {#                    </div>#}
+
+                    <div lass="row col-12 p-3 m-1">
+                        <div id="chart-{{ entry.ts_name }}"></div>
                     </div>
                 </div>
             {% endfor %}
+            <div class="row col-12 p-1 m-1">&nbsp;
+            </div>
         </div>
     </div>
 {% endblock %}
 
 {% block scripts %}
     {{ super() }}
-    <script src="{{ config.URL_PREFIX }}/static/js/jquery.scrollTo.min.js"></script>
-    <script src="{{ config.URL_PREFIX }}/static/js/charts.min.js"></script>
-    <script src="{{ config.URL_PREFIX }}/static/js/moment-timezone.min.js"></script>
+    <script src="{{ config.URL_PREFIX }}/static/dist/charts.js?v={{ version }}"></script>
+    <script src="{{ config.URL_PREFIX }}/static/dist/cal-heatmap.js?v={{ version }}"></script>
+    <script src="{{ config.URL_PREFIX }}/static/dist/jquery.scrollTo.js?v={{ version }}"></script>
+    <script type="text/javascript">
+        var today = moment();
+        var lastHour = today.clone().startOf('hour');
+        var yesterday = today.clone().subtract(1, 'days');
+        var lastMonth = today.clone().subtract(1, 'months');
+        var thisWeek = today.clone().startOf('week');
+        var thisYear = today.clone().startOf('year');
+        var noop = function () {
+        };
+        window.chart_config = {
+            'h': {
+                cellSize: 32,
+                colLimit: 2,
+                displayErrors: function () {
+                    return '!'
+                },
+                domain: 'hour',
+                range: 1,
+                start: lastHour.toDate(),
+                subDomain: 'x_min',
+                verticalOrientation: true,
+                domainLabelFormat: "%H:%M",
+                subDomainDateFormat: "%H:%M",
+
+            },
+            'd': {
+                cellSize: 43,
+                colLimit: 1,
+                domain: 'day',
+                domainGutter: 10,
+                domainLabelFormat: "%A, %d %B",
+                range: 1,
+                start: today.toDate(),
+                subDomain: 'x_hour',
+                subDomainDateFormat: "%H:%M",
+            },
+            'w': {
+                cellSize: 30,
+                colLimit: 6,
+                domain: 'day',
+                domainGutter: 15,
+                domainLabelFormat: "%A, %d %B",
+                range: 7,
+                start: thisWeek.toDate(),
+                subDomain: 'x_hour',
+                subDomainDateFormat: "%H:%M",
+            },
+            'm': {
+                cellSize: 20,
+                domain: 'day',
+                subDomain: 'hour',
+                start: today.clone().startOf('month').toDate(),
+                verticalOrientation: true,
+                range: 31,
+                rowLimit: 1,
+                label: {
+                    position: "left",
+                    offset: {
+                        x: 20,
+                        y: 12
+                    },
+                    width: 110
+                },
+                legendHorizontalPosition: "right",
+                domainLabelFormat: "%a, %d %B",
+                subDomainDateFormat: "%H:%M",
+                noData: ''
+            },
+            'y': {
+                cellSize: 15,
+                domain: 'month',
+                legendHorizontalPosition: "right",
+                maxDate: thisYear.toDate(),
+                minDate: thisYear.toDate(),
+                start: thisYear.toDate(),
+                subDomain: 'day',
+                success: '',
+                noData: '',
+                displayErrors: function (value) {
+                    return ''
+                },
+
+            },
+        };
+
+        var calCfg = {
+            cellSize: 12,
+            cellPadding: 2,
+            cellRadius: 2,
+            maxDate: today.toDate(),
+            itemName: ['error', 'errors'],
+            noData: 'n/a',
+            success: 'ok',
+            {#subDomainTitleFormat: {#}
+            {#    empty: '{date}',#}
+            {#    filled: '{date}'#}
+            {# },#}
+            displayErrors: function (value) {
+                return value
+            },
+            subDomainTextFormat: function (date, value) {
+                if (value === undefined) {
+                    return
+                }
+                if (value === null) {
+                    return this.noData
+                }
+                if (value === 0) {
+                    return this.success
+                }
+                return this.displayErrors(value)
+            },
+            label: {
+                position: "top"
+            },
+            afterLoadData: function (data) {
+                var stats = {};
+                for (var d in data.values) {
+                    if (d) {
+                        stats[data.values[d].date] = data.values[d].value;
+                    }
+                }
+                return stats;
+            },
+            tooltip: true,
+            displayLegend: false,
+            legend: [0, 1, 5, 10, 20],
+        };
+        $.extend(calCfg, chart_config['{{ granularity }}']);
+        var charts = {};
+        var interval = null;
+        {% for entry in urls %}
+            var cal = new CalHeatMap();
+            var localCfg = $.extend({}, calCfg, {
+                itemSelector: "#chart-{{ entry.ts_name }}",
+                itemNamespace: "{{ entry.ts_name }}",
+                data: "/data/{{ entry.ts_name }}/{{ granularity }}/",
+                nextSelector: "#next{{ entry.ts_name }}",
+                previousSelector: "#previous{{ entry.ts_name }}"
+
+            });
+            cal.graphDim.height = 0; // bug in cal-heatmap
+            cal.init(localCfg);
+            charts['{{entry.ts_name}}'] = {
+                chart: cal,
+                data: localCfg.data,
+            };
+        {% endfor %}
+        {% if config.REFRESH_INTERVAL %}
+            var REFRESH_INTERVAL = {{ config.REFRESH_INTERVAL }} * 1000;
+            var updateChart = function () {
+                $('#lastUpdate').html(moment().format('MM/DD/YYYY HH:mm'));
+                for (var entry in charts) {
+                    var target = charts[entry];
+                    target.chart.update(target.data);
+                }
+            };
+            $('#auto-refresh').change(function () {
+                if ($(this).prop('checked')) {
+                    console.log('auto-refresh ON');
+                    interval = setInterval(updateChart, REFRESH_INTERVAL)
+                } else {
+                    // clearinterval
+                    console.log('auto-refresh OFF');
+                    for (var entry in charts) {
+                        clearInterval(interval)
+                    }
+                }
+            });
+        {% endif %}
+
+
+    </script>
+
 
     <script>
         $.extend($.scrollTo.defaults, {
@@ -60,129 +248,5 @@
             $.scrollTo($(linkId).offset().top - 65);
             return false;
         });
-        var color = Chart.helpers.color;
-        var okColor = color(window.chartColors.green).alpha(0.5).rgbString();
-        var errorColor = color(window.chartColors.red).alpha(0.5).rgbString();
-        var cfg = {
-            data: {
-                datasets: [{
-                    backgroundColor: okColor,
-                    borderColor: okColor,
-                    steppedLine: true,
-                    data: [],
-                    type: 'line',
-                    pointRadius: 0,
-                    lineTension: 0,
-                    borderWidth: 2,
-                    {#fill: "start"#}
-
-                },
-                    {
-                        backgroundColor: errorColor,
-                        borderColor: errorColor,
-                        steppedLine: true,
-                        data: [],
-                        type: 'line',
-                        pointRadius: 0,
-                        lineTension: 0,
-                        borderWidth: 2,
-                        {#fill: "start"#}
-
-                    }
-                ]
-            },
-            options: {
-                legend: false,
-                scales: {
-                    xAxes: [{
-                        type: 'time',
-                        {#distribution: 'series',#}
-                        display: true,
-                        unit: '{{ unit }}',
-                        {#unitStepSize: 1,#}
-                        {#gridLines:{#}
-                        {#    drawTicks: true#}
-                        {# },#}
-                        time: {
-                            displayFormats: {
-                                second: '{{ format }}',
-                                minute: '{{ format }}',
-                                hour: '{{ format }}',
-                                {#hour: 'ddd DD',#}
-                                day: '{{ format }}',
-                                week: '{{ format }}',
-                            }
-                        },
-                        {#ticks: {#}
-                        {#    source: "data",#}
-                        {#    autoSkip: true,#}
-                        {#    maxTicksLimit: 30#}
-                        {##}
-                        {#                        }#}
-                    }],
-                    yAxes: [{
-                        ticks: {
-                            display: false,
-                            stepSize: 1,
-                            min: 0,
-                            max: 1
-                        }
-                    }]
-                },
-                tooltips: {
-                    enabled: false,
-                    intersect: false,
-                    mode: 'index',
-                    callbacks: {
-                        label: function (tooltipItem, myData) {
-                            var label = myData.datasets[tooltipItem.datasetIndex].label || '';
-                            if (label) {
-                                label += ': ';
-                            }
-                            label += parseFloat(tooltipItem.value).toFixed(2);
-                            return label;
-                        }
-                    }
-                }
-            }
-        };
-        var charts = {};
-        var ctxs = {};
-        var chartID;
-
-        {% for entry in urls %}
-            chartID = "{{entry.ts_name}}";
-            ctxs[chartID] = document.getElementById(chartID).getContext('2d');
-            ctxs[chartID].canvas.width = 500;
-            ctxs[chartID].canvas.height = 100;
-            charts[chartID] = new Chart(ctxs[chartID], cfg);
-
-            var update_{{entry.ts_name}} = function () {
-                $.get('{{config.URL_PREFIX}}/data/{{entry.ts_name}}/{{ granularity }}/')
-                    .done(function (data) {
-                        charts["{{entry.ts_name}}"].config.data.datasets[1].data = data.fails;
-                        charts["{{entry.ts_name}}"].config.data.datasets[0].data = data.ok;
-                        charts["{{entry.ts_name}}"].update();
-                    })
-            };
-            update_{{entry.ts_name}}();
-        {% endfor %}
-        {% if refresh %}
-            $('#auto-refresh').change(function () {
-                if ($(this).prop('checked')) {
-                    console.log('auto-refresh ON');
-                    {% for entry in urls %}
-                        var interval_{{entry.ts_name}} = setInterval(update_{{entry.ts_name}}, {{ refresh }} * 1000)
-                        ;{% endfor %}
-                } else {
-                    // clearinterval
-                    console.log('auto-refresh OFF');
-                    {% for entry in urls %}
-                        clearInterval(interval_{{entry.ts_name}});{% endfor %}
-                }
-            });
-        {% endif %}
     </script>
-
-
 {% endblock %}
