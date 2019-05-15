@@ -38,7 +38,7 @@
                             {% else %}
                                 {{ entry.url }}
                             {% endif %}
-                            <a target="_blank" href="/data/{{ entry.ts_name }}/{{ granularity }}/">data</a>
+                            <a target="_blank" href="{{ config.URL_PREFIX }}/data/{{ entry.ts_name }}/{{ granularity }}/">data</a>
                         </small>
                     {% endif %}
                     {#                    <div>#}
@@ -198,7 +198,7 @@
             var localCfg = $.extend({}, calCfg, {
                 itemSelector: "#chart-{{ entry.ts_name }}",
                 itemNamespace: "{{ entry.ts_name }}",
-                data: "/data/{{ entry.ts_name }}/{{ granularity }}/",
+                data: "{{ config.URL_PREFIX }}/data/{{ entry.ts_name }}/{{ granularity }}/",
                 nextSelector: "#next{{ entry.ts_name }}",
                 previousSelector: "#previous{{ entry.ts_name }}"
 
