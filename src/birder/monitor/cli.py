@@ -6,6 +6,7 @@ import time
 from datetime import timedelta
 from multiprocessing.pool import Pool
 
+
 import click
 from redis_timeseries import tz_now
 
@@ -29,20 +30,20 @@ def _get_target(arg):
 
 
 def monitor(target: Target, config: dict):
+    ts = config['timestamp']
+    color = "green"
+    extra = "Ok"
     try:
-        color = "green"
-        extra = "Ok"
         assert target.check(**config)
-        stats.success(target.ts_name)
+        stats.success(target.ts_name, timestamp=ts)
     except KeyboardInterrupt:
         return
     except BaseException as e:
         color = "red"
         extra = str(e)
-        stats.increase(target.ts_name, 1)
+        stats.increase(target.ts_name, 1, timestamp=ts)
     if config.get('echo'):
-        dt = tz_now().strftime('%H:%M:%S')
-        click.secho("{0:<6} {1:<15} {2} {3}".format(dt,
+        click.secho("{0:<6} {1:<15} {2} {3}".format(ts.strftime('%H:%M:%S'),
                                                     target.label,
                                                     target.url, extra), fg=color)
 
@@ -142,14 +143,17 @@ def run(ctx, sleep, processes, quiet, once, timeout, **kwargs):
     targets = get_targets()
     if not quiet:
         ctx.invoke(list)
-    click.secho('Running %s processes.' % processes)
+        click.secho('Running %s processes.' % processes)
     if targets:
         config = {'echo': not quiet,
+                  'timestamp': tz_now(),
                   'timeout': timeout}
         params = [(t, config) for t in targets]
 
         p = Pool(processes=processes, initializer=init_worker)
         while True:
+            for param in params:
+                param[1]['timestamp'] = tz_now()
             try:
                 p.starmap_async(monitor, params).get(9999999)
                 time.sleep(sleep)
