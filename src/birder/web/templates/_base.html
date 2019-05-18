@@ -9,7 +9,7 @@
 {% block styles %}
     {{ super() }}
     <link rel="stylesheet" href="{{ config.URL_PREFIX }}/static/dist/theme.css?v={{ version }}">
-{#    <link rel="stylesheet" href="{{ config.URL_PREFIX }}/static/css/login.css?v={{ version }}">#}
+    {#    <link rel="stylesheet" href="{{ config.URL_PREFIX }}/static/css/login.css?v={{ version }}">#}
     <link rel="apple-touch-icon" sizes="76x76"
           href="{{ config.URL_PREFIX }}/static/images/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32"
@@ -24,8 +24,8 @@
     <meta name="msapplication-config" content="{{ config.URL_PREFIX }}/static/images/favicon/browserconfig.xml">
     <meta name="theme-color" content="#ffffff">
 
-{#    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">#}
-{#    <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>#}
+    {#    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">#}
+    {#    <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>#}
 
 {% endblock %}
 {% block body %}
@@ -48,6 +48,7 @@
                         {% for g in config.GRANULARITIES %}
                             <li class="nav-item">
                                 <a class="nav-link {% if page == g %}selected{% endif %}"
+                                   tooltip
                                    href="{{ config.URL_PREFIX }}/{{ g }}/">{{ g.title() }}</a>
                             </li>
                         {% endfor %}
@@ -103,10 +104,25 @@
     {% endblock %}
     {% block scripts %}
         {{ super() }}
-{#        <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>#}
-{#        <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>#}
+        {#        <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>#}
+        {#        <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>#}
         <script src="{{ config.URL_PREFIX }}/static/dist/theme.js"></script>
         <script>
+            var tips = {
+                H: 'hour',
+                D: 'day',
+                W: 'week',
+                M: 'month',
+                Y: 'year',
+            };
+            $('a.nav-link').tooltip({
+                placement: 'bottom',
+                title: function () {
+                    var sel = $(this).text();
+                    return tips[sel]
+                }
+            });
+
             {% if messages %}
                 $('.alert').alert();
                 setTimeout(function () {

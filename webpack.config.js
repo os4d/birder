@@ -1,6 +1,4 @@
-// const HtmlWebPackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-// const webpack = require("webpack");
 const path = require("path");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
@@ -8,11 +6,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 
 const rel = path.resolve.bind(null, __dirname + "/src/birder/web/static/src/");
 const relToNode = path.resolve.bind(null, __dirname + "/node_modules/");
-
 const outputDir = rel("../dist");
-
-// const outputDir = path.resolve.bind(null, __dirname + "/src/birder/web/static/dist/")();
-
 const VERSION = require("./package.json").version;
 WITH_CSS_SOURCEMAPS = true;
 IS_PRODUCTION = false;
@@ -34,28 +28,28 @@ const loaders = {
             // devtool: 'source-map',
         },
     },
-    postcss: {
-        loader: "postcss-loader",
-        options: {
-            sourceMap: WITH_CSS_SOURCEMAPS,
-            minimize: IS_PRODUCTION,
-            devtool: 'source-map'
-            // plugins: function (loader) {
-            //     return [
-            //         autoprefixer({
-            //             browsers: ["last 2 versions"]
-            //         })
-            //     ]
-            // }
-        }
-    },
+    // postcss: {
+    //     loader: "postcss-loader",
+    //     options: {
+    //         sourceMap: WITH_CSS_SOURCEMAPS,
+    //         minimize: IS_PRODUCTION,
+    //         devtool: 'source-map'
+    //         // plugins: function (loader) {
+    //         //     return [
+    //         //         autoprefixer({
+    //         //             browsers: ["last 2 versions"]
+    //         //         })
+    //         //     ]
+    //         // }
+    //     }
+    // },
     sass: {
         loader: "sass-loader",
         options: {
             // indentedSyntax: true,
             sourceMap: WITH_CSS_SOURCEMAPS,
-            minimize: IS_PRODUCTION,
             devtool: 'source-map',
+            // minimize: IS_PRODUCTION,
             // includePaths: [path.resolve(__dirname, "./src")]
         }
     },
@@ -67,27 +61,38 @@ const loaders = {
 
 module.exports = {
     context: rel("."),
+    mode: 'production',
     entry: {
+        d3: "d3/d3.js",
         theme: "./common",
         charts: "./charts",
     },
+    optimization: {
+        minimize: false
+    },
     output: {
         path: outputDir,
+    },
+    resolve: {
+        modules: [path.resolve(__dirname), 'node_modules'],
+        // alias: {
+        //     Utilities: path.resolve(__dirname, 'src/utilities/'),
+        // }
     },
     module: {
         rules: [
             {
                 test: /\.js$/,
-                exclude: /node_modules/,
+                // exclude: /node_modules/,
                 use: {
                     loader: "babel-loader"
                 }
             },
             {
                 test: /\.scss/,
-                exclude: /node_modules/,
+                // exclude: /node_modules/,
 
-                use: [loaders.mini, loaders.css, loaders.postcss, loaders.sass]
+                use: [loaders.mini, loaders.css, loaders.sass]
             },
             {
                 test: /\.css$/,

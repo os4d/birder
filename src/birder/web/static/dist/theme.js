@@ -81,64 +81,239 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./common.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = 129);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "../../../../../node_modules/js-cookie/src/js.cookie.js":
-/*!**********************************************************************************************!*\
-  !*** /data/PROGETTI/saxix/bitcaster/service-monitor/node_modules/js-cookie/src/js.cookie.js ***!
-  \**********************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-eval("var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!\n * JavaScript Cookie v2.2.0\n * https://github.com/js-cookie/js-cookie\n *\n * Copyright 2006, 2015 Klaus Hartl & Fagner Brack\n * Released under the MIT license\n */\n;(function (factory) {\n\tvar registeredInModuleLoader = false;\n\tif (true) {\n\t\t!(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),\n\t\t\t\t__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?\n\t\t\t\t(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :\n\t\t\t\t__WEBPACK_AMD_DEFINE_FACTORY__),\n\t\t\t\t__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));\n\t\tregisteredInModuleLoader = true;\n\t}\n\tif (true) {\n\t\tmodule.exports = factory();\n\t\tregisteredInModuleLoader = true;\n\t}\n\tif (!registeredInModuleLoader) {\n\t\tvar OldCookies = window.Cookies;\n\t\tvar api = window.Cookies = factory();\n\t\tapi.noConflict = function () {\n\t\t\twindow.Cookies = OldCookies;\n\t\t\treturn api;\n\t\t};\n\t}\n}(function () {\n\tfunction extend () {\n\t\tvar i = 0;\n\t\tvar result = {};\n\t\tfor (; i < arguments.length; i++) {\n\t\t\tvar attributes = arguments[ i ];\n\t\t\tfor (var key in attributes) {\n\t\t\t\tresult[key] = attributes[key];\n\t\t\t}\n\t\t}\n\t\treturn result;\n\t}\n\n\tfunction init (converter) {\n\t\tfunction api (key, value, attributes) {\n\t\t\tvar result;\n\t\t\tif (typeof document === 'undefined') {\n\t\t\t\treturn;\n\t\t\t}\n\n\t\t\t// Write\n\n\t\t\tif (arguments.length > 1) {\n\t\t\t\tattributes = extend({\n\t\t\t\t\tpath: '/'\n\t\t\t\t}, api.defaults, attributes);\n\n\t\t\t\tif (typeof attributes.expires === 'number') {\n\t\t\t\t\tvar expires = new Date();\n\t\t\t\t\texpires.setMilliseconds(expires.getMilliseconds() + attributes.expires * 864e+5);\n\t\t\t\t\tattributes.expires = expires;\n\t\t\t\t}\n\n\t\t\t\t// We're using \"expires\" because \"max-age\" is not supported by IE\n\t\t\t\tattributes.expires = attributes.expires ? attributes.expires.toUTCString() : '';\n\n\t\t\t\ttry {\n\t\t\t\t\tresult = JSON.stringify(value);\n\t\t\t\t\tif (/^[\\{\\[]/.test(result)) {\n\t\t\t\t\t\tvalue = result;\n\t\t\t\t\t}\n\t\t\t\t} catch (e) {}\n\n\t\t\t\tif (!converter.write) {\n\t\t\t\t\tvalue = encodeURIComponent(String(value))\n\t\t\t\t\t\t.replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent);\n\t\t\t\t} else {\n\t\t\t\t\tvalue = converter.write(value, key);\n\t\t\t\t}\n\n\t\t\t\tkey = encodeURIComponent(String(key));\n\t\t\t\tkey = key.replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent);\n\t\t\t\tkey = key.replace(/[\\(\\)]/g, escape);\n\n\t\t\t\tvar stringifiedAttributes = '';\n\n\t\t\t\tfor (var attributeName in attributes) {\n\t\t\t\t\tif (!attributes[attributeName]) {\n\t\t\t\t\t\tcontinue;\n\t\t\t\t\t}\n\t\t\t\t\tstringifiedAttributes += '; ' + attributeName;\n\t\t\t\t\tif (attributes[attributeName] === true) {\n\t\t\t\t\t\tcontinue;\n\t\t\t\t\t}\n\t\t\t\t\tstringifiedAttributes += '=' + attributes[attributeName];\n\t\t\t\t}\n\t\t\t\treturn (document.cookie = key + '=' + value + stringifiedAttributes);\n\t\t\t}\n\n\t\t\t// Read\n\n\t\t\tif (!key) {\n\t\t\t\tresult = {};\n\t\t\t}\n\n\t\t\t// To prevent the for loop in the first place assign an empty array\n\t\t\t// in case there are no cookies at all. Also prevents odd result when\n\t\t\t// calling \"get()\"\n\t\t\tvar cookies = document.cookie ? document.cookie.split('; ') : [];\n\t\t\tvar rdecode = /(%[0-9A-Z]{2})+/g;\n\t\t\tvar i = 0;\n\n\t\t\tfor (; i < cookies.length; i++) {\n\t\t\t\tvar parts = cookies[i].split('=');\n\t\t\t\tvar cookie = parts.slice(1).join('=');\n\n\t\t\t\tif (!this.json && cookie.charAt(0) === '\"') {\n\t\t\t\t\tcookie = cookie.slice(1, -1);\n\t\t\t\t}\n\n\t\t\t\ttry {\n\t\t\t\t\tvar name = parts[0].replace(rdecode, decodeURIComponent);\n\t\t\t\t\tcookie = converter.read ?\n\t\t\t\t\t\tconverter.read(cookie, name) : converter(cookie, name) ||\n\t\t\t\t\t\tcookie.replace(rdecode, decodeURIComponent);\n\n\t\t\t\t\tif (this.json) {\n\t\t\t\t\t\ttry {\n\t\t\t\t\t\t\tcookie = JSON.parse(cookie);\n\t\t\t\t\t\t} catch (e) {}\n\t\t\t\t\t}\n\n\t\t\t\t\tif (key === name) {\n\t\t\t\t\t\tresult = cookie;\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t}\n\n\t\t\t\t\tif (!key) {\n\t\t\t\t\t\tresult[name] = cookie;\n\t\t\t\t\t}\n\t\t\t\t} catch (e) {}\n\t\t\t}\n\n\t\t\treturn result;\n\t\t}\n\n\t\tapi.set = api;\n\t\tapi.get = function (key) {\n\t\t\treturn api.call(api, key);\n\t\t};\n\t\tapi.getJSON = function () {\n\t\t\treturn api.apply({\n\t\t\t\tjson: true\n\t\t\t}, [].slice.call(arguments));\n\t\t};\n\t\tapi.defaults = {};\n\n\t\tapi.remove = function (key, attributes) {\n\t\t\tapi(key, '', extend(attributes, {\n\t\t\t\texpires: -1\n\t\t\t}));\n\t\t};\n\n\t\tapi.withConverter = init;\n\n\t\treturn api;\n\t}\n\n\treturn init(function () {});\n}));\n\n\n//# sourceURL=webpack:////data/PROGETTI/saxix/bitcaster/service-monitor/node_modules/js-cookie/src/js.cookie.js?");
-
-/***/ }),
-
-/***/ "./common.js":
-/*!*******************!*\
-  !*** ./common.js ***!
-  \*******************/
-/*! no exports provided */
+/***/ 129:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _css_theme_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./css/theme.scss */ \"./css/theme.scss\");\n/* harmony import */ var _css_theme_scss__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_css_theme_scss__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _css_login_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./css/login.scss */ \"./css/login.scss\");\n/* harmony import */ var _css_login_scss__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_css_login_scss__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _js_login_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./js/login.js */ \"./js/login.js\");\n/* harmony import */ var _js_login_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_js_login_js__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var js_cookie_src_js_cookie__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! js-cookie/src/js.cookie */ \"../../../../../node_modules/js-cookie/src/js.cookie.js\");\n/* harmony import */ var js_cookie_src_js_cookie__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(js_cookie_src_js_cookie__WEBPACK_IMPORTED_MODULE_3__);\n\n\n\n\n\n//# sourceURL=webpack:///./common.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _css_theme_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(130);
+/* harmony import */ var _css_theme_scss__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_css_theme_scss__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _css_login_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(131);
+/* harmony import */ var _css_login_scss__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_css_login_scss__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _js_login_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(132);
+/* harmony import */ var _js_login_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_js_login_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var js_cookie_src_js_cookie__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(133);
+/* harmony import */ var js_cookie_src_js_cookie__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(js_cookie_src_js_cookie__WEBPACK_IMPORTED_MODULE_3__);
+
+
+
+
 
 /***/ }),
 
-/***/ "./css/login.scss":
-/*!************************!*\
-  !*** ./css/login.scss ***!
-  \************************/
-/*! no static exports found */
+/***/ 130:
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("// extracted by mini-css-extract-plugin\n\n//# sourceURL=webpack:///./css/login.scss?");
+// extracted by mini-css-extract-plugin
 
 /***/ }),
 
-/***/ "./css/theme.scss":
-/*!************************!*\
-  !*** ./css/theme.scss ***!
-  \************************/
-/*! no static exports found */
+/***/ 131:
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("// extracted by mini-css-extract-plugin\n\n//# sourceURL=webpack:///./css/theme.scss?");
+// extracted by mini-css-extract-plugin
 
 /***/ }),
 
-/***/ "./js/login.js":
-/*!*********************!*\
-  !*** ./js/login.js ***!
-  \*********************/
-/*! no static exports found */
+/***/ 132:
 /***/ (function(module, exports) {
 
-eval("$('#login').click(function (e) {\n  e.preventDefault();\n  $('#loginForm').removeClass('d-none').show();\n  $('input[name=username]').focus();\n});\n\n//# sourceURL=webpack:///./js/login.js?");
+$('#login').click(function (e) {
+  e.preventDefault();
+  $('#loginForm').removeClass('d-none').show();
+  $('input[name=username]').focus();
+});
+
+/***/ }),
+
+/***/ 133:
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+ * JavaScript Cookie v2.2.0
+ * https://github.com/js-cookie/js-cookie
+ *
+ * Copyright 2006, 2015 Klaus Hartl & Fagner Brack
+ * Released under the MIT license
+ */
+;
+
+(function (factory) {
+  var registeredInModuleLoader = false;
+
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
+				__WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    registeredInModuleLoader = true;
+  }
+
+  if (true) {
+    module.exports = factory();
+    registeredInModuleLoader = true;
+  }
+
+  if (!registeredInModuleLoader) {
+    var OldCookies = window.Cookies;
+    var api = window.Cookies = factory();
+
+    api.noConflict = function () {
+      window.Cookies = OldCookies;
+      return api;
+    };
+  }
+})(function () {
+  function extend() {
+    var i = 0;
+    var result = {};
+
+    for (; i < arguments.length; i++) {
+      var attributes = arguments[i];
+
+      for (var key in attributes) {
+        result[key] = attributes[key];
+      }
+    }
+
+    return result;
+  }
+
+  function init(converter) {
+    function api(key, value, attributes) {
+      var result;
+
+      if (typeof document === 'undefined') {
+        return;
+      } // Write
+
+
+      if (arguments.length > 1) {
+        attributes = extend({
+          path: '/'
+        }, api.defaults, attributes);
+
+        if (typeof attributes.expires === 'number') {
+          var expires = new Date();
+          expires.setMilliseconds(expires.getMilliseconds() + attributes.expires * 864e+5);
+          attributes.expires = expires;
+        } // We're using "expires" because "max-age" is not supported by IE
+
+
+        attributes.expires = attributes.expires ? attributes.expires.toUTCString() : '';
+
+        try {
+          result = JSON.stringify(value);
+
+          if (/^[\{\[]/.test(result)) {
+            value = result;
+          }
+        } catch (e) {}
+
+        if (!converter.write) {
+          value = encodeURIComponent(String(value)).replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent);
+        } else {
+          value = converter.write(value, key);
+        }
+
+        key = encodeURIComponent(String(key));
+        key = key.replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent);
+        key = key.replace(/[\(\)]/g, escape);
+        var stringifiedAttributes = '';
+
+        for (var attributeName in attributes) {
+          if (!attributes[attributeName]) {
+            continue;
+          }
+
+          stringifiedAttributes += '; ' + attributeName;
+
+          if (attributes[attributeName] === true) {
+            continue;
+          }
+
+          stringifiedAttributes += '=' + attributes[attributeName];
+        }
+
+        return document.cookie = key + '=' + value + stringifiedAttributes;
+      } // Read
+
+
+      if (!key) {
+        result = {};
+      } // To prevent the for loop in the first place assign an empty array
+      // in case there are no cookies at all. Also prevents odd result when
+      // calling "get()"
+
+
+      var cookies = document.cookie ? document.cookie.split('; ') : [];
+      var rdecode = /(%[0-9A-Z]{2})+/g;
+      var i = 0;
+
+      for (; i < cookies.length; i++) {
+        var parts = cookies[i].split('=');
+        var cookie = parts.slice(1).join('=');
+
+        if (!this.json && cookie.charAt(0) === '"') {
+          cookie = cookie.slice(1, -1);
+        }
+
+        try {
+          var name = parts[0].replace(rdecode, decodeURIComponent);
+          cookie = converter.read ? converter.read(cookie, name) : converter(cookie, name) || cookie.replace(rdecode, decodeURIComponent);
+
+          if (this.json) {
+            try {
+              cookie = JSON.parse(cookie);
+            } catch (e) {}
+          }
+
+          if (key === name) {
+            result = cookie;
+            break;
+          }
+
+          if (!key) {
+            result[name] = cookie;
+          }
+        } catch (e) {}
+      }
+
+      return result;
+    }
+
+    api.set = api;
+
+    api.get = function (key) {
+      return api.call(api, key);
+    };
+
+    api.getJSON = function () {
+      return api.apply({
+        json: true
+      }, [].slice.call(arguments));
+    };
+
+    api.defaults = {};
+
+    api.remove = function (key, attributes) {
+      api(key, '', extend(attributes, {
+        expires: -1
+      }));
+    };
+
+    api.withConverter = init;
+    return api;
+  }
+
+  return init(function () {});
+});
 
 /***/ })
 

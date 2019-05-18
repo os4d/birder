@@ -8,7 +8,7 @@
     <div class="row">
         <div class="sidebar">
             <div class="sticky p-5 menu">
-                {% for entry in urls %}
+                {% for entry in targets %}
                     <h4>
                         <img class="icon" src="{{ config.URL_PREFIX }}/static/images/{{ entry.logo }}?v={{ version }}">
                         <a class="menu-item" href="#C{{ entry.ts_name }}">{{ entry.label }}</a></h4>
@@ -28,7 +28,7 @@
             </div>
         </div>
         <div class="container g-{{ granularity }}" id="content">
-            {% for entry in urls %}
+            {% for entry in targets %}
                 <div class="container charts h-10">
                     <h3 id="C{{ entry.ts_name }}">{{ entry.label }}</h3>
                     {% if user and config.DISPLAY_URLS %}
@@ -38,7 +38,8 @@
                             {% else %}
                                 {{ entry.url }}
                             {% endif %}
-                            - <a target="_blank" href="{{ config.URL_PREFIX }}/data/{{ entry.ts_name }}/{{ granularity }}/">data</a>
+                            - <a target="_blank"
+                                 href="{{ config.URL_PREFIX }}/data/{{ entry.ts_name }}/{{ granularity }}/">data</a>
                         </small>
                     {% endif %}
                     {#                    <div>#}
@@ -59,159 +60,26 @@
 
 {% block scripts %}
     {{ super() }}
+    <script src="{{ config.URL_PREFIX }}/static/dist/d3.js?v={{ version }}"></script>
     <script src="{{ config.URL_PREFIX }}/static/dist/charts.js?v={{ version }}"></script>
     <script src="{{ config.URL_PREFIX }}/static/dist/cal-heatmap.js?v={{ version }}"></script>
     <script src="{{ config.URL_PREFIX }}/static/dist/jquery.scrollTo.js?v={{ version }}"></script>
     <script type="text/javascript">
-        var today = moment();
-        var lastHour = today.clone().startOf('hour');
-        var yesterday = today.clone().subtract(1, 'days');
-        var lastMonth = today.clone().subtract(1, 'months');
-        var thisWeek = today.clone().startOf('week');
-        var thisYear = today.clone().startOf('year');
-        var noop = function () {
-        };
-        window.chart_config = {
-            'h': {
-                cellSize: 32,
-                colLimit: 2,
-                displayErrors: function () {
-                    return '!'
-                },
-                domain: 'hour',
-                range: 1,
-                start: lastHour.toDate(),
-                subDomain: 'x_min',
-                verticalOrientation: true,
-                domainLabelFormat: "%H:%M",
-                subDomainDateFormat: "%H:%M",
-
-            },
-            'd': {
-                cellSize: 43,
-                colLimit: 1,
-                domain: 'day',
-                domainGutter: 10,
-                range: 1,
-                start: today.toDate(),
-                subDomain: 'x_hour',
-                domainLabelFormat: "%a, %d %B",
-                subDomainDateFormat: "%H:%M",
-            },
-            'w': {
-                cellSize: 30,
-                colLimit: 6,
-                domain: 'day',
-                domainGutter: 15,
-                range: 7,
-                start: thisWeek.toDate(),
-                subDomain: 'x_hour',
-                domainLabelFormat: "%a, %d %B",
-                subDomainDateFormat: "%H:%M",
-            },
-            'm': {
-                cellSize: 20,
-                domain: 'day',
-                subDomain: 'hour',
-                start: today.clone().startOf('month').toDate(),
-                verticalOrientation: true,
-                range: 31,
-                rowLimit: 1,
-                label: {
-                    position: "left",
-                    offset: {
-                        x: 20,
-                        y: 12
-                    },
-                    width: 110
-                },
-                legendHorizontalPosition: "right",
-                domainLabelFormat: "%a, %d %B",
-                subDomainDateFormat: "%H:%M",
-                noData: ''
-            },
-            'y': {
-                cellSize: 15,
-                domain: 'month',
-                legendHorizontalPosition: "right",
-                maxDate: thisYear.toDate(),
-                minDate: thisYear.toDate(),
-                start: thisYear.toDate(),
-                subDomain: 'day',
-                success: '',
-                noData: '',
-                displayErrors: function (value) {
-                    return ''
-                },
-
-            },
-        };
-
-        var calCfg = {
-            cellSize: 12,
-            cellPadding: 2,
-            cellRadius: 2,
-            maxDate: today.toDate(),
-            itemName: ['error', 'errors'],
-            noData: 'n/a',
-            success: 'ok',
-            displayErrors: function (value) {
-                return value
-            },
-            subDomainTextFormat: function (date, value) {
-                if (value === undefined) {
-                    return
-                }
-                if (value === null) {
-                    return this.noData
-                }
-                if (value === 0) {
-                    return this.success
-                }
-                return this.displayErrors(value)
-            },
-            label: {
-                position: "top"
-            },
-            afterLoadData: function (data) {
-                var stats = {};
-                for (var d in data.values) {
-                    if (d) {
-                        stats[data.values[d].date] = data.values[d].value;
-                    }
-                }
-                return stats;
-            },
-            tooltip: true,
-            displayLegend: false,
-            legend: [0, 1, 5, 10, 20],
-        };
-        $.extend(calCfg, chart_config['{{ granularity }}']);
+        var calCfg = $.extend(chartConfig.common, chartConfig.granularity['{{ granularity }}']);
         var charts = {};
         var interval = null;
-        {% for entry in urls %}
-            var cal = new CalHeatMap();
-            var localCfg = $.extend({}, calCfg, {
-                itemSelector: "#chart-{{ entry.ts_name }}",
-                itemNamespace: "{{ entry.ts_name }}",
-                data: "{{ config.URL_PREFIX }}/data/{{ entry.ts_name }}/{{ granularity }}/",
-                nextSelector: "#next{{ entry.ts_name }}",
-                previousSelector: "#previous{{ entry.ts_name }}"
-
-            });
-            cal.graphDim.height = 0;
-            cal.init(localCfg);
-            charts['{{entry.ts_name}}'] = {
-                chart: cal,
-                data: localCfg.data,
-            };
-        {% endfor %}
+        var granularity = '{{ granularity }}';
+        var urlPrefix = '{{ config.URL_PREFIX }}';
+        var allCharts = "{{ names }}".split(',');
+        allCharts.forEach(function(name){
+            charts[name] = chartConfig.getChart(name, granularity, urlPrefix);
+        });
         {% if refresh %}
             var updateChart = function () {
                 $('#lastUpdate').html(moment().format('MM/DD/YYYY HH:mm'));
                 for (var entry in charts) {
                     var target = charts[entry];
-                    target.chart.update(target.data);
+                    target.update(target._data);
                 }
             };
             $('#auto-refresh').change(function () {
@@ -222,21 +90,6 @@
                 }
             });
         {% endif %}
-
-
-    </script>
-
-
-    <script>
-        $.extend($.scrollTo.defaults, {
-            axis: 'y',
-            duration: 0
-        });
-        $(".menu-item").click(function (e) {
-            e.preventDefault();
-            var linkId = $(this).attr('href');
-            $.scrollTo($(linkId).offset().top - 65);
-            return false;
-        });
+        chartConfig.initChartPage();
     </script>
 {% endblock %}
