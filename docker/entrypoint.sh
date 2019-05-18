@@ -2,8 +2,8 @@
 
 mkdir -p /var/db/
 chown :1024 /var/db/
-chmod 775 /var/db/ /backups
-chmod g+s /var/db/ /backups
+chmod 775 /var/db/
+chmod g+s /var/db/
 
 if [[ "$*" == "monitor" ]];then
     exec gosu birder circusd /etc/circus.conf

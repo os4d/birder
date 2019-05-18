@@ -1,0 +1,46 @@
+FROM python:3.6.8-alpine3.8
+ARG BUILD_DATE
+
+LABEL Date = $BUILD_DATE
+
+RUN apk add --no-cache --virtual .build-deps \
+        build-base \
+        gcc \
+        musl-dev \
+        python3-dev \
+        libffi-dev \
+        libressl-dev \
+        libxml2-dev \
+        linux-headers \
+        postgresql-dev \
+        zeromq-dev
+
+RUN apk add --no-cache --virtual .run-deps \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
+        --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+        gosu \
+        libpq \
+        redis \
+        zeromq
+
+RUN addgroup --gid 1024 birder \
+    && adduser --disabled-password --ingroup birder -S birder \
+    && mkdir /code \
+    && mkdir -p /var/db/
+
+VOLUME /var/db/
+
+WORKDIR /code
+ADD Pipfile.lock /code
+ADD Pipfile /code
+RUN pip install pipenv \
+    && pipenv install --verbose --system --deploy --ignore-pipfile
+
+RUN apk del .build-deps \
+    && rm -rf /var/cache/apk/* \
+    && rm -fr /root/.cache/ \
+    && rm -fr /var/bitcaster/.cache/ \
+    && rm -fr /usr/include/
+
+
+

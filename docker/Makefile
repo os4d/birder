@@ -21,6 +21,16 @@ help:
 	@echo "bump	 				bump version"
 
 
+build-base:
+	cd .. && docker build \
+			${BUILD_OPTIONS} \
+			--build-arg BUILD_DATE=${BUILD_DATE} \
+			-t os4d/birder-base:0 \
+			-f docker/Dockerfile.base .
+	docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
+	docker images | grep ${DOCKER_IMAGE_NAME}
+	docker push os4d/birder-base:0
+
 build:
 	cd .. && python setup.py sdist --dist-dir docker
 	cd .. && docker build \
