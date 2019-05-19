@@ -39,11 +39,12 @@ class DbConnParser:
 
 class MySQL(DbConnParser, Target):
     default_port = 3306
-    config = {'sql': 'SELECT 1 FROM DUAL;'}
+    default_config = {'sql': 'SELECT 1 FROM DUAL;'}
 
     def check(self, **config):
-        conn = pymysql.connect(**self.conn_kwargs,
-                               cursorclass=pymysql.cursors.DictCursor)
+        timeout = config.get('timeout', self.timeout)
+
+        conn = pymysql.connect(**self.conn_kwargs, connect_timeout=timeout)
         cursor = conn.cursor()
         cursor.execute(self.config['sql'])
         return True
@@ -51,13 +52,12 @@ class MySQL(DbConnParser, Target):
 
 class Postgres(DbConnParser, Target):
     default_port = 5432
-    config = {'sql': 'SELECT 1;'}
+    default_config = {'sql': 'SELECT 1;'}
 
     def check(self, **config):
         timeout = config.get('timeout', self.timeout)
 
-        conn = psycopg2.connect(**self.conn_kwargs,
-                                connect_timeout=timeout)
+        conn = psycopg2.connect(**self.conn_kwargs, connect_timeout=timeout)
         cursor = conn.cursor()
         cursor.execute(self.config['sql'])
         return True

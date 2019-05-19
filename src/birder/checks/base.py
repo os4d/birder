@@ -33,14 +33,14 @@ class Target:
     _ids = count(1)
     icon = ""
     conn = None
-
+    default_config = {}
     def __init__(self, name, init_string, timeout=5):
         self.name = name
         self.init_string = init_string
         self.timeout = timeout
         self.order = next(self._ids)
         self.label = labelize(name)
-        self.config = {}
+        self.config = dict(self.default_config)
         self.ts_name = slugify(self.init_string, separator='_', decimal=False)
         try:
             self.parse(self.init_string)
@@ -75,7 +75,6 @@ class Target:
                     handler(val)
                 else:
                     self.config[key] = val
-
         self.conn = urlparse(parts[0])
         self.query = parse_qs(self.conn.query)
 

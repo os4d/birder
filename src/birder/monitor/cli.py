@@ -81,8 +81,8 @@ def list(**kwargs):
     targets = get_targets()
     click.secho("{} targets found".format(len(targets)), bold=True)
 
-    for target in targets:
-        click.secho("  {0:3} {1:<15} {2}".format(target.order, target.label, target.url))
+    for i, target in enumerate(targets):
+        click.secho("  {0:3} {1:<15} {2}".format(i, target.label, target.url))
     click.echo("")
 
 
@@ -110,11 +110,11 @@ def check(ctx, target, fail, timeout):
     except StopIteration:
         ctx.fail("Invalid check '{}'".format(target))
 
-    click.secho("Checking {1:<10} {0:>10} {2}".format(t.label, t.__class__.__name__, t.url), nl=False)
+    click.secho("Checking {0:<10} ({1}) {2} ".format(t.label, t.__class__.__name__, t.url), nl=False)
 
     try:
         t.check(timeout=timeout)
-        click.secho('Ok', fg='green')
+        click.secho(' Ok', fg='green')
     except Exception as e:
         click.secho('Fail %s' % e, fg='red')
 
