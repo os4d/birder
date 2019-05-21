@@ -27,6 +27,7 @@ pymysql = "*"
 flask-session = "*"
 click = "*"
 colour = "*"
+flask-cors = "*"
 
 [requires]
 python_version = "3.7"

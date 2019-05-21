@@ -4,6 +4,7 @@ import json
 from colour import Color
 from flask import (Blueprint, flash, make_response, redirect, render_template,
                    request, session)
+from flask_cors import CORS, cross_origin
 
 from ..config import get_targets
 from ..monitor.tsdb import client, stats
@@ -28,6 +29,7 @@ def jsonify(*args):
 
 
 bp = Blueprint('birder', __name__, template_folder=template_dir)
+CORS(bp)
 
 
 @bp.route('/login/', methods=['POST'])
@@ -69,6 +71,7 @@ def about():
 
 
 @bp.route('/data/<hkey>/<granularity>/', methods=['GET', 'OPTIONS'])
+@cross_origin(origins=app.config['CORS_ALLOW_ORIGIN'])
 def data(hkey, granularity):
     if granularity in app.config['GRANULARITIES']:
         errors = stats.get_errors(hkey, granularity)

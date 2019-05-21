@@ -28,7 +28,7 @@ def parse_int(value, default=0):
 
 def parse_list(value, default=tuple()):
     try:
-        return value.split(",")
+        return [x.trim() for x in value.split(",")]
     except Exception:
         return default
 
@@ -68,6 +68,8 @@ class Config:
     SESSION_COOKIE_DOMAIN = os.environ.get('SESSION_COOKIE_NAME', None)
     SESSION_COOKIE_PATH = os.environ.get('SESSION_COOKIE_NAME', '/')
 
+    CORS_ALLOW_ORIGIN = parse_list(os.environ.get('CORS_ALLOW_ORIGIN', '*'))
+    HOST_NAME = os.environ.get('HOST_NAME', '')
     CACHE_TYPE = "redis"
     CACHE_KEY_PREFIX = "cache:"
     CACHE_REDIS_URL = "127.0.0.1:6379/2"
