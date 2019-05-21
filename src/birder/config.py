@@ -67,6 +67,7 @@ class Config:
     SESSION_COOKIE_NAME = os.environ.get('SESSION_COOKIE_NAME', 'sesion')
     SESSION_COOKIE_DOMAIN = os.environ.get('SESSION_COOKIE_NAME', None)
     SESSION_COOKIE_PATH = os.environ.get('SESSION_COOKIE_NAME', '/')
+    PREFERRED_URL_SCHEME = os.environ.get('PREFERRED_URL_SCHEME', 'http')
 
     CORS_ALLOW_ORIGIN = parse_list(os.environ.get('CORS_ALLOW_ORIGIN', '*'))
     HOST_NAME = os.environ.get('HOST_NAME', '')
