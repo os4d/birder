@@ -129,9 +129,11 @@ var commonConfig = {
     },
     afterLoadData: function (data) {
         var stats = {};
-        for (var d in data.values) {
-            if (d) {
-                stats[data.values[d].date] = data.values[d].value;
+        if (data) {
+            for (var d in data.values) {
+                if (d) {
+                    stats[data.values[d].date] = data.values[d].value;
+                }
             }
         }
         return stats;
