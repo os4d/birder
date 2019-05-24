@@ -41,7 +41,7 @@ class Target:
         self.order = next(self._ids)
         self.label = labelize(name)
         self.config = dict(self.default_config)
-        self.ts_name = slugify(self.init_string, separator='_', decimal=False)
+        self.ts_name = slugify(hash(self.init_string), separator='_', decimal=False)
         try:
             self.parse(self.init_string)
         except Exception as e:
