@@ -10,7 +10,7 @@
             <div class="sticky p-5 menu">
                 {% for entry in targets %}
                     <h4>
-                        <img class="icon" src="{{ config.HOSTNAME }}{{ config.URL_PREFIX }}/static/images/{{ entry.logo }}?v={{ version }}">
+                        <img class="icon" src="{{ config.SITE_HOST }}{{ config.URL_PREFIX }}/static/images/{{ entry.logo }}?v={{ version }}">
                         <a class="menu-item" href="#C{{ entry.ts_name }}">{{ entry.label }}</a></h4>
 
                 {% endfor %}
@@ -39,7 +39,7 @@
                                 {{ entry.url }}
                             {% endif %}
                             - <a target="_blank"
-                                 href="{{ config.HOSTNAME }}{{ config.URL_PREFIX }}/data/{{ entry.ts_name }}/{{ granularity }}/">data</a>
+                                 href="{{ config.SITE_HOST }}{{ config.URL_PREFIX }}/data/{{ entry.ts_name }}/{{ granularity }}/">data</a>
                         </small>
                     {% endif %}
                     {#                    <div>#}
@@ -60,16 +60,16 @@
 
 {% block scripts %}
     {{ super() }}
-    <script src="{{ config.HOSTNAME }}{{ config.URL_PREFIX }}/static/dist/d3.js?v={{ version }}"></script>
-    <script src="{{ config.HOSTNAME }}{{ config.URL_PREFIX }}/static/dist/charts.js?v={{ version }}"></script>
-    <script src="{{ config.HOSTNAME }}{{ config.URL_PREFIX }}/static/dist/cal-heatmap.js?v={{ version }}"></script>
-    <script src="{{ config.HOSTNAME }}{{ config.URL_PREFIX }}/static/dist/jquery.scrollTo.js?v={{ version }}"></script>
+    <script src="{{ config.SITE_HOST }}{{ config.URL_PREFIX }}/static/dist/d3.js?v={{ version }}"></script>
+    <script src="{{ config.SITE_HOST }}{{ config.URL_PREFIX }}/static/dist/charts.js?v={{ version }}"></script>
+    <script src="{{ config.SITE_HOST }}{{ config.URL_PREFIX }}/static/dist/cal-heatmap.js?v={{ version }}"></script>
+    <script src="{{ config.SITE_HOST }}{{ config.URL_PREFIX }}/static/dist/jquery.scrollTo.js?v={{ version }}"></script>
     <script type="text/javascript">
         var calCfg = $.extend(chartConfig.common, chartConfig.granularity['{{ granularity }}']);
         var charts = {};
         var interval = null;
         var granularity = '{{ granularity }}';
-        var host = '{{ config.HOSTNAME }}';
+        var host = '{{ config.SITE_HOST }}';
         var urlPrefix = '{{ config.URL_PREFIX }}';
         var allCharts = "{{ names }}".split(',');
         allCharts.forEach(function(name){

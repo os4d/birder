@@ -70,13 +70,13 @@ class Config:
     PREFERRED_URL_SCHEME = os.environ.get('PREFERRED_URL_SCHEME', 'http')
 
     CORS_ALLOW_ORIGIN = parse_list(os.environ.get('CORS_ALLOW_ORIGIN', '*'))
-    HOSTNAME = os.environ.get('HOSTNAME', '')
     CACHE_TYPE = "redis"
     CACHE_KEY_PREFIX = "cache:"
     CACHE_REDIS_URL = "127.0.0.1:6379/2"
 
     APPLICATION_ROOT = os.environ.get('APPLICATION_ROOT', '')
     URL_PREFIX = os.environ.get('URL_PREFIX', '')
+    SITE_HOST = os.environ.get('SITE_HOST', '')
 
 
 if not Config.SESSION_COOKIE_DOMAIN:

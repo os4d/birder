@@ -98,7 +98,8 @@ def scan(hkey, granularity):
     return "", 404
 
 
-@bp.route('/<granularity>/')
+@bp.route('/<granularity>/', methods=['GET', 'OPTIONS'])
+@cross_origin(origins=app.config['CORS_ALLOW_ORIGIN'])
 def chart(granularity):
     red = Color("#ff8a76")
     targets = get_targets()
