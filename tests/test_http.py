@@ -21,16 +21,15 @@ def test_http():
 
 
 def test_issue1():
-    c = Http('http', 'https://demo.bitcaster.io/login/|status=200,302')
-    assert c.conn == ParseResult(scheme='http',
-                                 netloc='www.google.com',
-                                 path='/',
+    c = Http('http', 'https://app.bitcaster.io/login/|status=200,302')
+    assert c.conn == ParseResult(scheme='https',
+                                 netloc='app.bitcaster.io',
+                                 path='/login/',
                                  params='',
-                                 query='a=1',
+                                 query='',
                                  fragment='')
-    assert c.query == {'a': '1'}
+    assert c.query == {}
     assert c.status_success == [200, 302]
-    assert c.match == "pippo"
     with pytest.raises(Exception):
         assert not c.check()
 

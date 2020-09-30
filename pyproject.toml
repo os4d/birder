@@ -24,6 +24,8 @@ pytz = "*"
 redis = "*"
 redis-timeseries = "*"
 requests = "*"
+attrs = "*"
+pyparsing = "^2.4.7"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.3"

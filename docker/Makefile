@@ -28,7 +28,7 @@ build-base:
 	cd .. && docker build \
 			${BUILD_OPTIONS} \
 			--build-arg BUILD_DATE=${BUILD_DATE} \
-			-t os4d/birder-base:0 \
+			-t os4d/birder-base:${BASE} \
 			-f docker/Dockerfile.base .
 	docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
 	docker images | grep ${DOCKER_IMAGE_NAME}
@@ -40,7 +40,7 @@ check:
 	@[ -n "`git tag -l ${VERSION}`" ] || git tag -m "v${VERSION}"  ${VERSION}
 
 
-build: check
+build:
 	cd .. && docker build \
 			${BUILD_OPTIONS} \
 			--build-arg BASE_IMAGE="${BASE}" \
@@ -58,6 +58,7 @@ build: check
 	 		--name=${CONTAINER_NAME} \
 			-p 5000:5000 \
 			-e "TERM=xterm-256color" \
+			-e SECRET_KEY="${SECRET_KEY}" \
 			-e MONITORa_BIRDER=http://localhost:5000 \
 			-e ADMINS=sax:123 \
 			-v /tmp/~birder:/var/db \
