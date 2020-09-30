@@ -1,6 +1,6 @@
 DEVELOP?=0
 DOCKER_USER?=
-VERSION?=0.31.0
+VERSION?=1.0.0
 BASE?=$(shell echo "${VERSION}" | sed "s/\([0-9]*\)\.\([0-9]*\)\.\(.*\)/\1.\2/g" )
 BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 # below vars are used internally
