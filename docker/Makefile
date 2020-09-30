@@ -6,10 +6,12 @@ BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 # below vars are used internally
 BUILD_OPTIONS?=--squash
 CMD?=
-CONTAINER_NAME?=
+
 DOCKER_IMAGE_NAME=os4d/birder
 DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:${VERSION}
+DOCKER_TARGET=${DOCKER_IMAGE}
 DOCKERFILE?=Dockerfile
+
 RUN_OPTIONS?=
 PIPENV_ARGS?=
 
@@ -39,7 +41,6 @@ check:
 
 
 build: check
-	cd .. && python setup.py sdist --dist-dir docker
 	cd .. && docker build \
 			${BUILD_OPTIONS} \
 			--build-arg BASE_IMAGE="${BASE}" \
