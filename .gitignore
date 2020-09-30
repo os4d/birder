@@ -9,3 +9,4 @@ docker/birder*
 *.xfc
 dist/*
 node_modules/*
+pip-wheel-metadata

@@ -1,7 +1,8 @@
 import os
 from urllib.parse import urlparse
+
 from .base import Target
-from .db import PostGis, Postgres, Redis, MySQL
+from .db import MySQL, PostGis, Postgres, Redis
 from .http import Http
 from .services import TCP, Celery, RabbitMQ
 

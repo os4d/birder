@@ -1,4 +1,4 @@
-FROM python:3.6.8-alpine3.8
+FROM python:3.8-alpine3.11
 ARG BUILD_DATE
 
 LABEL Date = $BUILD_DATE
@@ -30,11 +30,18 @@ RUN addgroup --gid 1024 birder \
 
 VOLUME /var/db/
 
+COPY . /code
 WORKDIR /code
-ADD Pipfile.lock /code
-ADD Pipfile /code
-RUN pip install pipenv \
-    && pipenv install --verbose --system --deploy --ignore-pipfile
+RUN mkdir -p /code
+COPY poetry.lock pyproject.toml /code/
+WORKDIR /code
+
+RUN set -ex \
+    ls -al /code \
+    && pip install pip poetry==1.0.0 \
+    && poetry config virtualenvs.create false \
+    && poetry install --no-dev --no-interaction --no-ansi \
+    && sha1sum poetry.lock > /CHECKSUM
 
 RUN apk del .build-deps \
     && rm -rf /var/cache/apk/* \

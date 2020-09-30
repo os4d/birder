@@ -3,18 +3,17 @@ import random
 import signal
 import sys
 import time
-from datetime import timedelta
+from datetime import datetime, timedelta
 from multiprocessing.pool import Pool
 
-
-import click
-from redis_timeseries import tz_now
-
 import birder
+import click
+import eventlet
 from birder.checks import Factory
 
 from ..config import Config, Target, get_targets
-from .tsdb import stats
+from ..utils import tz_now
+from .tsdb import client, granularities, stats
 
 
 def _get_target(arg):
@@ -31,17 +30,21 @@ def _get_target(arg):
 
 def monitor(target: Target, config: dict):
     ts = config['timestamp']
+    timeout = config['timeout']
     color = "green"
     extra = "Ok"
     try:
-        assert target.check(**config)
+        with eventlet.Timeout(timeout):
+            assert target.check(**config)
         stats.success(target.ts_name, timestamp=ts)
     except KeyboardInterrupt:
         return
     except BaseException as e:
         color = "red"
         extra = str(e)
-        stats.increase(target.ts_name, 1, timestamp=ts)
+        # stats.set(target.ts_name, amount=1, timestamp=ts)
+        stats.error(target.ts_name, 1, timestamp=ts)
+
     if config.get('echo'):
         click.secho("{0:<6} {1:<15} {2} {3}".format(ts.strftime('%H:%M:%S'),
                                                     target.label,
@@ -77,6 +80,23 @@ def sample(**kwargs):
 
 
 @cli.command()
+@click.option('-c', '--check', multiple=True)
+def show(check, **kwargs):
+    if check:
+        targets = [_get_target(c) for c in check]
+    else:
+        targets = get_targets()
+        click.secho("{} targets found".format(len(targets)), bold=True)
+
+    for i, target in enumerate(targets):
+        click.secho("{0:3} {1:<15} {2}".format(i, target.label, target.url))
+        for g in granularities:
+            hits = stats.get_total(target.ts_name, g)
+            click.echo("   {0} {1}".format(g, hits))
+    click.echo("")
+
+
+@cli.command()
 def list(**kwargs):
     targets = get_targets()
     click.secho("{} targets found".format(len(targets)), bold=True)
@@ -87,16 +107,25 @@ def list(**kwargs):
 
 
 @cli.command()
-@click.argument('target', nargs=1)
+@click.argument('target', nargs=-1)
+@click.option('--all', '_all', is_flag=True)
 @click.pass_context
-def clear(ctx, target):
-    try:
-        t = _get_target(target)
-    except StopIteration:
+def clear(ctx, target, _all):
+    if not (target or _all):
         ctx.fail("Invalid check '{}'".format(target))
+    if target:
+        try:
+            t = _get_target(target)
+        except StopIteration:
+            ctx.fail("Invalid check '{}'".format(target))
 
-    click.secho("{0:<3} {1:<15} {2}".format(t.order, t.label, t.url))
-    stats.zap(t.ts_name)
+        click.secho("{0:<3} {1:<15} {2}".format(t.order, t.label, t.url))
+        stats.zap(t.ts_name)
+    else:
+        targets = get_targets()
+        for t in targets:
+            click.secho("{0.order:<3} {0.label:<15} {0.url} {0.ts_name}".format(t))
+            stats.zap(t.ts_name)
 
 
 @cli.command()
@@ -113,7 +142,8 @@ def check(ctx, target, fail, timeout):
     click.secho("Checking {0:<10} ({1}) {2} ".format(t.label, t.__class__.__name__, t.url), nl=False)
 
     try:
-        t.check(timeout=timeout)
+        with eventlet.Timeout(timeout):
+            t.check(timeout=timeout)
         click.secho(' Ok', fg='green')
     except Exception as e:
         click.secho('Fail %s' % e, fg='red')
@@ -129,7 +159,17 @@ def force(ctx, target, fail, timeout):
         t = _get_target(target)
     except StopIteration:
         ctx.fail("Invalid check '{}'".format(target))
-    ctx.invoke(monitor, t, {'echo': True})
+    ctx.invoke(monitor, t, {'echo': True,
+                            'timestamp': datetime.now(),
+                            'timeout': timeout})
+
+
+@cli.command()
+@click.pass_context
+def zap(ctx, **kwargs):
+    r = client
+    for key in r.scan_iter("stats:*"):
+        r.delete(key)
 
 
 @cli.command()
@@ -138,12 +178,17 @@ def force(ctx, target, fail, timeout):
 @click.option('-s', '--sleep', default=Config.POLLING_INTERVAL)
 @click.option('-o', '--once', is_flag=True)
 @click.option('-t', '--timeout', type=int, default=5)
+@click.option('-c', '--check', multiple=True)
 @click.pass_context
-def run(ctx, sleep, processes, quiet, once, timeout, **kwargs):
-    targets = get_targets()
-    if not quiet:
-        ctx.invoke(list)
-        click.secho('Running %s processes.' % processes)
+def run(ctx, sleep, processes, quiet, once, timeout, check, **kwargs):
+    if check:
+        targets = [_get_target(c) for c in check]
+    else:
+        targets = get_targets()
+        if not quiet:
+            ctx.invoke(list)
+
+    click.secho('Running %s processes.' % processes)
     if targets:
         config = {'echo': not quiet,
                   'timestamp': tz_now(),
@@ -153,10 +198,12 @@ def run(ctx, sleep, processes, quiet, once, timeout, **kwargs):
         p = Pool(processes=processes, initializer=init_worker)
         while True:
             for param in params:
+                # param[1]['timestamp'] = tz_now()
                 param[1]['timestamp'] = tz_now()
             try:
                 p.starmap_async(monitor, params).get(9999999)
-                time.sleep(sleep)
+                if not once:
+                    time.sleep(sleep)
             except (KeyboardInterrupt, SystemExit):
                 break
             if once:

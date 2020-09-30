@@ -1,11 +1,11 @@
-import os
 import re
 import socket
 from contextlib import closing
+
 from celery import Celery as CeleryApp
 from celery.app.control import Control
-from werkzeug.utils import cached_property
 from kombu import Connection as KombuConnection
+from werkzeug.utils import cached_property
 
 from .base import Target
 

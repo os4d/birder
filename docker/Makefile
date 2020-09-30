@@ -1,6 +1,7 @@
 DEVELOP?=0
 DOCKER_USER?=
 VERSION?=0.31.0
+BASE?=$(shell echo "${VERSION}" | sed "s/\([0-9]*\)\.\([0-9]*\)\.\(.*\)/\1.\2/g" )
 BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 # below vars are used internally
 BUILD_OPTIONS?=--squash
@@ -31,10 +32,17 @@ build-base:
 	docker images | grep ${DOCKER_IMAGE_NAME}
 	docker push os4d/birder-base:0
 
-build:
+check:
+	@[ -z "`git status --porcelain`" ] || ( echo "Uncommited changes"; exit 1 )
+	@[ -z "`docker images -q ${DOCKER_TARGET}`" ] || ( echo "Docker image '${DOCKER_TARGET}' already exists"; exit 1 )
+	@[ -n "`git tag -l ${VERSION}`" ] || git tag -m "v${VERSION}"  ${VERSION}
+
+
+build: check
 	cd .. && python setup.py sdist --dist-dir docker
 	cd .. && docker build \
 			${BUILD_OPTIONS} \
+			--build-arg BASE_IMAGE="${BASE}" \
 			--build-arg DEVELOP=${DEVELOP} \
 			--build-arg VERSION=${VERSION} \
 			--build-arg BUILD_DATE=${BUILD_DATE} \

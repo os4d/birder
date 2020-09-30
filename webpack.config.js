@@ -28,21 +28,6 @@ const loaders = {
             // devtool: 'source-map',
         },
     },
-    // postcss: {
-    //     loader: "postcss-loader",
-    //     options: {
-    //         sourceMap: WITH_CSS_SOURCEMAPS,
-    //         minimize: IS_PRODUCTION,
-    //         devtool: 'source-map'
-    //         // plugins: function (loader) {
-    //         //     return [
-    //         //         autoprefixer({
-    //         //             browsers: ["last 2 versions"]
-    //         //         })
-    //         //     ]
-    //         // }
-    //     }
-    // },
     sass: {
         loader: "sass-loader",
         options: {

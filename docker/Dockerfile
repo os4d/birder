@@ -1,4 +1,5 @@
-FROM os4d/birder-base:0
+ARG BASE_IMAGE
+FROM os4d/birder-base:${BASE_IMAGE}
 ARG BUILD_DATE
 ARG VERSION
 
@@ -12,7 +13,14 @@ ADD docker/birder-${VERSION}.tar.gz /code
 
 WORKDIR /code
 
-RUN find /code/ -name "birder-${VERSION}" | xargs pip install
+COPY . /code
+WORKDIR /code
+RUN set -ex \
+    ls -al /code \
+    && pip install pip \
+    && sha1sum -c /CHECKSUM \
+    && poetry config virtualenvs.create false \
+    && poetry install --no-interaction --no-ansi
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 

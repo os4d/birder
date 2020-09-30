@@ -1,20 +1,10 @@
-import os
 import re
-import socket
 import sys
 import traceback
-from contextlib import closing
 from itertools import count
 from urllib import parse
 from urllib.parse import urlparse
 
-import psycopg2
-import pymysql
-import requests
-from celery import Celery as CeleryApp
-from celery.app.control import Control
-from kombu import Connection
-from redis import Redis as RedisClient
 from slugify import slugify
 from werkzeug.utils import cached_property
 
@@ -34,6 +24,7 @@ class Target:
     icon = ""
     conn = None
     default_config = {}
+
     def __init__(self, name, init_string, timeout=5):
         self.name = name
         self.init_string = init_string
@@ -41,7 +32,7 @@ class Target:
         self.order = next(self._ids)
         self.label = labelize(name)
         self.config = dict(self.default_config)
-        self.ts_name = slugify(hash(self.init_string), separator='_', decimal=False)
+        self.ts_name = slugify(str(str(self.init_string)), separator='_', decimal=False)
         try:
             self.parse(self.init_string)
         except Exception as e:
@@ -77,7 +68,6 @@ class Target:
                     self.config[key] = val
         self.conn = urlparse(parts[0])
         self.query = parse_qs(self.conn.query)
-
 
     @cached_property
     def url(self):
