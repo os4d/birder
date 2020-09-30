@@ -1,6 +1,6 @@
 DEVELOP?=0
 DOCKER_USER?=
-VERSION?=1.0.1.0
+VERSION?=1.0.2
 BASE?=$(shell echo "${VERSION}" | sed "s/\([0-9]*\)\.\([0-9]*\)\.\(.*\)/\1.\2/g" )
 BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 # below vars are used internally
@@ -28,9 +28,9 @@ build-base:
 			--build-arg BUILD_DATE=${BUILD_DATE} \
 			-t os4d/birder-base:${BASE} \
 			-f docker/Dockerfile.base .
-	docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
-	docker images | grep ${DOCKER_IMAGE_NAME}
-	docker push os4d/birder-base:0
+	@echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
+	docker images | grep os4d/birder-base:${BASE}
+	docker push os4d/birder-base:${BASE}
 
 check:
 	@[ -z "`git status --porcelain`" ] || ( echo "Uncommited changes"; exit 1 )
