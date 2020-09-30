@@ -1,6 +1,6 @@
 DEVELOP?=0
 DOCKER_USER?=
-VERSION?=1.0.0
+VERSION?=1.0.1.0
 BASE?=$(shell echo "${VERSION}" | sed "s/\([0-9]*\)\.\([0-9]*\)\.\(.*\)/\1.\2/g" )
 BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 # below vars are used internally
@@ -20,8 +20,6 @@ help:
 	@echo "build                build production image (based on tag ${VERSION})"
 	@echo "release              release tag ${VERSION} on docker hub"
 	@echo "run                  run ${DOCKER_IMAGE} locally"
-	@echo "ignore               run ${DOCKER_IMAGE} locally"
-	@echo "bump	 				bump version"
 
 
 build-base:
@@ -68,10 +66,10 @@ build:
 
 
 release:
-	docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
+	@echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
 	docker tag ${DOCKER_IMAGE_NAME}:${VERSION} ${DOCKER_IMAGE_NAME}:latest
-	docker push ${DOCKER_IMAGE_NAME}:${VERSION}
 	docker push ${DOCKER_IMAGE_NAME}:latest
+	docker push ${DOCKER_IMAGE_NAME}:${VERSION}
 
 run:
 	$(MAKE) .run
