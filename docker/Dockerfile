@@ -21,10 +21,9 @@ COPY . /code
 WORKDIR /code
 RUN set -ex \
     ls -al /code \
-    && pip install pip \
+    && pip install poetry \
     && sha1sum -c /CHECKSUM \
-    && poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi
+    && poetry install --no-dev
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 

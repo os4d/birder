@@ -1,7 +1,7 @@
 {% extends "_base.html" %}
 {% block styles %}
     {{ super() }}
-    <link rel="stylesheet" href="{{ config.URL_PREFIX }}/static/dist/charts.css?v={{ version }}">
+    <link rel="stylesheet" href="{{ config.SITE_HOST }}{{ config.URL_PREFIX }}/static/dist/charts.css?v={{ version }}">
 
 {% endblock %}
 {% block page %}
@@ -73,7 +73,7 @@
         var urlPrefix = '{{ config.URL_PREFIX }}';
         var allCharts = "{{ names }}".split(',');
         allCharts.forEach(function(name){
-            charts[name] = chartConfig.getChart(name, granularity, host+urlPrefix);
+            charts[name] = chartConfig.getChart(name, granularity, "{{ config.SITE_HOST }}{{ config.URL_PREFIX }}");
         });
         {% if refresh %}
             var updateChart = function () {

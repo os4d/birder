@@ -156,7 +156,7 @@ var getChart = function (name, granularity, urlPrefix) {
     cal._data = localCfg.data;
     cal.graphDim.height = 0;
     cal.init(localCfg);
-    return cal
+    return cal;
 };
 var initChartPage = function () {
     $.extend($.scrollTo.defaults, {

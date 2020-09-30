@@ -1,5 +1,5 @@
-~*
-.*
-*.tar.gz
-*.xcf
-
+*
+!docker
+!src
+!poetry.lock
+!pyproject.toml

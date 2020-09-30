@@ -1,8 +1,12 @@
 [tool.poetry]
 name = "birder"
-version = "0.1.0"
+version = "1.0.2"
 description = ""
 authors = ["sax <s.apostolico@gmail.com>"]
+
+[tool.poetry.scripts]
+birder = "birder.monitor.cli:main"
+
 
 [tool.poetry.dependencies]
 python = "^3.8"

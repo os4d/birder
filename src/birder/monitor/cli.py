@@ -59,7 +59,10 @@ def init_worker():
 @click.version_option(version=birder.VERSION)
 @click.pass_context
 def cli(ctx, **kwargs):
-    pass
+    click.echo("Starting Birder monitor")
+    targets = get_targets()
+    for target in targets:
+        click.echo(target)
 
 
 @cli.command()
