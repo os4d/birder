@@ -77,15 +77,12 @@ def data(hkey, granularity):
     if granularity in app.config['GRANULARITIES']:
         ts = tz_now()
         start_at = hour_rounder(ts)
-        # errors = stats.get_buckets(hkey, granularity, count=-1, timestamp=start_at)
 
         errors = stats.get_errors(hkey, granularity)
         pings = stats.get_pings(hkey, granularity)
 
         values = []
         for err, ping in zip(errors, pings):
-            # ts = err[0].strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-            # dt = err[0].timestamp()
             record = {
                 'timestamp': err[0].strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
                 'date': err[0].timestamp()
@@ -97,21 +94,9 @@ def data(hkey, granularity):
             if 'value' in record:
                 values.append(record)
 
-        # for error in errors:
-        #     if error[1] == 0:
-        #         values.append({'timestamp': error[0].strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
-        #                        'date': error[0].timestamp(),
-        #                        'value': None,
-        #                        })
-        #     elif error[1] > 0:
-        #         values.append({'timestamp': error[0].strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
-        #                        'date': error[0].timestamp(),
-        #                        'value': error[1],
-        #                        })
-
         ret = {'datapoints': len(values),
-               'errors': [e[1] for e in errors],
-               'pings': [e[1] for e in pings],
+               # 'errors': [e[1] for e in errors],
+               # 'pings': [e[1] for e in pings],
                'values': values,
                'ts': ts,
                'start': start_at}
