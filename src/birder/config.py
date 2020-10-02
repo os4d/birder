@@ -1,18 +1,77 @@
 import os
-from functools import lru_cache
+from functools import wraps
 
 from .checks import Factory, Target
 from .logging import logger  # noqa
+from .monitor.tsdb import client
 
 
-@lru_cache(1)
-def get_targets(ctx=os.environ) -> [Target]:
-    targets = []
+def typed(args):
+    pass
+
+
+def redis_lru(f):
+    def clear_cache():
+        client.set(f"invalid:{f.__name__}", 1)
+
+    f.cache_clear = clear_cache
+    f.cache = []
+
+    f.cache_clear()
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        cached_is_invalid = client.get(f"invalid:{f.__name__}")
+        if cached_is_invalid:
+            f.cache = f(*args, **kwargs)
+            client.delete(f"invalid:{f.__name__}")
+
+        return f.cache
+
+    return decorated_function
+
+
+def init_monitor_storage(ctx=os.environ):
     names = sorted([k for k, v in ctx.items() if k.startswith('MONITOR')])
     for varname in names:
         m = Factory.from_envvar(varname)
-        targets.append(m)
-    return targets
+        existing = client.hgetall("monitors")
+        existing[m.label] = m.init_string
+        client.hmset('monitors', existing)
+
+
+@redis_lru
+def get_targets(ctx=os.environ) -> [Target]:
+    targets = {}
+    # names = sorted([k for k, v in ctx.items() if k.startswith('MONITOR')])
+    # for varname in names:
+    #     m = Factory.from_envvar(varname)
+    #     targets[m.ts_name] = m
+
+    existing = client.hgetall("monitors")
+    for k, v in existing.items():
+        m = Factory.from_conn_string(k.decode(), v.decode())
+        targets[m.name] = m
+
+    order = client.lrange("order", 0, client.llen("order"))
+    if order:
+        ordered = []
+        for e in order:
+            try:
+                ordered.append(targets[e.decode()])
+            except KeyError:
+                pass
+        # ordered = [targets[e.decode()] for e in order]
+        ordered.extend([targets[x] for x, y in targets.items() if y not in ordered])
+        return ordered
+    return targets.values()
+
+
+def get_target(hkey) -> Target:
+    for t in get_targets():
+        if t.name == hkey:
+            return t
+    raise ValueError(hkey)
 
 
 def parse_bool(value):
@@ -68,7 +127,7 @@ class Config:
     SESSION_COOKIE_DOMAIN = os.environ.get('SESSION_COOKIE_NAME', None)
     SESSION_COOKIE_PATH = os.environ.get('SESSION_COOKIE_NAME', '/')
     PREFERRED_URL_SCHEME = os.environ.get('PREFERRED_URL_SCHEME', 'http')
-
+    SENTRY_DSN = os.environ.get('SENTRY_DSN', '')
     CORS_ALLOW_ORIGIN = parse_list(os.environ.get('CORS_ALLOW_ORIGIN', '*'))
     CACHE_TYPE = "redis"
     CACHE_KEY_PREFIX = "cache:"

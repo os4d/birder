@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block styles %}
+    {{ super() }}
+{% endblock %}
+{% block page %}
+    <div class="m-5">
+        <ul>
+            {% for endpoint in endpoints %}
+                <li><a href="{{ endpoint.0 }}">{{ endpoint.0 }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+
+{% endblock %}

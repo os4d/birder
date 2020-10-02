@@ -37,10 +37,13 @@ clean: ## clean development tree
 	find tests -name __pycache__ -o -name "*.py?" -o -name "*.orig" -prune | xargs rm -rf
 	find src/bitcaster/locale -name django.mo | xargs rm -f
 
-run:
+run:  ## run gunicorn locally
 	gunicorn \
 		birder.web.wsgi:app \
 		-b 0.0.0.0:5000 \
 		--access-logfile - \
 		--error-logfile - \
 		--log-level debug
+
+static:  ## build static assets
+	node_modules/.bin/webpack --mode production

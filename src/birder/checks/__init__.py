@@ -2,7 +2,8 @@ import os
 from urllib.parse import urlparse
 
 from .base import Target
-from .db import MySQL, PostGis, Postgres, Redis
+from .db import MySQL, PostGis, Postgres
+from .redis import Redis
 from .http import Http
 from .services import TCP, Celery, RabbitMQ
 
@@ -21,8 +22,11 @@ class Factory:
 
     @classmethod
     def from_conn_string(cls, name, conn):
-        o = urlparse(conn.lower())
-        return cls.PROTOCOLS[o.scheme](name, conn)
+        try:
+            o = urlparse(conn.lower())
+            return cls.PROTOCOLS[o.scheme](name, conn)
+        except KeyError:
+            raise Exception(f"Unknown protocol '{o.scheme}'")
 
     @classmethod
     def from_envvar(cls, varname):

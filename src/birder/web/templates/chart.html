@@ -1,4 +1,4 @@
-{% extends "_base.html" %}
+{% extends "layout.html" %}
 {% block styles %}
     {{ super() }}
     <link rel="stylesheet" href="{{ config.SITE_HOST }}{{ config.URL_PREFIX }}/static/dist/charts.css?v={{ version }}">
@@ -8,12 +8,19 @@
     <div class="row">
         <div class="sidebar">
             <div class="sticky p-5 menu">
-                {% for entry in targets %}
-                    <h4>
-                        <img class="icon" src="{{ config.SITE_HOST }}{{ config.URL_PREFIX }}/static/images/{{ entry.logo }}?v={{ version }}">
-                        <a class="menu-item" href="#C{{ entry.ts_name }}">{{ entry.label }}</a></h4>
+                <div class="dragsort">
+                    {% for entry in targets %}
+                        <h4>
+                            <img class="icon"
+                                 src="
 
-                {% endfor %}
+                                         {{ config.SITE_HOST }}{{ config.URL_PREFIX }}/static/images/{{ entry.logo }}?v={{ version }}">
+                            <a class="menu-item" href="#C{{ entry.ts_name }}">{{ entry.label }}</a>
+                        </h4>
+                    {% endfor %}
+                </div>
+                <a class="nav-link" id="add" href="#">Add</a>
+
                 <div class="m-3"></div>
                 {% if refresh %}
                     Auto Refresh <input type="checkbox" {% if refresh == 0 %}disabled="disabled"{% endif %}
@@ -40,13 +47,16 @@
                             {% endif %}
                             - <a target="_blank"
                                  href="{{ config.SITE_HOST }}{{ config.URL_PREFIX }}/data/{{ entry.ts_name }}/{{ granularity }}/">data</a>
+                            <a class="edit-monitor"
+                               data-name="{{ entry.label }}"
+                               data-url="{{ entry.url }}"
+                               href="/api/edit/{{ entry.name }}/"><i
+                                    class="fas fa-edit"></i></a>
+                            <a class="delete-monitor"
+                               href="/api/del/{{ entry.name }}/"><i
+                                    class="fas fa-trash"></i></a>
                         </small>
                     {% endif %}
-                    {#                    <div>#}
-                    {#                        <button id="previous{{ entry.ts_name }}" class="btn btn-sm btn-outline-dark"><</button>#}
-                    {#                        <button id="next{{ entry.ts_name }}" class="btn btn-sm btn-outline-dark">></button>#}
-                    {#                    </div>#}
-
                     <div lass="row col-12 p-3 m-1">
                         <div id="chart-{{ entry.ts_name }}"></div>
                     </div>
@@ -64,6 +74,8 @@
     <script src="{{ config.SITE_HOST }}{{ config.URL_PREFIX }}/static/dist/charts.js?v={{ version }}"></script>
     <script src="{{ config.SITE_HOST }}{{ config.URL_PREFIX }}/static/dist/cal-heatmap.js?v={{ version }}"></script>
     <script src="{{ config.SITE_HOST }}{{ config.URL_PREFIX }}/static/dist/jquery.scrollTo.js?v={{ version }}"></script>
+    <script src="
+            {{ config.SITE_HOST }}{{ config.URL_PREFIX }}/static/dist/jquery.dragsort.min.js?v={{ version }}"></script>
     <script type="text/javascript">
         var calCfg = $.extend(chartConfig.common, chartConfig.granularity['{{ granularity }}']);
         var charts = {};
@@ -71,10 +83,90 @@
         var granularity = '{{ granularity }}';
         var host = '{{ config.SITE_HOST }}';
         var urlPrefix = '{{ config.URL_PREFIX }}';
-        var allCharts = "{{ names }}".split(',');
-        allCharts.forEach(function(name){
-            charts[name] = chartConfig.getChart(name, granularity, "{{ config.SITE_HOST }}{{ config.URL_PREFIX }}");
+        var allCharts = {{ names|safe }};
+        if (allCharts){
+            allCharts.forEach(function (name) {
+                charts[name] = chartConfig.getChart(name, granularity, "{{ config.SITE_HOST }}{{ config.URL_PREFIX }}");
+            });
+        }
+
+        function getFormData($form) {
+            var unindexed_array = $form.serializeArray();
+            var indexed_array = {};
+
+            $.map(unindexed_array, function (n, i) {
+                indexed_array[n['name']] = n['value'];
+            });
+
+            return indexed_array;
+        }
+
+        $('#add').click(function (e) {
+            e.preventDefault();
+            $('#targetForm input[type=submit]').val('Add');
+            $('#targetForm').submit(function (e) {
+                e.preventDefault();
+                var serializedData = getFormData($('#targetForm'));
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/add/',
+                    data: JSON.stringify(serializedData),
+                    contentType: "application/json",
+                    dataType: 'json'
+                })
+                    .done(function (data) {
+                        $('#formWindow').hide();
+                        location.reload();
+                    })
+                    .fail(function (xqr, aa, data,) {
+                        console.log(xqr.responseText)
+                        $('#formWindow .alert').html(xqr.responseText)
+                    })
+            });
+            $('#formWindow').removeClass('d-none').show();
+            $('input[name=label]').focus();
         });
+        $('.delete-monitor').click(function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: 'DELETE',
+                url: $(this).attr('href')
+            })
+                .done(function (data) {
+                    location.reload();
+                })
+        });
+
+        $('.edit-monitor').click(function (e) {
+            e.preventDefault();
+            var url = $(this).attr('href')
+            $('#targetForm input[name=label]').val($(this).data('name'));
+            $('#targetForm input[name=url]').val($(this).data('url'));
+            $('#targetForm input[type=submit]').val('Update');
+
+            $('#targetForm').submit(function (e) {
+                e.preventDefault();
+                var serializedData = getFormData($('#targetForm'));
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: JSON.stringify(serializedData),
+                    contentType: "application/json",
+                    dataType: 'json'
+                })
+                    .done(function (data) {
+                        $('#formWindow').hide();
+                        location.reload();
+                    })
+                    .fail(function (xqr, aa, data,) {
+                        console.log(xqr.responseText)
+                        $('#formWindow .alert').html(xqr.responseText)
+                    })
+            });
+            $('#formWindow').removeClass('d-none').show();
+            $('input[name=label]').focus();
+        });
+
         {% if refresh %}
             var updateChart = function () {
                 $('#lastUpdate').html(moment().format('MM/DD/YYYY HH:mm'));

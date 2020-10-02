@@ -30,6 +30,8 @@ redis-timeseries = "*"
 requests = "*"
 attrs = "*"
 pyparsing = "^2.4.7"
+Flask-BasicAuth = "^0.2.0"
+sentry-sdk = {extras = ["flask"], version = "^0.18.0"}
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.3"

@@ -1,7 +1,7 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
+const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 const CopyPlugin = require('copy-webpack-plugin');
 
 const rel = path.resolve.bind(null, __dirname + "/src/birder/web/static/src/");
@@ -93,19 +93,15 @@ module.exports = {
             chunkFilename: IS_PRODUCTION ? '[id].[hash].css' : '[id].css'
         }),
         new CleanWebpackPlugin(),
-        new CopyPlugin([
+        new CopyPlugin(
             {
-                context: relToNode('cal-heatmap/'),
-                from: 'cal-heatmap.js',
-                to: outputDir
-            },
-            {
-                context: relToNode('jquery.scrollto'),
-                from: 'jquery.scrollTo.js',
-                to: outputDir
-            },
-
-        ]),
+                patterns: [
+                    {from: relToNode('cal-heatmap/cal-heatmap.js'), to: 'cal-heatmap.js'},
+                    {from: relToNode('jquery.scrollto/jquery.scrollTo.js'), to: 'jquery.scrollTo.js'},
+                    {from: relToNode('dragsort/dist/js/jquery.dragsort.min.js'), to: 'jquery.dragsort.min.js'},
+                ],
+            }
+        ),
         // new HtmlWebPackPlugin({
         //     template: "./src/index.html",
         //     filename: "./index.html"

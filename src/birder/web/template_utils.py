@@ -20,7 +20,7 @@ def name(value):
 def globals():
     return dict(
         version=birder.VERSION,
-        user=session.get('user'),
+        user=session.get('user', None),
         basic_auth=bool(app.config.get('ADMINS')),
         messages=get_flashed_messages(True)
     )

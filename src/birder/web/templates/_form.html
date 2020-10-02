@@ -1,0 +1,20 @@
+<div id="formWindow" class="d-none wrapper">
+    <div id="formContent" class="p-2 pt-3 pb-3">
+        <div class="alert show" role="alert"></div>
+        <!-- Login Form -->
+        <form id="targetForm" method="post" action="#">
+            <div class="form-group pl-5 pr-5 pt-2">
+                <input type="text"
+                       class="form-control mb-4 form-control-lg"
+                       name="label" placeholder="label">
+                <input type="text"
+                       class="form-control mb-4 form-control-lg"
+                       name="url" placeholder="connection">
+            </div>
+            <input class="btn btn-primary" type="submit" value="Add">
+            <input class="btn btn-secondary"
+                   onclick="javascript:$('#formWindow').hide();"
+                   type="button" value="Cancel">
+        </form>
+    </div>
+</div>

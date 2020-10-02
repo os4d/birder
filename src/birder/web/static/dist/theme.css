@@ -107,7 +107,7 @@ footer img.logo {
   background-color: #0062cc;
   border-color: #005cbf; }
 
-#loginForm {
+#loginForm, #formWindow {
   display: flex;
   align-items: center;
   flex-direction: column;

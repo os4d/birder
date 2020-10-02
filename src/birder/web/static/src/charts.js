@@ -2,8 +2,6 @@
  * chart.js
  */
 
-// import "d3/d3.js";
-
 import "cal-heatmap/cal-heatmap.css";
 import "./css/charts.scss";
 

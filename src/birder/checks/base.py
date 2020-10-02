@@ -1,11 +1,11 @@
 import re
 import sys
 import traceback
+from hashlib import md5
 from itertools import count
 from urllib import parse
 from urllib.parse import urlparse
 
-from slugify import slugify
 from werkzeug.utils import cached_property
 
 
@@ -32,7 +32,7 @@ class Target:
         self.order = next(self._ids)
         self.label = labelize(name)
         self.config = dict(self.default_config)
-        self.ts_name = slugify(str(str(self.init_string)), separator='_', decimal=False)
+        self.ts_name = md5(f"{name}{init_string}".encode()).hexdigest()
         try:
             self.parse(self.init_string)
         except Exception as e:

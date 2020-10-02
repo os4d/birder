@@ -1,13 +1,18 @@
-from datetime import datetime, timedelta
+import datetime
+import json
+from datetime import timedelta
+from urllib.parse import parse_qs, urlparse
 
+from flask import make_response
 from pytz import timezone
+from redis import Redis
 
 TIME_ZONE = timezone('utc')
 
 
 def tz_now():
     # return datetime().replace(tzinfo=TIME_ZONE)
-    return datetime.utcnow().replace(tzinfo=TIME_ZONE)
+    return datetime.datetime.utcnow().replace(tzinfo=TIME_ZONE)
 
 
 def hour_rounder(t):
@@ -15,14 +20,39 @@ def hour_rounder(t):
     return t.replace(second=0, microsecond=0, minute=0, hour=t.hour) + timedelta(hours=1)
 
 
-def roundTime(dt=None, roundTo=60):
-    """Round a datetime object to any time lapse in seconds
-    dt : datetime.datetime object, default now.
-    roundTo : Closest number of seconds to round to, default 1 minute.
-    Author: Thierry Husson 2012 - Use it as you want but don't blame me.
-    """
-    if dt is None:
-        dt = datetime.now().replace(tzinfo=TIME_ZONE)
-    seconds = (dt.replace(tzinfo=None) - dt.min).seconds
-    rounding = (seconds + roundTo / 2) // roundTo * roundTo
-    return dt + timedelta(0, rounding - seconds, -dt.microsecond)
+class SmartRedis(Redis):
+    @classmethod
+    def from_url(cls, url, db=None, **kwargs):
+        parts = urlparse(url)
+        opts = parse_qs(parts.query)
+        opts.pop('key_prefix', '')
+        opts.update(kwargs)
+        if ':' in parts.netloc:
+            host, port = parts.netloc.split(':')
+        else:
+            host, port = parts.netloc, 6379
+
+        return super().from_url('{0}://{1}:{2}'.format(parts.scheme, host, port), db, **opts)
+
+
+class Encoder(json.JSONEncoder):
+
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        return json.JSONEncoder.default(self, obj)
+
+
+def jsonify(*args):
+    response = make_response(json.dumps(*args, cls=Encoder))
+    response.headers['Content-Type'] = 'application/json; charset=utf-8'
+    response.headers['mimetype'] = 'application/json'
+    response.last_modified = datetime.datetime.utcnow()
+    response.add_etag()
+    return response
+
+
+def has_no_empty_params(rule):
+    defaults = rule.defaults if rule.defaults is not None else ()
+    arguments = rule.arguments if rule.arguments is not None else ()
+    return len(defaults) >= len(arguments)
