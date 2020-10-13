@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block styles %}
     {{ super() }}
-    <link rel="stylesheet" href="{{ config.SITE_HOST }}{{ config.URL_PREFIX }}/static/dist/charts.css?v={{ version }}">
+    <link rel="stylesheet" href="{{ config.SERVER_URL }}/static/dist/charts.css?v={{ version }}">
 
 {% endblock %}
 {% block page %}
@@ -12,8 +12,7 @@
                     {% for entry in targets %}
                         <h5 id="{{ entry.pk }}">
                             <img class="icon"
-                                 src="
-                                         {{ config.SITE_HOST }}{{ config.URL_PREFIX }}/static/images/{{ entry.logo }}?v={{ version }}">
+                                 src="{{ config.SERVER_URL }}/static/images/{{ entry.logo }}?v={{ version }}">
                             <a class="menu-item" href="#C{{ entry.pk }}">{{ entry.label }}</a>
                         </h5>
                     {% endfor %}
@@ -46,9 +45,7 @@
                                 {{ entry.url }}
                             {% endif %}
                             - <a target="_blank"
-                                 href="
-
-                                         {{ config.SITE_HOST }}{{ config.URL_PREFIX }}/data/{{ entry.pk }}/{{ granularity }}/">data</a>
+                                 href="{{ config.SERVER_URL }}/api/data/{{ entry.pk }}/{{ granularity }}/">data</a>
                             <a class="edit-monitor"
                                data-name="{{ entry.label }}"
                                data-url="{{ entry.url }}"
@@ -72,12 +69,11 @@
 
 {% block scripts %}
     {{ super() }}
-    <script src="{{ config.SITE_HOST }}{{ config.URL_PREFIX }}/static/dist/d3.js?v={{ version }}"></script>
-    <script src="{{ config.SITE_HOST }}{{ config.URL_PREFIX }}/static/dist/charts.js?v={{ version }}"></script>
-    <script src="{{ config.SITE_HOST }}{{ config.URL_PREFIX }}/static/dist/cal-heatmap.js?v={{ version }}"></script>
-    <script src="{{ config.SITE_HOST }}{{ config.URL_PREFIX }}/static/dist/jquery.scrollTo.js?v={{ version }}"></script>
-    <script src="
-            {{ config.SITE_HOST }}{{ config.URL_PREFIX }}/static/dist/jquery.dragsort.min.js?v={{ version }}"></script>
+    <script src="{{ config.SERVER_URL }}/static/dist/d3.js?v={{ version }}"></script>
+    <script src="{{ config.SERVER_URL }}/static/dist/charts.js?v={{ version }}"></script>
+    <script src="{{ config.SERVER_URL }}/static/dist/cal-heatmap.js?v={{ version }}"></script>
+    <script src="{{ config.SERVER_URL }}/static/dist/jquery.scrollTo.js?v={{ version }}"></script>
+    <script src="{{ config.SERVER_URL }}/static/dist/jquery.dragsort.min.js?v={{ version }}"></script>
 
     {% if user %}
         <script>
@@ -113,12 +109,11 @@
         var charts = {};
         var interval = null;
         var granularity = '{{ granularity }}';
-        var host = '{{ config.SITE_HOST }}';
-        var urlPrefix = '{{ config.URL_PREFIX }}';
+        var urlPrefix = '{{ config.SERVER_URL }}';
         var allCharts = {{ names|safe }};
         if (allCharts) {
             allCharts.forEach(function (name) {
-                charts[name] = chartConfig.getChart(name, granularity, "{{ config.SITE_HOST }}{{ config.URL_PREFIX }}");
+                charts[name] = chartConfig.getChart(name, granularity, "{{ config.SERVER_URL }}");
             });
         }
 

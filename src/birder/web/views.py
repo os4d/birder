@@ -60,7 +60,7 @@ def about():
     return r
 
 
-@bp.route('/data/<pk>/<granularity>/', methods=['GET', 'OPTIONS'])
+@bp.route('/api/data/<pk>/<granularity>/', methods=['GET', 'OPTIONS'])
 @cross_origin(origins=app.config['CORS_ALLOW_ORIGIN'])
 def data(pk, granularity):
     if granularity in app.config['GRANULARITIES']:

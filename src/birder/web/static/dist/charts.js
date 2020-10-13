@@ -29377,7 +29377,7 @@ var getChart = function (name, granularity, urlPrefix) {
     var localCfg = $.extend({}, calCfg, {
         itemSelector: "#chart-" + name,
         itemNamespace: name,
-        data: urlPrefix + "/data/" + name + "/" + granularity,
+        data: urlPrefix + "/api/data/" + name + "/" + granularity + "/",
         nextSelector: "#next" + name,
         previousSelector: "#previous" + name
 

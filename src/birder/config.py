@@ -67,6 +67,7 @@ class Config:
     SITE_HOST = os.environ.get('SITE_HOST', '')
     FORCE_HTTPS = parse_bool(os.environ.get('FORCE_HTTPS', False))
 
+    SERVER_URL = SITE_HOST + URL_PREFIX
 
 if not Config.SESSION_COOKIE_DOMAIN:
     del Config.SESSION_COOKIE_DOMAIN
