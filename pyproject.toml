@@ -3,9 +3,12 @@ name = "birder"
 version = "1.0.4"
 description = ""
 authors = ["sax <s.apostolico@gmail.com>"]
+packages = [
+    { include = "birder", from = "src" },
+]
 
 [tool.poetry.scripts]
-birder = "birder.monitor.cli:main"
+birder = "birder.cli:main"
 
 
 [tool.poetry.dependencies]
@@ -32,6 +35,7 @@ attrs = "*"
 pyparsing = "^2.4.7"
 Flask-BasicAuth = "^0.2.0"
 sentry-sdk = {extras = ["flask"], version = "^0.18.0"}
+uwsgi = "^2.0.19"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.3"

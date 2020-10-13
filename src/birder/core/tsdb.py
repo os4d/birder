@@ -1,15 +1,23 @@
+#  :copyright: Copyright (c) 2018-2020. OS4D Ltd - All Rights Reserved
+#  :license: Commercial
+#  Unauthorized copying of this file, via any medium is strictly prohibited
+#  Written by Stefano Apostolico <s.apostolico@gmail.com>, October 2020
+
 from collections import OrderedDict
 
-import redis
+from redis_timeseries import (TimeSeries, days, hours,
+                              minutes, round_time_with_tz,)
+
 from birder.utils import TIME_ZONE
-from redis_timeseries import (TimeSeries, days, hours, minutes,
-                              round_time_with_tz)
+
+from .redis import client
 
 
 class TS(TimeSeries):
     def zap(self, key):
         pipe = self.client.pipeline()
         pipe.expire(key, -1)
+        pipe.delete(key)
         pipe.execute()
 
     def get_errors(self, key, granularity, timestamp=None):
@@ -56,5 +64,4 @@ granularities = OrderedDict([
     ('y', {'duration': days(1), 'ttl': days(365)}),
 ])
 
-client = redis.StrictRedis()
 stats: TS = TS(client, base_key='stats', granularities=granularities, timezone=TIME_ZONE)

@@ -1,6 +1,7 @@
-import birder
 from flask import get_flashed_messages, session
 from slugify import slugify
+
+import birder
 
 from .app import app
 

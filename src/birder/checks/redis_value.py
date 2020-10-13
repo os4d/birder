@@ -2,11 +2,12 @@
 #  :license: Commercial
 #  Unauthorized copying of this file, via any medium is strictly prohibited
 #  Written by Stefano Apostolico <s.apostolico@gmail.com>, October 2020
-from birder.checks import Target
 from redis import Redis as RedisClient
 
+from birder.core.check import BaseCheck
 
-class RedisValue(Target):
+
+class RedisValue(BaseCheck):
     default_port = 6379
     default_host = '127.0.0.1'
 

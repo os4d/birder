@@ -3,13 +3,15 @@ import logging
 
 from colour import Color
 from flask import (Blueprint, flash, g, make_response, redirect,
-                   render_template, request, session, url_for)
+                   render_template, request, session, url_for,)
 from flask_cors import CORS, cross_origin
 
-from ..checks import Factory
-from ..config import get_targets, get_target
-from ..monitor.tsdb import client, stats
-from ..utils import has_no_empty_params, hour_rounder, jsonify, tz_now
+from birder.checks import Factory
+from birder.core.redis import client
+from birder.core.registry import registry
+from birder.core.tsdb import stats
+from birder.utils import has_no_empty_params, hour_rounder, jsonify, tz_now
+
 from .app import app, basic_auth, template_dir
 from .decorators import api_authenticate, login_required
 
@@ -35,27 +37,6 @@ def login():
     return redirect(referrer)
 
 
-@bp.route('/add/', methods=['POST'])
-def add():
-    referrer = request.headers.get("Referer", "%s/" % app.config['URL_PREFIX'])
-    if not session.get("user"):
-        return redirect(referrer)
-    try:
-        label = request.form['label']
-        conn = request.form['url']
-        t = Factory.from_conn_string(label, conn)
-        existing = client.hgetall("monitors")
-        existing[t.name] = conn
-        client.hmset('monitors', existing)
-
-        get_targets.cache_clear()
-
-        return jsonify({}), 200
-    except Exception as e:
-        logger.exception(e)
-        return jsonify({'error': str(e)}), 400
-
-
 @bp.route('/logout/')
 def logout():
     referrer = request.headers.get("Referer", "%s/" % app.config['URL_PREFIX'])
@@ -67,8 +48,8 @@ def logout():
 @bp.route('/')
 def home():
     services = []
-    for target in get_targets():
-        services.append((target, client.get(target.ts_name)))
+    for target in registry:
+        services.append((target, client.get(target.pk)))
     r = make_response(render_template('index.html', services=services))
     return r
 
@@ -79,31 +60,15 @@ def about():
     return r
 
 
-@bp.route('/api/')
-@login_required
-def api_root():
-    links = []
-    for rule in app.url_map.iter_rules():
-        # Filter out rules we can't navigate to in a browser
-        # and rules that require parameters
-        if "GET" in rule.methods and has_no_empty_params(rule):
-            url = url_for(rule.endpoint, **(rule.defaults or {}))
-            if url.startswith('/api/'):
-                links.append((url, rule.endpoint))
-
-    r = make_response(render_template('api.html', page="API", endpoints=links))
-    return r
-
-
-@bp.route('/data/<hkey>/<granularity>/', methods=['GET', 'OPTIONS'])
+@bp.route('/data/<pk>/<granularity>/', methods=['GET', 'OPTIONS'])
 @cross_origin(origins=app.config['CORS_ALLOW_ORIGIN'])
-def data(hkey, granularity):
+def data(pk, granularity):
     if granularity in app.config['GRANULARITIES']:
         ts = tz_now()
         start_at = hour_rounder(ts)
 
-        errors = stats.get_errors(hkey, granularity)
-        pings = stats.get_pings(hkey, granularity)
+        errors = stats.get_errors(pk, granularity)
+        pings = stats.get_pings(pk, granularity)
 
         values = []
         for err, ping in zip(errors, pings):
@@ -117,13 +82,19 @@ def data(hkey, granularity):
                 record['value'] = 0
             if 'value' in record:
                 values.append(record)
-
-        ret = {'datapoints': len(values),
-               # 'errors': [e[1] for e in errors],
-               # 'pings': [e[1] for e in pings],
-               'values': values,
-               'ts': ts,
-               'start': start_at}
+        try:
+            t = registry[pk]
+        except KeyError:
+            ret = {}
+        else:
+            ret = {'datapoints': len(values),
+                   'target': t.name,
+                   'url': t.url,
+                   # 'errors': [e[1] for e in errors],
+                   # 'pings': [e[1] for e in pings],
+                   'values': values,
+                   'ts': ts,
+                   'start': start_at}
         return jsonify(ret)
     return "", 404
 
@@ -142,7 +113,7 @@ def scan(hkey, granularity):
 @cross_origin(origins=app.config['CORS_ALLOW_ORIGIN'])
 def chart(granularity):
     red = Color("#ff8a76")
-    targets = get_targets()
+    # targets = registry.values()
     if granularity == 'h':
         refresh = app.config['REFRESH_INTERVAL'] * 1000
     else:
@@ -151,8 +122,8 @@ def chart(granularity):
     if granularity in app.config['GRANULARITIES']:
         r = make_response(render_template('chart.html',
                                           refresh=refresh,
-                                          names=json.dumps([t.ts_name for t in targets]),
-                                          targets=targets,
+                                          names=json.dumps([t.pk for t in registry]),
+                                          targets=registry,
                                           granularity=granularity,
                                           colors=[(i, c.hex) for i, c in enumerate(red.range_to(Color("red"), 10), 2)],
                                           page=granularity,
@@ -161,48 +132,57 @@ def chart(granularity):
     return "", 404
 
 
+@bp.route('/api/')
+@login_required
+def api_root():
+    links = []
+    for rule in app.url_map.iter_rules():
+        # Filter out rules we can't navigate to in a browser
+        # and rules that require parameters
+        if "GET" in rule.methods and has_no_empty_params(rule):
+            url = url_for(rule.endpoint, **(rule.defaults or {}))
+            if url.startswith('/api/'):
+                links.append((url, rule.endpoint))
+
+    r = make_response(render_template('api.html', page="API", endpoints=links))
+    return r
+
+
 @bp.route('/api/add/', methods=['POST'])
 @api_authenticate
 def api_add():
     try:
         data = request.get_json()
         label = data["label"]
-        conn = data['url']
-        Factory.from_conn_string(label, conn)
+        init_string = data['url']
 
-        existing = client.hgetall("monitors")
-        existing[label] = conn
-        client.hmset('monitors', existing)
-
-        get_targets.cache_clear()
-
+        registry.add_dynamic(label, init_string)
         return jsonify({"message": f"'{label}' added"})
     except Exception as e:
         logger.exception(e)
         return str(e), 400
+
 
 @bp.route('/api/edit/<hkey>/', methods=['POST'])
 @api_authenticate
 def api_edit(hkey):
     try:
+        existing = registry[hkey]
         data = request.get_json()
         label = data["label"]
-        conn = data['url']
-        Factory.from_conn_string(label, conn)
-        t = get_target(hkey)
-        deleted = client.hdel("monitors", hkey)
-        get_targets.cache_clear()
+        init_string = data['url']
+        overrides = {'label': label}
+        if init_string != existing.url:
+            copy = Factory.from_conn_string(label, init_string)
+            copy.check()
+            overrides['init_string'] = init_string
 
-        existing = client.hgetall("monitors")
-        existing[label] = conn
-        client.hmset('monitors', existing)
-
-        get_targets.cache_clear()
-
-        return jsonify({"message": f"'{label}' added"})
+        registry.override(hkey, **overrides)
+        return jsonify({"message": f"'{hkey}' updated"})
     except Exception as e:
         logger.exception(e)
         return str(e), 400
+
 
 @bp.route('/api/sort/', methods=['POST'])
 @api_authenticate
@@ -210,29 +190,23 @@ def api_sort():
     try:
         data = request.get_json()
         order = data['order']
-        order.reverse()
-        p = client.pipeline()
-        p.delete("order")
-        p.lpush("order", *order)
-        p.execute()
-        order1 = client.lrange("order", 0, client.llen("order"))
-        get_targets.cache_clear()
-        return jsonify({"order": list(map(lambda s: s.decode(), order1))})
-    except BaseException as e:
-        return str(e), 400
-
-
-@bp.route('/api/del/<name>/', methods=['DELETE'])
-@api_authenticate
-def api_del(name):
-    try:
-        deleted = client.hdel("monitors", name)
-        get_targets.cache_clear()
-        return jsonify({"message": f"{deleted} entries deleted",
-
+        registry.sort_by(order)
+        return jsonify({"order1": order,
+                        "order2": registry.order,
                         })
-    except Exception as e:
+    except BaseException as e:
+        logger.exception(e)
         return str(e), 400
+
+
+@bp.route('/api/del/<hkey>/', methods=['DELETE'])
+@api_authenticate
+def api_del(hkey):
+    try:
+        registry.remove(hkey)
+        return jsonify({"message": f"{hkey} deleted"})
+    except Exception as e:
+        return f"{type(e).__name__}: {e}", 400
 
 
 @bp.route('/api/inspect/', methods=['GET'])
@@ -240,10 +214,11 @@ def api_del(name):
 def api_inspect():
     try:
         ret = {}
-        existing = client.hgetall("monitors")
-        for k, v in existing.items():
-            ret[k.decode()] = v.decode()
-        return jsonify({"monitors": ret})
+        values = registry._checks()
+        for __, target in values.items():
+            ret[target.pk] = [target.label, target.url]
+        return jsonify({"monitors": ret,
+                        "order": registry.order})
     except Exception as e:
         return str(e), 400
 
@@ -253,8 +228,8 @@ def api_inspect():
 def api_list():
     try:
         ret = {}
-        for target in get_targets():
-            ret[target.ts_name] = [target.name, target.url]
+        for target in registry:
+            ret[target.pk] = [target.label, target.url]
         return jsonify({"monitors": ret})
     except Exception as e:
         return str(e), 400
@@ -266,7 +241,7 @@ def api_env():
     """returns endpoints as environment varialbles list """
     try:
         ret = []
-        for i, target in enumerate(get_targets()):
+        for i, target in enumerate(registry.values()):
             ret.append(f"MONITORo{i}_{target.name}={target.url}")
         return "\n".join(ret)
     except Exception as e:

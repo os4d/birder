@@ -1,10 +1,10 @@
-import os
 from urllib.parse import urlparse
 
-from .base import Target
+from birder.core.check import BaseCheck
+
 from .db import MySQL, PostGis, Postgres
-from .redis import Redis
 from .http import Http
+from .redis import Redis
 from .services import TCP, Celery, RabbitMQ
 
 
@@ -21,14 +21,16 @@ class Factory:
                  }
 
     @classmethod
-    def from_conn_string(cls, name, conn):
+    def from_conn_string(cls, name, conn, pk=None, system=False, **kwargs):
         try:
             o = urlparse(conn.lower())
-            return cls.PROTOCOLS[o.scheme](name, conn)
+            t = cls.PROTOCOLS[o.scheme](name.upper(), conn, **kwargs)
+            t.pk = pk
+            t.system = system
+            return t
         except KeyError:
-            raise Exception(f"Unknown protocol '{o.scheme}'")
+            raise Exception(f"{conn} - Unknown protocol '{o.scheme}'")
 
-    @classmethod
-    def from_envvar(cls, varname):
-        conn = os.environ[varname]
-        return cls.from_conn_string(varname.split('_', 1)[1], conn)
+    @staticmethod
+    def deserialize(data):
+        return BaseCheck.deserialize(data)

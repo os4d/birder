@@ -2,7 +2,7 @@ import psycopg2
 import pymysql
 from werkzeug.utils import cached_property
 
-from .base import Target
+from birder.core.check import BaseCheck
 
 
 class DbConnParser:
@@ -20,7 +20,7 @@ class DbConnParser:
         return kwargs
 
 
-class MySQL(DbConnParser, Target):
+class MySQL(DbConnParser, BaseCheck):
     default_port = 3306
     default_config = {'sql': 'SELECT 1 FROM DUAL;'}
 
@@ -33,7 +33,7 @@ class MySQL(DbConnParser, Target):
         return True
 
 
-class Postgres(DbConnParser, Target):
+class Postgres(DbConnParser, BaseCheck):
     default_port = 5432
     default_config = {'sql': 'SELECT 1;'}
 

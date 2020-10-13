@@ -11,7 +11,8 @@ from flask_cors import CORS
 from sentry_sdk.integrations.flask import FlaskIntegration
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-from ..config import Config, init_monitor_storage
+from birder.config import Config
+from birder.core.registry import registry
 
 logger = logging.getLogger(__name__)
 
@@ -55,4 +56,5 @@ app.logger.removeHandler(default_handler)
 def before_request():
     g.user = session.get('user', None)
 
-init_monitor_storage()
+
+registry.initialize()

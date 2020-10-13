@@ -54,7 +54,7 @@ Configuration
    - APPLICATION_ROOT = 
    - URL_PREFIX = 
 
-   - MONITOR_<name> = _connection_string_
+   - MONITOR_<ORDER> = name|_connection_string_
 
 #### Connection strings examples:
 
@@ -75,19 +75,13 @@ docker run \
     --rm \
     --name=${CONTAINER_NAME} \
     -p 5000:5000 \
-    -e MONITORa_${MONITOR_A_NAME}=${MONITOR_A_CONN_STRING} \
-    -e MONITORb_${MONITOR_B_NAME}=${MONITOR_B_CONN_STRING} \
+    -e MONITOR_10=GitLab|https://gitlab.com \
+    -e MONITOR_20=database|postgres://user:pass@10.10.10.1 \
     -e ADMINS=${BIRDER_ADMIN}:${BIRDER_PASSWORD}\
     -v /tmp/~birder:/var/db \
     ${RUN_OPTIONS} \
     birder
 ```
-
-Where:
- - MONITOR_A_NAME : is the identifier of the first monitored target
- - MONITOR_A_URL : is the url of the first monitored target (eg. postgres://host:port/dbname)
- - MONITOR_B_NAME : is the identifier of the second monitored target
- - ... and so on ...
 
 Todo
 ----

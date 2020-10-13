@@ -7,10 +7,10 @@ from celery.app.control import Control
 from kombu import Connection as KombuConnection
 from werkzeug.utils import cached_property
 
-from .base import Target
+from birder.core.check import BaseCheck
 
 
-class Amqp(Target):
+class Amqp(BaseCheck):
     def check(self, **config):
         conn = KombuConnection(self.conn)
         conn.ensure_connection(max_retries=1)
@@ -20,7 +20,7 @@ class Amqp(Target):
 Rabbit = RabbitMQ = Kombu = Amqp
 
 
-class Celery(Target):
+class Celery(BaseCheck):
     @property
     def url(self):
         address = re.sub('.*@', '******@', self.conn.netloc)
@@ -41,7 +41,7 @@ class Celery(Target):
         return bool(d)
 
 
-class TCP(Target):
+class TCP(BaseCheck):
     default_port = 7
 
     @cached_property

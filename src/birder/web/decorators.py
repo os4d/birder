@@ -4,7 +4,8 @@
 #  Written by Stefano Apostolico <s.apostolico@gmail.com>, October 2020
 
 from functools import wraps
-from flask import session, redirect, request, url_for, g
+
+from flask import redirect, session
 
 from birder.utils import jsonify
 from birder.web.app import basic_auth

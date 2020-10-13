@@ -1,9 +1,9 @@
 import requests
 
-from .base import Target
+from birder.core.check import BaseCheck
 
 
-class Http(Target):
+class Http(BaseCheck):
     icon = "http.png"
     status_success = [200]
     match = None

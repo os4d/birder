@@ -1,77 +1,74 @@
 import os
-from functools import wraps
 
-from .checks import Factory, Target
 from .logging import logger  # noqa
-from .monitor.tsdb import client
+
+# from functools import wraps
+
+# from .redis import client
 
 
 def typed(args):
     pass
 
-
-def redis_lru(f):
-    def clear_cache():
-        client.set(f"invalid:{f.__name__}", 1)
-
-    f.cache_clear = clear_cache
-    f.cache = []
-
-    f.cache_clear()
-
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        cached_is_invalid = client.get(f"invalid:{f.__name__}")
-        if cached_is_invalid:
-            f.cache = f(*args, **kwargs)
-            client.delete(f"invalid:{f.__name__}")
-
-        return f.cache
-
-    return decorated_function
-
-
-def init_monitor_storage(ctx=os.environ):
-    names = sorted([k for k, v in ctx.items() if k.startswith('MONITOR')])
-    for varname in names:
-        m = Factory.from_envvar(varname)
-        existing = client.hgetall("monitors")
-        existing[m.label] = m.init_string
-        client.hmset('monitors', existing)
-
-
-@redis_lru
-def get_targets(ctx=os.environ) -> [Target]:
-    targets = {}
-    # names = sorted([k for k, v in ctx.items() if k.startswith('MONITOR')])
-    # for varname in names:
-    #     m = Factory.from_envvar(varname)
-    #     targets[m.ts_name] = m
-
-    existing = client.hgetall("monitors")
-    for k, v in existing.items():
-        m = Factory.from_conn_string(k.decode(), v.decode())
-        targets[m.name] = m
-
-    order = client.lrange("order", 0, client.llen("order"))
-    if order:
-        ordered = []
-        for e in order:
-            try:
-                ordered.append(targets[e.decode()])
-            except KeyError:
-                pass
-        # ordered = [targets[e.decode()] for e in order]
-        ordered.extend([targets[x] for x, y in targets.items() if y not in ordered])
-        return ordered
-    return targets.values()
+#
+# def redis_lru(f):
+#     def clear_cache():
+#         client.set(f"invalid:{f.__name__}", 1)
+#
+#     f.cache_clear = clear_cache
+#     f.cache = []
+#
+#     f.cache_clear()
+#
+#     @wraps(f)
+#     def decorated_function(*args, **kwargs):
+#         cached_is_invalid = client.get(f"invalid:{f.__name__}")
+#         if cached_is_invalid:
+#             f.cache = f(*args, **kwargs)
+#             client.delete(f"invalid:{f.__name__}")
+#
+#         return f.cache
+#
+#     return decorated_function
+#
+# #
+# def populate_registry(ctx=os.environ):
+#     names = sorted([k for k, v in ctx.items() if k.startswith('MONITOR_')])
+#     for varname in names:
+#         Factory.from_envvar(varname)
+#
+#     dynamic = client.hgetall("monitors")
+#     for
+#         # existing[m.label] = m.init_string
+#         # client.hmset('monitors', existing)
 
 
-def get_target(hkey) -> Target:
-    for t in get_targets():
-        if t.name == hkey:
-            return t
-    raise ValueError(hkey)
+# @redis_lru
+# def get_targets(ctx=os.environ) -> [Target]:
+    # for hkey, target in registry.items():
+    # targets = {}
+    # # names = sorted([k for k, v in ctx.items() if k.startswith('MONITOR')])
+    # # for varname in names:
+    # #     m = Factory.from_envvar(varname)
+    # #     targets[m.ts_name] = m
+    #
+    # existing = client.hgetall("monitors")
+    # for k, v in existing.items():
+    #     m = Factory.from_conn_string(k.decode(), v.decode())
+    #     targets[m.name] = m
+    #
+    # order = client.lrange("order", 0, client.llen("order"))
+    # if order:
+    #     ordered = []
+    #     for e in order:
+    #         try:
+    #             ordered.append(targets[e.decode()])
+    #         except KeyError:
+    #             pass
+    #     # ordered = [targets[e.decode()] for e in order]
+    #     ordered.extend([targets[x] for x, y in targets.items() if y not in ordered])
+    #     return ordered
+    # return targets.values()
 
 
 def parse_bool(value):

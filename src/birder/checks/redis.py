@@ -1,9 +1,9 @@
 from redis import Redis as RedisClient
 
-from .base import Target
+from birder.core.check import BaseCheck
 
 
-class Redis(Target):
+class Redis(BaseCheck):
     default_port = 6379
     default_host = '127.0.0.1'
 

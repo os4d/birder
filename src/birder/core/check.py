@@ -1,12 +1,14 @@
+import json
 import re
 import sys
 import traceback
-from hashlib import md5
 from itertools import count
 from urllib import parse
 from urllib.parse import urlparse
 
 from werkzeug.utils import cached_property
+
+from birder.utils import fqn, import_by_name
 
 
 def labelize(varname):
@@ -19,20 +21,26 @@ def parse_qs(string: str):
     return {k: v[0] for k, v in initial.items()}
 
 
-class Target:
-    _ids = count(1)
+class BaseCheck:
+    pks = count(1)
     icon = ""
     conn = None
     default_config = {}
 
-    def __init__(self, name, init_string, timeout=5):
+    def __init__(self, name, init_string, timeout=5, enabled=True, env_var=None, **kwargs):
         self.name = name
         self.init_string = init_string
         self.timeout = timeout
-        self.order = next(self._ids)
+        self.order = next(self.pks)
         self.label = labelize(name)
         self.config = dict(self.default_config)
-        self.ts_name = md5(f"{name}{init_string}".encode()).hexdigest()
+        self.env_var = env_var
+        self.pk = ""
+        self.ts_name = f"pk-{self.pk}"
+        self.system = False
+        self.enabled = enabled
+        for k, v in kwargs.items():
+            setattr(self, k, v)
         try:
             self.parse(self.init_string)
         except Exception as e:
@@ -84,3 +92,22 @@ class Target:
 
     def check(self, **config):
         raise NotImplementedError
+
+    def serialize(self):
+        return json.dumps({
+            "fqn": fqn(self),
+            "name": self.name,
+            "init_string": self.init_string,
+            "timeout": self.timeout,
+            "enabled": self.enabled,
+            "label": self.label,
+            "pk": self.pk,
+            "env_var": self.env_var,
+            "system": self.system
+        })
+
+    @staticmethod
+    def deserialize(data):
+        config = json.loads(data)
+        _class = import_by_name(config.pop('fqn'))
+        return _class(**config)
