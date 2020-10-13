@@ -113,7 +113,6 @@ def scan(hkey, granularity):
 @cross_origin(origins=app.config['CORS_ALLOW_ORIGIN'])
 def chart(granularity):
     red = Color("#ff8a76")
-    # targets = registry.values()
     if granularity == 'h':
         refresh = app.config['REFRESH_INTERVAL'] * 1000
     else:
@@ -124,6 +123,7 @@ def chart(granularity):
                                           refresh=refresh,
                                           names=json.dumps([t.pk for t in registry]),
                                           targets=registry,
+                                          disabled=registry.disabled(),
                                           granularity=granularity,
                                           colors=[(i, c.hex) for i, c in enumerate(red.range_to(Color("red"), 10), 2)],
                                           page=granularity,
@@ -175,6 +175,7 @@ def api_edit(hkey):
         if init_string != existing.url:
             copy = Factory.from_conn_string(label, init_string)
             copy.check()
+            stats.zap(existing.name)
             overrides['init_string'] = init_string
 
         registry.override(hkey, **overrides)
@@ -207,6 +208,16 @@ def api_del(hkey):
         return f"{type(e).__name__}: {e}", 400
 
 
+@bp.route('/api/enable/<hkey>/', methods=['GET'])
+@api_authenticate
+def api_enable(hkey):
+    try:
+        registry.enable(hkey)
+    except Exception as e:
+        pass
+    return redirect(request.referrer)
+
+
 @bp.route('/api/inspect/', methods=['GET'])
 @api_authenticate
 def api_inspect():
@@ -214,7 +225,7 @@ def api_inspect():
         ret = {}
         values = registry._checks()
         for __, target in values.items():
-            ret[target.pk] = [target.label, target.url]
+            ret[target.pk] = [target.label, target.url, target.enabled]
         return jsonify({"monitors": ret,
                         "order": registry.order})
     except Exception as e:
@@ -227,7 +238,7 @@ def api_list():
     try:
         ret = {}
         for target in registry:
-            ret[target.pk] = [target.label, target.url]
+            ret[target.pk] = [target.label, target.url, target.enabled]
         return jsonify({"monitors": ret})
     except Exception as e:
         return str(e), 400

@@ -65,6 +65,11 @@
             </div>
         </div>
     </div>
+    {% if user %}
+        {% for c in disabled %}
+            <a href="/api/enable/{{ c.pk }}/">enable {{ c.name }}</a>
+        {% endfor %}
+    {% endif %}
 {% endblock %}
 
 {% block scripts %}

@@ -29,7 +29,13 @@ class Registry:
         checks = self._checks()
         if not self.order:
             self.sort_by()
-        return iter([checks[v] for v in self.order if v in checks.keys()])
+        return iter([checks[v] for v in self.order if v in checks.keys() and checks[v].enabled])
+
+    def disabled(self):
+        checks = self._checks()
+        if not self.order:
+            self.sort_by()
+        return iter([checks[v] for v in self.order if v in checks.keys() and not checks[v].enabled])
 
     def __getitem__(self, item):
         checks = self._checks()
@@ -45,10 +51,8 @@ class Registry:
                 conn = self.context[varname]
                 check = Factory.from_conn_string(*conn.split('|', 1), system=True)
                 check.pk = varname
-                override = client.get(f"override:{varname}")
-                if override:
-                    for k, v in json.loads(override).items():
-                        setattr(check, k, v)
+                for k, v in self.overriden(varname).items():
+                    setattr(check, k, v)
                 checks[varname] = check
             except Exception as e:
                 logger.exception(e)
@@ -83,6 +87,9 @@ class Registry:
     def override(self, hkey, **kwargs):
         client.set(f"override:{hkey}", json.dumps(kwargs))
 
+    def overriden(self, hkey):
+        return json.loads(client.get(f"override:{hkey}") or "{}")
+
     def get_dynamic(self):
         return client.hgetall('dynamic')
 
@@ -95,12 +102,23 @@ class Registry:
         self.sort_by()
         send(label)
 
+    def enable(self, hkey):
+        kwargs = self.overriden(hkey)
+        kwargs['enabled'] = True
+        self.override(hkey, **kwargs)
+        send(hkey)
+
     def remove(self, hkey):
         check = self[hkey]
-        if not check.system:
+        if check.system:
+            kwargs = self.overriden(hkey)
+            kwargs['enabled'] = False
+            self.override(hkey, **kwargs)
+        else:
             client.hdel('dynamic', hkey.encode())
             self.sort_by()
-            send(hkey)
+
+        send(hkey)
 
 
 registry = Registry()
