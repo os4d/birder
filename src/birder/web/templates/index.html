@@ -1,7 +1,6 @@
 {% extends "layout.html" %}
 {% block page %}
     <div class="container mt-5 ">
-    {{ services }}
         <div class="row dragsort">
             {% for entry in services %}
                 <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item" id="{{ entry.0.pk }}">

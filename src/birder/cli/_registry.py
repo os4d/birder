@@ -59,14 +59,13 @@ def reg(ctx, **kwargs):
 @click.option('--removed', default=False, is_flag=True)
 @click.option('--system', default=False, is_flag=True)
 def list_(removed, system, **kwargs):
-    # targets = get_targets()
     click.secho("{} targets registered".format(len(registry)), bold=True)
 
     click.echo("Active:")
     for target in registry:
         if target.enabled:
             click.secho("  {0:3} {1:<25} {2}".format(target.pk, target.label, target.url))
-
+    registry.sort_by()
     # if system:
     #     click.echo("System:")
     #     for target in registry.system:

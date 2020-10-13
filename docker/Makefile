@@ -6,7 +6,7 @@ BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 # below vars are used internally
 BUILD_OPTIONS?=--squash
 CMD?=
-
+CONTAINER_NAME=birder
 DOCKER_IMAGE_NAME=os4d/birder
 DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:${VERSION}
 DOCKER_TARGET=${DOCKER_IMAGE}
@@ -57,7 +57,7 @@ build:
 			-p 5000:5000 \
 			-e "TERM=xterm-256color" \
 			-e SECRET_KEY="${SECRET_KEY}" \
-			-e MONITORa_BIRDER=http://localhost:5000 \
+			-e MONITOR_BIRDER="web|http://localhost:5000" \
 			-e ADMINS=sax:123 \
 			-v /tmp/~birder:/var/db \
 			${RUN_OPTIONS} \

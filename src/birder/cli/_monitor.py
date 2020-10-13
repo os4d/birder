@@ -60,19 +60,22 @@ def clear(ctx, targets):
 
 @monitor.command()
 @click.argument('targets', nargs=-1, type=CheckParam)
+@click.option('-q', '--quiet', is_flag=True)
 @click.option('-f', '--fail', is_flag=True)
 @click.option('-t', '--timeout', type=int, default=5)
 @click.pass_context
-def check(ctx, targets, fail, timeout):
-    # t = registry[target]
-    try:
-        for t in targets:
-            click.secho("Checking {0:<10} ({1}) {2} ".format(t.label, t.__class__.__name__, t.url))
-            with eventlet.Timeout(timeout):
-                t.check(timeout=timeout)
-        click.secho(' Ok', fg='green')
-    except Exception as e:
-        click.secho('Fail %s' % e, fg='red')
+def check(ctx, targets, fail, quiet, timeout):
+        for t in (targets or registry):
+            click.secho("Checking {0:<10} ({1}) {2} ".format(t.pk, t.__class__.__name__, t.url), nl=False)
+            try:
+                with eventlet.Timeout(timeout):
+                    t.check(timeout=timeout)
+                click.secho(' Ok', fg='green')
+            except Exception as e:
+                click.secho('Fail', fg='red')
+                if not quiet:
+                    click.secho(str(e), fg='red')
+        # click.secho(' Ok', fg='green')
 
 
 @monitor.command()
