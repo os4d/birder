@@ -1,2 +1,2 @@
-VERSION = __version__ = "1.0.6"
+VERSION = __version__ = "1.0.7"
 NAME = "birder"
