@@ -106,3 +106,10 @@ def sort(ctx, order, show, **kwargs):
     # click.secho(",".join(map(str, registry.order)))
     # if show:
     #     ctx.invoke(list_)
+
+@reg.command()
+@click.pass_context
+def env(ctx, **kwargs):
+    for c in registry:
+        click.echo(f'{c.pk}="{c.label}|{c.init_string}"')
+

@@ -51,7 +51,7 @@ class Registry:
                         setattr(check, k, v)
                 checks[varname] = check
             except Exception as e:
-                raise ValidationError(f"Error with {varname} - {e}")
+                logger.exception(e)
 
         dynamics = self.get_dynamic()
         for label, init_string in dynamics.items():
