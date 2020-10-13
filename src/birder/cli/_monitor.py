@@ -65,17 +65,17 @@ def clear(ctx, targets):
 @click.option('-t', '--timeout', type=int, default=5)
 @click.pass_context
 def check(ctx, targets, fail, quiet, timeout):
-        for t in (targets or registry):
-            click.secho("Checking {0:<10} ({1}) {2} ".format(t.pk, t.__class__.__name__, t.url), nl=False)
-            try:
-                with eventlet.Timeout(timeout):
-                    t.check(timeout=timeout)
-                click.secho(' Ok', fg='green')
-            except Exception as e:
-                click.secho('Fail', fg='red')
-                if not quiet:
-                    click.secho(str(e), fg='red')
-        # click.secho(' Ok', fg='green')
+    for t in (targets or registry):
+        click.secho("Checking {0:<10} ({1}) {2} ".format(t.pk, t.__class__.__name__, t.url), nl=False)
+        try:
+            with eventlet.Timeout(timeout):
+                t.check(timeout=timeout)
+            click.secho(' Ok', fg='green')
+        except Exception as e:
+            click.secho('Fail', fg='red')
+            if not quiet:
+                click.secho(str(e), fg='red')
+    # click.secho(' Ok', fg='green')
 
 
 @monitor.command()
@@ -94,6 +94,8 @@ def zap(ctx, **kwargs):
 @click.option('-g', '--group', default=False, is_flag=True)
 @click.pass_context
 def run(ctx, sleep, processes, quiet, once, timeout, group, **kwargs):
+    from birder.core.queue import read
+
     click.secho('Running %s processes.' % processes)
     p = Pool(processes=processes, initializer=init_worker)
     config = {'echo': not quiet,
@@ -101,12 +103,10 @@ def run(ctx, sleep, processes, quiet, once, timeout, group, **kwargs):
               'timeout': timeout}
 
     while True:
-        # targets = registry.values()
-        from birder.core.queue import read
-        message = read()
-        if message:
-            # TODO: remove me
-            print(111, "_monitor.py:109", 11111, message)
+        # message = read()
+        # if message:
+        #     pass
+        client.set('timestamp', tz_now().strftime('%Y-%m-%d  %H:%M:%S'))
         params = [(t, config) for t in registry if t.enabled]
         for param in params:
             param[1]['timestamp'] = tz_now()

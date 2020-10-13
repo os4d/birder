@@ -7,6 +7,7 @@ from click import ClickException
 
 import birder
 from birder.core.registry import registry
+from ..core.queue import send
 
 
 class CheckParamType(click.ParamType):
@@ -32,6 +33,13 @@ def cli(ctx, init, **kwargs):
             registry.initialize()
         except Exception as e:
             click.secho(str(e))
+
+
+@cli.command()
+@click.pass_context
+def refresh(ctx, **kwargs):
+    send('--')
+
 
 
 from . import _monitor  # noqa

@@ -3,7 +3,7 @@ import logging
 
 from colour import Color
 from flask import (Blueprint, flash, g, make_response, redirect,
-                   render_template, request, session, url_for,)
+                   render_template, request, session, url_for, Response, )
 from flask_cors import CORS, cross_origin
 
 from birder.checks import Factory
@@ -191,9 +191,7 @@ def api_sort():
         data = request.get_json()
         order = data['order']
         registry.sort_by(order)
-        return jsonify({"order1": order,
-                        "order2": registry.order,
-                        })
+        return jsonify({"order": registry.order})
     except BaseException as e:
         logger.exception(e)
         return str(e), 400
@@ -234,15 +232,24 @@ def api_list():
     except Exception as e:
         return str(e), 400
 
-
-@bp.route('/api/env/', methods=['GET'])
+@bp.route('/api/check/', methods=['GET'])
 @api_authenticate
-def api_env():
-    """returns endpoints as environment varialbles list """
+def api_check():
     try:
-        ret = []
-        for i, target in enumerate(registry.values()):
-            ret.append(f"MONITORo{i}_{target.name}={target.url}")
-        return "\n".join(ret)
+        return jsonify({"timestamp": client.get('timestamp').decode()})
     except Exception as e:
         return str(e), 400
+#
+#
+# @bp.route('/api/env/', methods=['GET'])
+# @api_authenticate
+# def api_env():
+#     """returns endpoints as environment varialbles list """
+#     ret = []
+#     for c in registry:
+#         try:
+#             ret.append(f'{c.pk}="{c.label}|{c.init_string}"')
+#         except Exception as e:
+#             pass
+#     return Response("\n".join(ret), mimetype='text/plain')
+#

@@ -21,11 +21,11 @@ class Factory:
                  }
 
     @classmethod
-    def from_conn_string(cls, name, conn, pk=None, system=False, **kwargs):
+    def from_conn_string(cls, name, conn, system=False, **kwargs):
         try:
-            o = urlparse(conn.lower())
-            t = cls.PROTOCOLS[o.scheme](name.upper(), conn, **kwargs)
-            t.pk = pk
+            o = urlparse(conn.strip().lower())
+            t = cls.PROTOCOLS[o.scheme](name.strip().upper(), conn, **kwargs)
+            t.pk = t.name
             t.system = system
             return t
         except KeyError:

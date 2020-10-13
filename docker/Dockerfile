@@ -9,7 +9,7 @@ ENV SECRET_KEY=""
 ENV ADMINS=""
 ENV BOOTSTRAP_SERVE_LOCAL="1"
 ENV SM_TITLE="Birder"
-ENV BIRDER_REDIS_URL="redis://127.0.0.1:6379/1"
+ENV BIRDER_REDIS_URL="redis://localhost:6379/1"
 
 ADD docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 ADD docker/circus.conf /etc/circus.conf
