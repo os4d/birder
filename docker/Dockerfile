@@ -23,7 +23,7 @@ RUN set -ex \
     ls -al /code \
     && pip install poetry \
     && sha1sum -c /CHECKSUM \
-    && poetry install --no-dev
+    && poetry install --no-dev --no-deps
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
