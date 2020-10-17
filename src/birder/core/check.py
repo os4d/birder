@@ -74,13 +74,18 @@ class BaseCheck:
                     handler(val)
                 else:
                     self.config[key] = val
+        self.raw_url = parts[0]
         self.conn = urlparse(parts[0])
         self.query = parse_qs(self.conn.query)
 
     @cached_property
+    def target_url(self):
+        return self.url
+
+    @cached_property
     def url(self):
-        address = re.sub('.*@', '******@', self.conn.netloc)
-        return "%s://%s%s" % (self.conn.scheme, address, self.conn.path)
+        return re.sub('.*@', '******@', self.raw_url)
+        
 
     @cached_property
     def logo(self):
