@@ -6,7 +6,7 @@ import click
 
 from birder.core.registry import registry
 
-from . import cli
+from . import cli, CheckParam
 
 
 @cli.group(name="registry")
@@ -112,4 +112,11 @@ def sort(ctx, order, show, **kwargs):
 def env(ctx, **kwargs):
     for c in registry:
         click.echo(f'{c.pk}="{c.label}|{c.init_string}"')
+
+@reg.command()
+@click.argument('targets', nargs=-1, type=CheckParam)
+@click.pass_context
+def restore(ctx, targets, **kwargs):
+    for t in (targets or registry):
+        registry.restore(t.pk)
 

@@ -80,7 +80,7 @@ class BaseCheck:
     @cached_property
     def url(self):
         address = re.sub('.*@', '******@', self.conn.netloc)
-        return "%s://%s" % (self.conn.scheme, address)
+        return "%s://%s%s" % (self.conn.scheme, address, self.conn.path)
 
     @cached_property
     def logo(self):

@@ -16,7 +16,7 @@ class Http(BaseCheck):
 
     def check(self, **config):
         timeout = config.get('timeout', self.timeout)
-        address = "%s://%s" % (self.conn.scheme, self.conn.netloc)
+        address = "%s://%s%s" % (self.conn.scheme, self.conn.netloc, self.conn.path)
         res = requests.get(address, timeout=timeout)
         self._assert(res.status_code in self.status_success, f'Invalid status code: {res.status_code}')
         if self.match:
