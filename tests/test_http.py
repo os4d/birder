@@ -1,36 +1,20 @@
+from unittest.mock import Mock
 from urllib.parse import ParseResult
 
 import pytest
 
-from birder.checks import Http
+from birder.checks.http import HttpCheck
 
 
 def test_http():
-    c = Http('http', 'http://www.google.com/?a=1|status=200,302|match=pippo')
+    c = HttpCheck(Mock(configuration={"url": 'http://www.google.com/?a=1'}))
     assert c.conn == ParseResult(scheme='http',
                                  netloc='www.google.com',
                                  path='/',
                                  params='',
                                  query='a=1',
                                  fragment='')
-    assert c.query == {'a': '1'}
-    assert c.status_success == [200, 302]
-    assert c.match == "pippo"
+    assert c.query == {'a': ['1']}
+    assert c.status_success == [200]
     with pytest.raises(Exception):
         assert not c.check()
-
-
-def test_issue1():
-    c = Http('http', 'https://app.bitcaster.io/login/|status=200,302')
-    assert c.conn == ParseResult(scheme='https',
-                                 netloc='app.bitcaster.io',
-                                 path='/login/',
-                                 params='',
-                                 query='',
-                                 fragment='')
-    assert c.query == {}
-    assert c.status_success == [200, 302]
-    with pytest.raises(Exception):
-        assert not c.check()
-
-

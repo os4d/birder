@@ -1,36 +1,32 @@
-from functools import cached_property
+from urllib.parse import urlparse, parse_qs
 
 import requests
+from django.core.validators import URLValidator, MinValueValidator, MaxValueValidator
+from django import forms
 
-from birder.core.check import BaseCheck
+from .base import BaseCheck, ConfigForm
 
 
-class Http(BaseCheck):
+class Config(ConfigForm):
+    DEFAULTS = {"timeout": 10}
+    url = forms.URLField(validators=[URLValidator()])
+    timeout = forms.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)], initial=10)
+    match = forms.CharField(required=False)
+
+
+class HttpCheck(BaseCheck):
     icon = "http.png"
     status_success = [200]
-    match = None
+    config_class = Config
 
-    def _parse_status_success(self, value):
-        self.status_success = list(map(int, value.split(',')))
+    def ready(self)->None:
+        self.conn = urlparse(self.config["url"])
+        self.query = parse_qs(self.conn.query)
 
-    def _parse_match(self, value):
-        self.match = value
-
-    @cached_property
-    def target_url(self):
-        return self.raw_url
-
-    def check(self, **config):
-        timeout = config.get('timeout', self.timeout)
-        # address = "%s://%s%s?%s" % (self.conn.scheme, self.conn.netloc, self.conn.path, self.conn.query)
-        # address = "%s://%s%s" % (self.conn.scheme, self.conn.netloc, self.conn.path)
-        res = requests.get(self.target_url, timeout=timeout)
-        self._assert(res.status_code in self.status_success, f'Invalid status code: {res.status_code}')
+    def check(self) -> bool:
+        timeout = self.config["timeout"]
+        res = requests.get(self.config["url"], timeout=timeout)
+        self._assert(res.status_code in self.status_success, f"Invalid status code: {res.status_code}")
         if self.match:
-            self._assert(str(self.match) in str(res.content), 'Cannot find %s' % self.match)
+            self._assert(str(self.match) in str(res.content), "Cannot find %s" % self.match)
         return True
-
-    @property
-    def link(self):
-        return self.url
-

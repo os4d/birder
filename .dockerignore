@@ -1,5 +1,7 @@
 *
-!docker
+!docker/**/**
 !src
-!poetry.lock
+!uv.lock
 !pyproject.toml
+!README.md
+!MANIFEST.in

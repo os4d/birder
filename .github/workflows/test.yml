@@ -1,0 +1,206 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - develop
+      - master
+      - staging
+      - release/*
+      - feature/*
+      - bugfix/*
+      - hotfix/*
+#  pull_request:
+#    branches: [ develop, master ]
+#    types: [ synchronize, opened, reopened, ready_for_review ]
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  id-token: write
+  attestations: write
+
+
+jobs:
+#  changes:
+#    if: (github.event_name != 'pull_request'
+#            || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name)
+#            || github.event_name == 'create'
+#    runs-on: ubuntu-latest
+#    timeout-minutes: 1
+#    defaults:
+#      run:
+#        shell: bash
+#    outputs:
+#      run_tests: ${{ steps.changes.outputs.run_tests }}
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v4.1.7
+#      - id: changes
+#        name: Check for file changes
+#        uses: dorny/paths-filter@0bc4621a3135347011ad047f9ecf449bf72ce2bd # v3.0.0
+#        with:
+#          base: ${{ github.ref }}
+#          token: ${{ github.token }}
+#          filters: .github/file-filters.yml
+
+  test:
+#    needs: [ changes ]
+#    if: needs.changes.outputs.run_tests == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ env.IMAGE }}
+      commit: ${{env.sha_short}}
+      build_date: ${{env.BUILD_DATE}}
+      branch: ${{env.BRANCH}}
+    services:
+      redis:
+        image: redis:7.4.0
+        ports:
+          - 16379:6379
+    env:
+      DOCKER_DEFAULT_PLATFORM: linux/amd64
+      DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
+      CELERY_BROKER_URL: redis://localhost:16379/1
+      CACHE_URL: redis://localhost:16379/2
+      DOCKER_BUILDKIT: 1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Hack container for local development
+        if: ${{ env.ACT }}
+        run: |
+          echo /home/runner/externals/node20/bin >> $GITHUB_PATH
+      - name: Hack container for local development
+        run: |
+          echo BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_ENV
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5.5.1
+        with:
+          images: "os4d/birder"
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=ref,event=tag
+            type=semver,pattern={{version}}
+            type=semver,pattern={{raw}}
+      - name: DockerHub login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - id: last_commit
+        uses: ./.github/actions/last_commit
+      - id: calc
+        shell: bash
+        run: |
+          set -x
+          LOCK_SHA=$(sha1sum uv.lock docker/bin/* docker/conf/* docker/Dockerfile | sha1sum | awk '{print $1}' | cut -c 1-8)
+          IMAGE=$(echo '${{env.DOCKER_METADATA_OUTPUT_JSON}}' | jq '.tags[0]')
+          echo "checksum=$LOCK_SHA" >> "$GITHUB_ENV"
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "BUILD_DATE=$(date +"%Y-%m-%d %H:%M" )" >> $GITHUB_ENV
+          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+
+      - name: Build Test Image
+        run: |
+             docker build \
+                --target tests \
+                -t ${{env.IMAGE}} \
+                --cache-from "type=gha" \
+                --cache-to "type=gha,mode=max" \
+                -f docker/Dockerfile .
+
+      - name: Run Test suite
+        run: |
+            mkdir output
+            docker run --rm \
+              --network host \
+              -e PYTHONPATH=/app/src \
+              -e DATABASE_URL=${DATABASE_URL} \
+              -e CELERY_BROKER_URL=${CELERY_BROKER_URL} \
+              -e CACHE_URL=${CACHE_URL} \
+              -e SECRET_KEY=super-secret-key-just-for-testing \
+              -e HOPE_API_URL="https://dev-hope.unitst.org/api/rest/" \
+              -e HOPE_API_TOKEN=${{ secrets.HOPE_API_TOKEN }} \
+              -e AURORA_API_URL="https://uni-hope-ukr-sr-dev.unitst.org/api/" \
+              -e AURORA_API_TOKEN=${{ secrets.AURORA_API_TOKEN }} \
+              -v "./output/:/app/output" \
+              -v "./src/:/app/src" \
+              -v "./tests:/app/tests" \
+              -v "./pytest.ini:/app/pytest.ini" \
+              -t ${{env.IMAGE}} \
+              pytest tests/ --selenium -n auto -v --maxfail=5 --migrations --cov-report xml:./output/coverage.xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        continue-on-error: true
+        with:
+          env_vars: OS,PYTHON
+          fail_ci_if_error: true
+          files: /app/output/coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: false
+          name: codecov-${{env.GITHUB_REF_NAME}}
+
+  release:
+    needs: [ test ]
+    runs-on: ubuntu-latest
+    services:
+      redis1:
+        image: redis:7.4.0
+        ports:
+          - 5379:6379
+      db1:
+        image: postgres:14
+        env:
+          POSTGRES_HOST: db1
+          POSTGRES_DATABASE: country_workspace
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USERNAME: postgres
+        ports:
+          - 4432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DOCKER_DEFAULT_PLATFORM: linux/amd64
+      DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
+      DATABASE_URL: postgres://postgres:postgres@localhost:4432/country_workspace
+      CELERY_BROKER_URL: redis://localhost:5379/1
+      CACHE_URL: redis://localhost:5379/2
+      DOCKER_BUILDKIT: 1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: DockerHub login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build Distro
+        run: |
+            docker build \
+                --target dist \
+                --cache-from "type=gha" \
+                --cache-to "type=gha,mode=max" \
+                --build-arg "GIT_SHA=${{needs.test.outputs.commit}}" \
+                --build-arg "BUILD_DATE=${{needs.test.outputs.build_date}}" \
+                --build-arg "BRANCH=${{needs.test.outputs.branch}}" \
+                -t ${{needs.test.outputs.image}} \
+                -f docker/Dockerfile .
+
+      - name: Publish images
+        run: |
+            docker push ${{needs.test.outputs.image}}
+            docker inspect ${{needs.test.outputs.image}} | jq -r '.[0].Config.Labels'
+            echo "::notice::✅ Image ${{needs.test.outputs.image}} built and pushed"

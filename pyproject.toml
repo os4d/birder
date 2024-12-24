@@ -1,47 +1,90 @@
-[tool.poetry]
+[project]
 name = "birder"
-version = "1.0.13"
-description = ""
-authors = ["sax <s.apostolico@gmail.com>"]
-packages = [
-    { include = "birder", from = "src" },
+#version = "2.0"
+dynamic = ["version"]
+description = "HOPE Country Workspace (HCW)"
+authors = [
+    {name = "sax", email = "s.apostolico@gmail.com"},
 ]
+requires-python = "==3.12.*"
+readme = "README.md"
+license = {text = "MIT"}
+dependencies = [
+    "click>=8.1.8",
+    "colour>=0.1.5",
+    "eventlet>=0.38.2",
+    "flask>=3.1.0",
+    "flask-bootstrap4>=4.0.2",
+    "flask-caching>=2.3.0",
+    "flask-cors>=5.0.0",
+    "flask-session>=0.8.0",
+    "gunicorn>=23.0.0",
+    "psycopg2>=2.9.10",
+    "pymysql>=1.1.1",
+    "python-slugify>=8.0.4",
+    "pytz>=2024.2",
+    "redis>=5.2.1",
+    "redis-timeseries>=0.1.9",
+    "requests>=2.32.3",
+    "attrs>=24.3.0",
+    "pyparsing>=3.2.0",
+    "sentry-sdk>=2.19.2",
+    "flask-basicauth>=0.2.0",
+    "celery>=5.4.0",
+    "werkzeug>=3.1.3",
+    "django>=5.1.4",
+    "django-environ>=0.11.2",
+    "django-strategy-field>=3.1.0",
+    "whisper>=1.1.10",
+    "pytest-cov>=6.0.0",
+    "django-webtest>=1.9.12",
+    "pytest-django>=4.9.0",
+    "django-admin-extra-buttons>=1.6.0",
+    "django-regex>=0.5.0",
+]
+[tool.mypy]
+mypy_path = "$MYPY_CONFIG_FILE_DIR/stubs"
 
-[tool.poetry.scripts]
+[tool.django-stubs]
+django_version = "3.12"
+django_apps = ["birder"]
+django_settings_module = "birder.config.settings"
+ignore_missing_settings = true
+ignore_missing_model_attributes = true
+
+#[project]
+#name = ""
+#version = "1.0.13"
+#description = ""
+#packages = [
+#    { include = "birder", from = "src" },
+#]
+#requires-python = ">=3.12"
+
+#
+#[tool.poetry.dev-dependencies]
+#flake8 = "^3.8.3"
+#isort = "^5.5.4"
+#pytest = "^6.1.0"
+#
+#[build-system]
+#requires = ["setuptools"]
+#build-backend = "setuptools.build_meta"
+#
+#[tool.setuptools]
+#py-modules = ['birder']
+#
+#[tool.setuptools.package-data]
+#hello = ['my_data/*']
+
+[project.scripts]
 birder = "birder.cli:main"
 
-
-[tool.poetry.dependencies]
-python = "^3.8"
-celery = "*"
-circus = "*"
-click = "*"
-colour = "*"
-eventlet = "*"
-flask = "*"
-flask-bootstrap4 = "*"
-flask-caching = "*"
-flask-cors = "*"
-flask-session = "*"
-gunicorn = "*"
-psycopg2-binary = "*"
-pymysql = "*"
-python-slugify = "*"
-pytz = "*"
-redis = "*"
-redis-timeseries = "*"
-requests = "*"
-attrs = "*"
-pyparsing = "^2.4.7"
-Flask-BasicAuth = "^0.2.0"
-sentry-sdk = {extras = ["flask"], version = "^0.18.0"}
-uwsgi = "^2.0.19"
-
-[tool.poetry.dev-dependencies]
-flake8 = "^3.8.3"
-isort = "^5.5.4"
-pytest = "^6.1.0"
-
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+[tool.uv]
+package = true
+dev-dependencies = [
+    "django-stubs>=5.1.1",
+    "mypy>=1.14.0",
+    "pytest-xdist>=3.6.1",
+    "pytest>=8.3.4",
+]

@@ -1,80 +1,177 @@
-DEVELOP?=0
-DOCKER_USER?=
-VERSION?=1.0.13
-BASE?=$(shell echo "${VERSION}" | sed "s/\([0-9]*\)\.\([0-9]*\)\.\(.*\)/\1.\2/g" )
-BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
-# below vars are used internally
-BUILD_OPTIONS?=--squash
-CMD?=
-CONTAINER_NAME=birder
-DOCKER_IMAGE_NAME=os4d/birder
-DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:${VERSION}
-DOCKER_TARGET=${DOCKER_IMAGE}
-DOCKERFILE?=Dockerfile
+# envs to set before use this script
+.ONESHELL:
+
+#BASE?=$(shell echo "${VERSION}" | sed "s/\([0-9]*\)\.\([0-9]*\)\.\(.*\)/\1.\2/g" )
+VERSION := $(shell grep -m 1 version ../pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
+RELEASE = $(shell grep -m 1 version ../pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
+LOCK_CHECKSUM?=$(shell sha1sum ../uv.lock | awk '{print $$1}')
+LOCK_HASH?=$(shell echo ${LOCK_CHECKSUM} | cut -c 1-8)
+
+DOCKER_IMAGE_NAME?=os4d/birder
+
+CMD?=run
+VERSION?=dev
+STAGE?=dist
 
 RUN_OPTIONS?=
-PIPENV_ARGS?=
+BUILD_OPTIONS?=
+
+BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
+SOURCE_COMMIT=$(shell git rev-parse --short HEAD)
+
+.PHONY: help runlocal tests
+.DEFAULT_GOAL := help
+
+
+define PRINT_HELP_PYSCRIPT
+import re, sys
+
+for line in sys.stdin:
+	match = re.match(r'^([a-zA-Z_-]+):.*?## (.*)$$', line)
+	if match:
+		target, help = match.groups()
+		print("%-20s %s" % (target, help))
+endef
+export PRINT_HELP_PYSCRIPT
+
+BROWSER := python -c "$$BROWSER_PYSCRIPT"
 
 help:
-	@echo "dev                  build dev image (based on local code)"
-	@echo "build                build production image (based on tag ${VERSION})"
-	@echo "release              release tag ${VERSION} on docker hub"
-	@echo "run                  run ${DOCKER_IMAGE} locally"
+	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
 
-build-base:
-	cd .. && docker build \
-			${BUILD_OPTIONS} \
-			--build-arg BUILD_DATE=${BUILD_DATE} \
-			-t os4d/birder-base:${BASE} \
-			-f docker/Dockerfile.base .
-	@echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
-	docker images | grep os4d/birder-base:${BASE}
-	docker push os4d/birder-base:${BASE}
-
-check:
-	@[ -z "`git status --porcelain`" ] || ( echo "Uncommited changes"; exit 1 )
-	@[ -z "`docker images -q ${DOCKER_TARGET}`" ] || ( echo "Docker image '${DOCKER_TARGET}' already exists"; exit 1 )
-	@[ -n "`git tag -l ${VERSION}`" ] || git tag -m "v${VERSION}"  ${VERSION}
-
-
-build:
-	cd .. && docker build \
-			${BUILD_OPTIONS} \
-			--build-arg BASE_IMAGE="${BASE}" \
-			--build-arg DEVELOP=${DEVELOP} \
+.build:
+	DOCKER_BUILDKIT=1 cd .. && docker build \
 			--build-arg VERSION=${VERSION} \
+			--build-arg RELEASE=${RELEASE} \
 			--build-arg BUILD_DATE=${BUILD_DATE} \
+			--build-arg GIT_SHA=${SOURCE_COMMIT} \
+			--target ${STAGE} \
+			${BUILD_OPTIONS} \
 			-t ${DOCKER_IMAGE} \
-			-f docker/${DOCKERFILE} .
-	docker images | grep ${DOCKER_IMAGE_NAME}
+			-f docker/Dockerfile .
+	docker images | grep "${DOCKER_IMAGE_NAME}" | grep ${VERSION}-${STAGE}
+	docker inspect ${DOCKER_IMAGE} | jq -r '.[0].Config.Labels'
 
+build:  ## build image
+	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:${VERSION}-${STAGE} \
+	$(MAKE) .build
+
+.build-stage:
+	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:${VERSION}-${STAGE} \
+	$(MAKE) .build
+
+base_os:
+	STAGE=base_os $(MAKE) .build-stage
+
+builder:
+	STAGE=builder $(MAKE) .build-stage
+
+tests:
+	STAGE=tests $(MAKE) .build-stage
+
+production:
+	STAGE=production $(MAKE) .build-stage
+
+dist:
+	STAGE=dist $(MAKE) .build-stage
+
+
+step1: base_os
+step2: builder
+step3: tests
+step4: production
+step5: dist
+
+build1: base_os
+build2: builder
+build3: tests
+build4: production
+build5: dist
 
 .run:
 	cd .. && docker run \
 	 		--rm \
-	 		--name=${CONTAINER_NAME} \
-			-p 5000:5000 \
-			-e "TERM=xterm-256color" \
-			-e SECRET_KEY="${SECRET_KEY}" \
-			-e MONITOR_BIRDER="web|http://localhost:5000" \
-			-e ADMINS=sax:123 \
-			-v /tmp/~birder:/var/db \
+			-p 8000:8000 \
+			-e HOPE_API_TOKEN=${HOPE_API_TOKEN} \
+			-e ADMIN_EMAIL="${ADMIN_EMAIL}" \
+			-e ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
+			-e ALLOWED_HOSTS="*" \
+			-e AUTHENTICATION_BACKENDS=\
+			-e CACHE_URL="redis://192.168.66.66:6379/0" \
+			-e CELERY_BROKER_URL=redis://192.168.66.66:6379/0 \
+			-e CSRF_COOKIE_SECURE=False \
+			-e CSRF_TRUSTED_ORIGINS=http://localhost \
+			-e DATABASE_URL="${DATABASE_URL}" \
+			-e DEBUG="1" \
+			-e DJANGO_ADMIN_URL=admin/ \
+			-e LOGGING_LEVEL="DEBUG" \
+			-e SECRET_KEY=liujhljhlkjhlkjhlkj \
+			-e SOCIAL_AUTH_REDIRECT_IS_HTTPS="False" \
+			-e SENTRY_DSN="${SENTRY_DSN}" \
+			-e SUPERUSERS="sax," \
 			${RUN_OPTIONS} \
-			${DOCKER_IMAGE} \
+			-t ${DOCKER_IMAGE} \
 			${CMD}
 
-
-release:
-	@echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
-	docker tag ${DOCKER_IMAGE_NAME}:${VERSION} ${DOCKER_IMAGE_NAME}:latest
-	docker push ${DOCKER_IMAGE_NAME}:latest
-	docker push ${DOCKER_IMAGE_NAME}:${VERSION}
-
 run:
+	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:${VERSION}-dist \
+ 	STAGE='dist' \
+ 	CMD='run' \
 	$(MAKE) .run
 
-shell:
-	CMD=/bin/sh RUN_OPTIONS=-it $(MAKE) .run
+.run-step:
+	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:${VERSION}-${STAGE} \
+	RUN_OPTIONS="-it" \
+ 	CMD='/bin/bash' \
+	$(MAKE) .run
 
 
+
+run1:
+	STAGE=base_os \
+	$(MAKE) .run-step
+
+run2:
+	STAGE=builder \
+	$(MAKE) .run-step
+
+run3:
+	STAGE=tests \
+	$(MAKE) .run-step
+
+run4:
+	STAGE=production \
+	$(MAKE) .run-step
+
+run5:
+	STAGE=dist \
+	$(MAKE) .run-step
+
+all: step1 step2 step3 step4 step5
+
+
+.shell:
+	RUN_OPTIONS=-it \
+	CMD=/bin/bash \
+	$(MAKE) .run
+
+shell1:
+	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:${VERSION}-base_os \
+	$(MAKE) .shell
+
+shell2:
+	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:${VERSION}-builder \
+	$(MAKE) .shell
+
+shell3:
+	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:${VERSION}-tests \
+	$(MAKE) .shell
+
+shell4:
+	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:${VERSION}-production \
+	$(MAKE) .shell
+
+shell5:
+	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:${VERSION}-dist \
+	$(MAKE) .shell
