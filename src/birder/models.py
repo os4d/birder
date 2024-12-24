@@ -3,6 +3,7 @@ import uuid
 from django.contrib.auth.models import AbstractUser, Group
 from django.db import models
 from django.db.models.functions.text import Lower
+from django_stubs_ext.db.models import TypedModelMeta
 from strategy_field.fields import StrategyField
 
 from birder.checks.registry import registry
@@ -34,7 +35,7 @@ class UserProjectRole(models.Model):
 
 
 class Monitor(models.Model):
-    program = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=True)
     strategy = StrategyField(registry=registry)
     configuration = models.JSONField(default=dict)
@@ -42,9 +43,9 @@ class Monitor(models.Model):
     data = models.BinaryField(blank=True, null=True, default=None)
     token = models.UUIDField(default=uuid.uuid4, editable=False)
 
-    class Meta:
+    class Meta(TypedModelMeta):
         constraints = [
-            models.UniqueConstraint("program", Lower("name"), name="unique_program_monitor_name"),
+            models.UniqueConstraint("project", Lower("name"), name="unique_project_monitor_name"),
         ]
 
     def __str__(self) -> str:

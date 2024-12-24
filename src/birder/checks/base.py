@@ -1,6 +1,5 @@
 import sys
 import traceback
-
 from typing import TYPE_CHECKING, Any
 
 from django import forms
@@ -14,6 +13,11 @@ if TYPE_CHECKING:
 class ConfigForm(forms.Form):
     DEFAULTS = {}
 
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        for k, v in self.fields.items():
+            self.DEFAULTS[k] = v.initial
+
 
 class BaseCheck:
     pragma: str
@@ -21,19 +25,19 @@ class BaseCheck:
 
     def __init__(self, owner: "Monitor") -> None:
         self.monitor: "Monitor" = owner
-        self.ready()
+        if owner.pk:
+            self.ready()
 
     def ready(self) -> None:
         pass
 
     @property
     def config(self) -> dict[str, Any]:
-        cfg = {**self.config_class.DEFAULTS}
+        cfg = {}
         cfg.update(self.monitor.configuration)
         frm = self.config_class(cfg)
         if frm.is_valid():
             return frm.cleaned_data
-        breakpoint()
         return {}
 
     def _assert(self, condition: Any, msg: str = "", *args: Any, **kwargs: Any) -> None:

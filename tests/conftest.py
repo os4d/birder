@@ -11,4 +11,5 @@ def pytest_configure(config):
     os.environ["DJANGO_SETTINGS_MODULE"] = "birder.config.settings"
     os.environ["SECRET_KEY"] = "super-secret"
     import django
+
     django.setup()

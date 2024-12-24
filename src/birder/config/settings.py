@@ -1,8 +1,10 @@
 from pathlib import Path
+
 from . import env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+PACKAGE_DIR = Path(__file__).resolve().parent.parent  # src/birder
+PROJECT_DIR = PACKAGE_DIR.parent.parent  # git project root
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -25,7 +27,14 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "admin_extra_buttons",
+    "constance",
+    "flags",
+    "social_django",
+    "tailwind",
+    "birder.theme",
     "birder",
+    *env("EXTRA_APPS"),
 ]
 
 MIDDLEWARE = [
@@ -62,16 +71,13 @@ WSGI_APPLICATION = "birder.config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
+DATABASES = {"default": env.db("DATABASE_URL")}
 
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/"
 
 AUTH_USER_MODEL = "birder.User"
 
@@ -90,6 +96,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = (
+    "social_core.backends.google.GoogleOAuth2",
+    "django.contrib.auth.backends.ModelBackend",
+)
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -112,3 +122,8 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+from .fragments.app import *  # noqa
+from .fragments.constance import *  # noqa
+from .fragments.social_auth import *  # noqa
+from .fragments.tailwind import *  # noqa
