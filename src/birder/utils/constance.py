@@ -2,7 +2,7 @@ import logging
 from typing import Any
 
 from constance import config
-from django.forms import ChoiceField, HiddenInput, Textarea, TextInput
+from django.forms import ChoiceField, HiddenInput, TextInput, Textarea
 from django.template import Context, Template
 from django.utils.safestring import SafeString, mark_safe
 

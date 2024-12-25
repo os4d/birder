@@ -40,6 +40,5 @@ CONSTANCE_CONFIG = {
         "Group to assign to any new user",
         "group_select",
     ),
-    "CACHE_TIMEOUT": (86400, "Cache Redis TTL", int),
-    "CACHE_BY_VERSION": (False, "Invalidate Cache on CW version change", bool),
+    "HARD_THRESHOLD": (86400, "System Wide Threshold", int),
 }

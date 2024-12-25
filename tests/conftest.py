@@ -1,6 +1,16 @@
 import os
 import sys
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+import pytest
+import responses
+
+if TYPE_CHECKING:
+    from django_webtest import DjangoTestApp
+    from django_webtest.pytest_plugin import MixinWithInstanceVariables
+
+    from birder.models import User
 
 here = Path(__file__).parent
 sys.path.insert(0, str(here / "../src"))
@@ -13,3 +23,17 @@ def pytest_configure(config):
     import django
 
     django.setup()
+
+
+@pytest.fixture
+def app(django_app_factory: "MixinWithInstanceVariables", user: "User") -> "DjangoTestApp":
+    django_app = django_app_factory(csrf_checks=False)
+    django_app.set_user(user)
+    django_app._user = user
+    return django_app
+
+
+@pytest.fixture
+def mocked_responses():
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+        yield rsps

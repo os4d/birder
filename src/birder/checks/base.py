@@ -1,5 +1,3 @@
-import sys
-import traceback
 from typing import TYPE_CHECKING, Any
 
 from django import forms
@@ -24,12 +22,12 @@ class BaseCheck:
     config_class: type[ConfigForm]
 
     def __init__(self, owner: "Monitor") -> None:
-        self.monitor: "Monitor" = owner
+        self.monitor: Monitor = owner
         if owner.pk:
             self.ready()
 
     def ready(self) -> None:
-        pass
+        """Post initialization hook."""
 
     @property
     def config(self) -> dict[str, Any]:
@@ -39,17 +37,6 @@ class BaseCheck:
         if frm.is_valid():
             return frm.cleaned_data
         return {}
-
-    def _assert(self, condition: Any, msg: str = "", *args: Any, **kwargs: Any) -> None:
-        if not condition:
-            if not msg:
-                try:
-                    raise AssertionError
-                except AssertionError:
-                    f = sys.exc_info()[2].tb_frame.f_back
-                stck = traceback.extract_stack(f)
-                msg = str(stck[-1][-1])
-            raise Exception(msg)
 
     def check(self) -> bool:
         """Perform the check."""

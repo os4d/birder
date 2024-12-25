@@ -19,6 +19,7 @@ exclude_lines =
     def __repr__
     if self\.debug
     # Don't complain if tests don't hit defensive assertion code:
+    ...
     raise AssertionError
     raise NotImplementedError
     except ImportError
