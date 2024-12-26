@@ -37,3 +37,24 @@ def app(django_app_factory: "MixinWithInstanceVariables", user: "User") -> "Djan
 def mocked_responses():
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         yield rsps
+
+
+@pytest.fixture
+def project(db):
+    from testutils.factories import ProjectFactory
+
+    return ProjectFactory()
+
+
+@pytest.fixture
+def monitor(project):
+    from testutils.factories import MonitorFactory
+
+    return MonitorFactory(project=project)
+
+
+@pytest.fixture
+def user_role(project):
+    from testutils.factories import UserRoleFactory
+
+    return UserRoleFactory(project=project)

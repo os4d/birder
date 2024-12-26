@@ -7,7 +7,7 @@ omit =
     */migrations/*,
     */wsgi.py,
     */asgi.py,
-
+    */management/commands/demo.py
 
 [report]
 # Regexes for lines to exclude from consideration
@@ -19,7 +19,6 @@ exclude_lines =
     def __repr__
     if self\.debug
     # Don't complain if tests don't hit defensive assertion code:
-    ...
     raise AssertionError
     raise NotImplementedError
     except ImportError

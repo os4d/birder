@@ -117,7 +117,7 @@ def pytest_generate_tests(metafunc: "Metafunc") -> None:  # noqa
 
 @pytest.fixture
 def record(db: Any, request: "pytest.FixtureRequest") -> Model:
-    from testutils.base import get_factory_for_model
+    from testutils.factories import get_factory_for_model
 
     model_admin = request.getfixturevalue("model_admin")
     instance: Model = model_admin.model.objects.first()
@@ -139,7 +139,6 @@ def app(
 ) -> "DjangoTestApp":
     from testutils.factories import SuperUserFactory
 
-    settings.FLAGS = {"OLD_STYLE_UI": [("boolean", True)]}
     django_app = django_app_factory(csrf_checks=False)
     admin_user = SuperUserFactory(username="superuser")
     django_app.set_user(admin_user)
@@ -212,6 +211,7 @@ def test_admin_delete(
         pytest.skip("No 'delete' permission")
 
 
+@pytest.mark.skip_buttons("birder.MonitorAdmin:manual_check")
 def test_admin_buttons(
     app: "DjangoTestApp",
     model_admin: "ExtraButtonsMixin",

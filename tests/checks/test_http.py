@@ -2,6 +2,7 @@ from unittest.mock import Mock
 from urllib.parse import ParseResult
 
 import pytest
+from django.core.exceptions import ValidationError
 
 from birder.checks.http import HttpCheck, HttpConfig
 
@@ -54,3 +55,17 @@ def test_http_config_error():
     c: HttpConfig = HttpCheck.config_class({"url": "http://www.google.com", "timeout": 10, "status_success": "200,abc"})
     assert not c.is_valid()
     assert c.errors == {"status_success": ["Enter a whole number."]}
+
+
+def test_http_config_from_uri():
+    uri = "http://username:password@localhost/path/?timeout=4"
+    assert HttpCheck.config_from_uri(uri) == {
+        "url": "http://localhost/path/",
+        "username": "username",
+        "password": "password",
+        "match": "",
+        "status_success": [200],
+        "timeout": 4,
+    }
+    with pytest.raises(ValidationError):
+        assert HttpCheck.config_from_uri("http://")

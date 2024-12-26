@@ -1,15 +1,9 @@
 from typing import TYPE_CHECKING, Any
 
 import factory.fuzzy
-from django.conf import settings
-from django.contrib.auth.models import Group
 from factory.django import DjangoModelFactory
-from strategy_field.utils import fqn
 
-from birder.checks import HttpCheck
-from birder.models import Monitor, Project, User
-
-from .base import AutoRegisterModelFactory
+from birder.models import User
 
 if TYPE_CHECKING:
     from django.db.models import Model
@@ -21,7 +15,7 @@ class UserFactory(DjangoModelFactory):
     password = "password"  # noqa
 
     class Meta:
-        model = settings.AUTH_USER_MODEL
+        model = User
 
     @classmethod
     def _create(cls, model_class: "Model", *args: Any, **kwargs: Any) -> "User":
@@ -39,25 +33,3 @@ class SuperUserFactory(UserFactory):
     is_superuser = True
     is_staff = True
     is_active = True
-
-
-class GroupFactory(AutoRegisterModelFactory):
-    name = factory.Sequence(lambda n: "Group-%03d" % n)
-
-    class Meta:
-        model = Group
-        django_get_or_create = ("name",)
-
-
-class ProjectFactory(AutoRegisterModelFactory):
-    class Meta:
-        model = Project
-
-
-class MonitorFactory(AutoRegisterModelFactory):
-    project = factory.SubFactory(ProjectFactory)
-    strategy = fqn(HttpCheck)
-    configuration = {"timeout": 10, "url": "http://example.com"}
-
-    class Meta:
-        model = Monitor

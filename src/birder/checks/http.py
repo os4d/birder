@@ -36,11 +36,23 @@ class HttpConfig(ConfigForm):
     timeout = forms.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)], initial=10)
     match = forms.CharField(required=False)
     status_success = SeparatedValuesField(required=True, initial="200")
+    username = forms.CharField(required=False)
+    password = forms.CharField(required=False, widget=forms.PasswordInput)
 
 
 class HttpCheck(BaseCheck):
-    icon = "http.png"
+    icon = "http.svg"
+    pragma = ["http", "https"]
     config_class = HttpConfig
+
+    @classmethod
+    def config_from_uri(cls, uri: str) -> dict[str, Any]:
+        cfg = cls.parse_uri(uri)
+        cfg["url"] = cfg["address"]
+        frm = cls.config_class(cfg)
+        if frm.is_valid():
+            return frm.cleaned_data
+        raise forms.ValidationError(frm.errors)
 
     def ready(self) -> None:
         if self.config:

@@ -31,6 +31,8 @@ INSTALLED_APPS = [
     "constance",
     "flags",
     "social_django",
+    "django_celery_beat",
+    "django_celery_results",
     "tailwind",
     "birder.theme",
     "birder",
@@ -72,7 +74,14 @@ WSGI_APPLICATION = "birder.config.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {"default": env.db("DATABASE_URL")}
-
+CACHE_URL = env("CACHE_URL")
+CACHES = {
+    "default": {
+        "BACKEND": "redis_lock.django_cache.RedisCache",
+        "LOCATION": CACHE_URL,
+        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -124,6 +133,7 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 from .fragments.app import *  # noqa
+from .fragments.celery import *  # noqa
 from .fragments.constance import *  # noqa
 from .fragments.social_auth import *  # noqa
 from .fragments.tailwind import *  # noqa

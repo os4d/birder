@@ -27,14 +27,13 @@ class MonitorAdmin(ExtraButtonsMixin, admin.ModelAdmin[Monitor]):
             return ["name", "strategy", "project"]
         return ["name", "strategy", "project"]
 
-    @button(label="check")
+    @button(label="Check")
     def manual_check(self, request: HttpRequest, pk: str) -> HttpResponse:
         self.get_common_context(request, pk)
         monitor: Monitor = self.object
-        try:
-            monitor.strategy.check()
+        if monitor.trigger():
             self.message_user(request, "Monitor checked", level=messages.SUCCESS)
-        except AssertionError:
+        else:
             self.message_user(request, "Monitor failed", level=messages.ERROR)
 
     @button()

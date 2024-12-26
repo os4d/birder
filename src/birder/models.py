@@ -25,9 +25,9 @@ class Project(models.Model):
         return self.name
 
 
-class UserProjectRole(models.Model):
+class UserRole(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    program = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     role = models.ForeignKey(Group, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
@@ -41,7 +41,11 @@ class Monitor(models.Model):
     configuration = models.JSONField(default=dict)
 
     data = models.BinaryField(blank=True, null=True, default=None)
+    data_file = models.FileField(blank=True, null=True, default=None)
     token = models.UUIDField(default=uuid.uuid4, editable=False)
+
+    active = models.BooleanField(default=True)
+    grace_period = models.PositiveIntegerField(default=5)
 
     class Meta(TypedModelMeta):
         constraints = [
@@ -51,8 +55,14 @@ class Monitor(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    @classmethod
+    def from_conn_string(cls, uri: str) -> "Monitor":
+        checker = registry.from_conn_string(uri)
+        config = checker.config_from_uri(uri)
+        return Monitor(strategy=checker, configuration=config)
+
     def trigger(self) -> None:
-        pass
+        return self.strategy.check()
 
     def regenerate_token(self, save: bool = True) -> None:
         self.token = uuid.uuid4()

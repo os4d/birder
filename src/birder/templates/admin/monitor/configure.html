@@ -1,9 +1,11 @@
 {% extends "admin_extra_buttons/action_page.html" %}
 
 {% block action-content %}
-    <form method="post">
+    <form method="post" id="config_form">
         {% csrf_token %}
-        {{ form }}
+        <table>
+        {{ form.as_table }}
+        </table>
         <input type="submit">
     </form>
 {% endblock action-content %}
