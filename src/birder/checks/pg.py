@@ -1,3 +1,5 @@
+from typing import Any
+
 import psycopg2
 from django import forms
 from django.core.validators import MinValueValidator
@@ -19,6 +21,11 @@ class PostgresCheck(BaseCheck):
     icon = "postgres.svg"
     pragma = ["postgres", "postgis"]
     config_class = PostgresConfig
+
+    @classmethod
+    def clean_config(cls, cfg: dict[str, Any]) -> dict[str, Any]:
+        cfg["database"] = cfg.get("path")
+        return cfg
 
     def check(self, raise_error: bool = False) -> bool:
         try:

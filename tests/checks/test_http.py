@@ -12,6 +12,9 @@ def test_http():
     c = HttpCheck(Mock(configuration={"url": "http://www.google.com/?a=1", "timeout": 10, "status_success": "200"}))
     assert c.config
     assert c.config["status_success"] == [200]
+    c = HttpCheck(Mock(configuration={}))
+    with pytest.raises(ValidationError):
+        assert c.config
 
 
 def test_http_check_success(mocked_responses):
@@ -23,7 +26,10 @@ def test_http_check_success(mocked_responses):
 def test_http_check_fail(monkeypatch, mocked_responses):
     mocked_responses.add("GET", "http://www.google.com/", status=404)
 
-    c = HttpCheck(Mock(configuration={"url": "http://a.b.xxx", "timeout": 10, "status_success": "200"}))
+    c = HttpCheck(Mock(configuration={"url": "http://www.google.com", "timeout": 10, "status_success": "200"}))
+    assert not c.check()
+
+    c = HttpCheck(Mock(configuration={"url": "http://a.b.xx", "timeout": 10, "status_success": "200"}))
     assert not c.check()
 
     monkeypatch.setattr("birder.checks.http.requests.get", Mock(side_effect=requests.exceptions.ConnectionError))
@@ -61,17 +67,3 @@ def test_http_config_error():
     c: HttpConfig = HttpCheck.config_class({"url": "http://www.google.com", "timeout": 10, "status_success": "200,abc"})
     assert not c.is_valid()
     assert c.errors == {"status_success": ["Enter a whole number."]}
-
-
-def test_http_config_from_uri():
-    uri = "http://username:password@localhost/path/?timeout=4"
-    assert HttpCheck.config_from_uri(uri) == {
-        "url": "http://localhost/path/",
-        "username": "username",
-        "password": "password",
-        "match": "",
-        "status_success": [200],
-        "timeout": 4,
-    }
-    with pytest.raises(ValidationError):
-        assert HttpCheck.config_from_uri("http://")

@@ -52,3 +52,12 @@ def test_monitor_configure(app: "DjangoTestApp", mocked_responses, monitor: Moni
     res.forms["config_form"]["url"] = "http://example.com"
     res = res.forms["config_form"].submit()
     assert res.status_code == 302
+
+
+def test_actions(app: "DjangoTestApp", mocked_responses, monitor: Monitor) -> None:
+    url = reverse("admin:birder_monitor_changelist")
+    res = app.get(url)
+    res.forms["changelist-form"]["action"] = "check_selected"
+    res.forms["changelist-form"]["_selected_action"] = True
+    res = res.forms["changelist-form"].submit()
+    assert res.status_code == 302

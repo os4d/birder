@@ -15,27 +15,23 @@ class Command(BaseCommand):
     requires_system_checks = ()
 
     def handle(self, *args: Any, **options: Any) -> None:
+        Monitor.objects.all().delete()
         demo, __ = Project.objects.get_or_create(name="Demo")
         for url in [
-            "https://www.google.com",
-            "https://github.com",
-            "https://os4d.org",
-            "http://example.com",
-            "https://gitlab.com/",
-            "https://pypi.org/",
-            "https://www.djangoproject.com/",
-            "https://mail.google.com/",
-            "redis://localhost",
-            "postgres://localhost/demo",
-            "ftp://localhost",
-            "mysql://localhost/demo",
-            "https+json://json.org",
-            "ssh://localhost",
+            "https://google.com",
+            "redis://localhost:26379",
+            "postgres://postgres:@localhost/postgres",
+            "ftp://user:password@localhost:2221",
+            "mysql://root:password@localhost:23306",
+            "https+json://json.org:28000",
+            "ssh://user:password@localhost:2222",
+            "memcache://localhost:21121",
         ]:
             checker, config = registry.from_conn_string(url)
-            Monitor.objects.get_or_create(
+            m, __ = Monitor.objects.get_or_create(
                 project=demo,
                 name=url,
                 strategy=fqn(checker),
                 defaults={"strategy": fqn(checker), "configuration": config},
             )
+            m.trigger()

@@ -21,14 +21,10 @@ class JsonCheck(HttpCheck):
     config_class = JsonConfig
 
     @classmethod
-    def config_from_uri(cls, uri: str) -> dict[str, Any]:
-        uri = uri.replace("+json://", "://")
-        cfg = cls.parse_uri(uri)
-        cfg["url"] = cfg["address"]
-        frm = cls.config_class(cfg)
-        if frm.is_valid():
-            return frm.cleaned_data
-        raise forms.ValidationError(frm.errors)
+    def clean_config(cls, cfg: dict[str, Any]) -> dict[str, Any]:
+        if not cfg.get("url"):
+            cfg["url"] = cfg.get("address", "").replace("+json://", "://")
+        return cfg
 
     def check(self, raise_error: bool = False) -> bool:
         try:

@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractUser, Group
 from django.core.cache import cache
 from django.db import models
 from django.db.models.functions.text import Lower
+from django.utils import timezone
 from django_stubs_ext.db.models import TypedModelMeta
 from strategy_field.fields import StrategyField
 
@@ -63,12 +64,17 @@ class Monitor(models.Model):
 
     def trigger(self) -> bool:
         result = self.strategy.check()
-        cache.set(self.pk, result)
+        cache.set(f"monitor:{self.pk}", result, timeout=86400)
+        cache.set(f"monitor:check{self.pk}", timezone.now().strftime("%Y %b %d %H:%M"), timeout=86400)
         return result
 
     @property
     def status(self) -> bool:
-        return cache.get(self.pk)
+        return cache.get(f"monitor:{self.pk}")
+
+    @property
+    def last_check(self) -> bool:
+        return cache.get(f"monitor:check{self.pk}")
 
     def regenerate_token(self, save: bool = True) -> None:
         self.token = uuid.uuid4()

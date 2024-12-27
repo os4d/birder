@@ -23,7 +23,17 @@ class ProjectAdmin(admin.ModelAdmin[Project]):
 @admin.register(Monitor)
 class MonitorAdmin(ExtraButtonsMixin, admin.ModelAdmin[Monitor]):
     search_fields = ("name",)
+    list_display = ("name", "status", "checker")
+    list_filter = ("project",)
     actions = ["check_selected"]
+
+    @admin.display(boolean=True)
+    def status(self, obj: Monitor) -> bool:
+        return obj.status
+
+    @admin.display(ordering="strategy")
+    def checker(self, obj: Monitor) -> bool:
+        return obj.strategy.__class__.__name__
 
     def check_selected(self, request: HttpRequest, queryset: QuerySet[Monitor]) -> None:
         for m in queryset.all():
@@ -51,8 +61,15 @@ class MonitorAdmin(ExtraButtonsMixin, admin.ModelAdmin[Monitor]):
             form = monitor.strategy.config_class(request.POST, initial=monitor.configuration)
             if form.is_valid():
                 monitor.configuration = form.cleaned_data
-                monitor.save()
-                return HttpResponseRedirect("..")
+                if "check" in request.POST:
+                    if not monitor.strategy.check():
+                        self.message_user(request, "Check failed", level=messages.ERROR)
+                    else:
+                        monitor.save()
+                        return HttpResponseRedirect("..")
+                else:
+                    monitor.save()
+                    return HttpResponseRedirect("..")
         else:
             form = monitor.strategy.config_class(initial=monitor.configuration)
         ctx["form"] = form

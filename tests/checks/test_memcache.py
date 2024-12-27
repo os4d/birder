@@ -3,16 +3,16 @@ from unittest.mock import Mock, patch
 import pytest
 import redis
 
-from birder.checks.redis import RedisCheck
+from birder.checks.memcache import MemCacheCheck
 from birder.exceptions import CheckError
 
 
-def test_redis():
-    c = RedisCheck(
+def test_memcache():
+    c = MemCacheCheck(
         Mock(
             configuration={
                 "host": "localhost",
-                "port": 6379,
+                "port": 11211,
                 "socket_timeout": 2,
                 "socket_connect_timeout": 2,
                 "password": "",
@@ -20,17 +20,17 @@ def test_redis():
         )
     )
     assert c.config
-    assert c.config["port"] == 6379
+    assert c.config["port"] == 11211
 
 
-def test_redis_check_success():
-    c = RedisCheck(configuration={"host": "localhost"})
-    with patch("redis.Redis.ping"):
+def test_memcache_check_success():
+    c = MemCacheCheck(configuration={"host": "localhost"})
+    with patch("birder.checks.memcache.MemCacheClient", Mock()):
         assert c.check()
 
 
-def test_redis_check_fail():
-    c = RedisCheck(configuration={"host": "localhost"})
+def test_memcache_check_fail():
+    c = MemCacheCheck(configuration={"host": "localhost"})
     with patch("redis.Redis.ping", side_effect=redis.ConnectionError):
         assert not c.check()
         with pytest.raises(CheckError):

@@ -3,6 +3,7 @@ from django import forms
 from django.core.validators import MinValueValidator
 
 from ..exceptions import CheckError
+from ..utils.constance import WriteOnlyInput
 from .base import BaseCheck, ConfigForm
 
 
@@ -11,7 +12,7 @@ class MySQLConfig(ConfigForm):
     port = forms.IntegerField(validators=[MinValueValidator(1)], initial=3306)
     database = forms.CharField(required=False)
     user = forms.CharField(required=False)
-    password = forms.CharField(required=False, widget=forms.PasswordInput)
+    password = forms.CharField(required=False, widget=WriteOnlyInput)
     connect_timeout = forms.IntegerField(initial=2)
 
 

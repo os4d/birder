@@ -3,12 +3,17 @@
     <div class="" id="monitor-grid">
         {% for monitor in monitors %}
             <a class="cursor-pointer h-full" href="{% url "monitor-detail" monitor.pk %}">
-                <div class="monitor-panel">
-                    <div class="flex h-5">
+                <div class="monitor-panel grid grid-cols-1">
+                    <div class="flex h-5 ">
                         <div class="flex-shrink"><img class="icon" src="{% icon monitor.strategy.icon %}"></div>
                         <div class="flex-grow w-max-2/3 overflow-clip pl-3">{{ monitor.name|truncatechars:"20" }}
                         </div>
-                        <img class="status" src="{% status monitor.status %}">
+                        <img class="status status-{{ monitor.status }}" src="{% status monitor.status %}">
+                    </div>
+                    <div class=" content-end text-xs ">
+                        <div class="float-right">
+                            {{ monitor.last_check }}
+                        </div>
                     </div>
                 </div>
             </a>

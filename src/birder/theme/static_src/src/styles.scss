@@ -16,15 +16,20 @@ body {
       @apply w-8 h-8;
       @apply dark:text-white;
     }
+    .status {
+      @apply w-10 h-10;
+    }
   }
 }
 .dark{
   .icon{
     filter: invert(99%) sepia(65%) saturate(0%) hue-rotate(200deg) brightness(110%) contrast(100%);
   }
-  .status{
+  .status.status-True{
     filter: invert(69%) sepia(50%) saturate(7395%) hue-rotate(88deg) brightness(124%) contrast(122%);
-
+  }
+  .status.status-False{
+    filter: invert(18%) sepia(95%) saturate(7006%) hue-rotate(360deg) brightness(97%) contrast(116%);
   }
 }
 

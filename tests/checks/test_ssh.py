@@ -26,7 +26,7 @@ def test_check_success(monkeypatch):
 
 def test_check_fail(monkeypatch):
     monkeypatch.setattr("birder.checks.ssh.pxssh.pxssh", Mock(side_effect=pexpect.pxssh.ExceptionPxssh("")))
-    c = SSHCheck(configuration={"server": "localhost", "database": "test"})
+    c = SSHCheck(configuration={"server": "localhost"})
     assert not c.check()
     with pytest.raises(CheckError):
         assert c.check(True)

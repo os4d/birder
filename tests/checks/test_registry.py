@@ -17,7 +17,7 @@ def test_checks(registry):
 
 
 def test_from_conn_string(registry):
-    checker, __ = registry.from_conn_string("redis://localhost:6379/0")
+    checker = registry.checker_from_url("redis://localhost:6379/0")
     assert checker == RedisCheck
     with pytest.raises(ValueError, match="Unknown protocol"):
-        registry.from_conn_string("miss://localhost:6379/0")
+        registry.checker_from_url("miss://localhost:6379/0")

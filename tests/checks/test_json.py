@@ -2,7 +2,6 @@ from unittest.mock import Mock
 
 import pytest
 import requests
-from django.core.exceptions import ValidationError
 
 from birder.checks.json import JsonCheck, JsonConfig
 from birder.exceptions import CheckError
@@ -17,7 +16,10 @@ def test_json_check_success(mocked_responses):
 def test_json_check_fail(monkeypatch, mocked_responses):
     mocked_responses.add("GET", "http://www.google.com/", json={}, status=404)
 
-    c = JsonCheck(Mock(configuration={"url": "http://a.b.xxx", "timeout": 10, "status_success": "200"}))
+    c = JsonCheck(Mock(configuration={"url": "http://www.google.com", "timeout": 2, "status_success": "200"}))
+    assert not c.check()
+
+    c = JsonCheck(Mock(configuration={"url": "http://a.b.xx", "timeout": 2, "status_success": "200"}))
     assert not c.check()
 
     monkeypatch.setattr("birder.checks.http.requests.get", Mock(side_effect=requests.exceptions.ConnectionError))
@@ -51,17 +53,3 @@ def test_json_config_error():
     c: JsonConfig = JsonCheck.config_class({"url": "http://www.google.com", "timeout": 10, "status_success": "200,abc"})
     assert not c.is_valid()
     assert c.errors == {"status_success": ["Enter a whole number."]}
-
-
-def test_json_config_from_uri():
-    uri = "http://username:password@localhost/path/?timeout=4"
-    assert JsonCheck.config_from_uri(uri) == {
-        "url": "http://localhost/path/",
-        "username": "username",
-        "password": "password",
-        "match": "",
-        "status_success": [200],
-        "timeout": 4,
-    }
-    with pytest.raises(ValidationError):
-        assert JsonCheck.config_from_uri("http+json://")

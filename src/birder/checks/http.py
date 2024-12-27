@@ -17,8 +17,6 @@ class SeparatedValuesField(forms.Field):
         self.separator = separator
 
     def clean(self, data: dict[str, Any]) -> list[int | str]:
-        if not data:
-            raise forms.ValidationError("Enter at least one value.")
         if isinstance(data, str):
             self.value_list = data.split(self.separator)
         else:
@@ -49,13 +47,10 @@ class HttpCheck(BaseCheck):
     config_class = HttpConfig
 
     @classmethod
-    def config_from_uri(cls, uri: str) -> dict[str, Any]:
-        cfg = cls.parse_uri(uri)
-        cfg["url"] = cfg["address"]
-        frm = cls.config_class(cfg)
-        if frm.is_valid():
-            return frm.cleaned_data
-        raise forms.ValidationError(frm.errors)
+    def clean_config(cls, cfg: dict[str, Any]) -> dict[str, Any]:
+        if not cfg.get("url"):
+            cfg["url"] = cfg.get("address", "")
+        return cfg
 
     def check(self, raise_error: bool = False) -> bool:
         try:
