@@ -29,6 +29,7 @@ class JsonCheck(HttpCheck):
         if frm.is_valid():
             return frm.cleaned_data
         raise forms.ValidationError(frm.errors)
+
     def check(self, raise_error: bool = False) -> bool:
         try:
             timeout = self.config["timeout"]

@@ -27,7 +27,9 @@ class CheckRegistry(Registry):
         try:
             checker: BaseCheck = self.protocols[o.scheme]
         except KeyError as e:
-            raise ValueError(f"{uri} - Unknown protocol '{o.scheme}'. Valid protocols are {list(self.protocols.keys())}") from e
+            raise ValueError(
+                f"{uri} - Unknown protocol '{o.scheme}'. Valid protocols are {list(self.protocols.keys())}"
+            ) from e
         return checker, checker.config_from_uri(uri)
 
 

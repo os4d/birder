@@ -28,9 +28,7 @@ def test_json_check_fail(monkeypatch, mocked_responses):
 @pytest.mark.parametrize(("match", "result"), [("a==`1`", True), ("--", False)])
 def test_json_match(mocked_responses, match, result):
     mocked_responses.add("GET", "http://www.google.com/", json={"a": 1}, status=200)
-    c = JsonCheck(
-            configuration={"url": "http://www.google.com/?a=1", "match": match}
-    )
+    c = JsonCheck(configuration={"url": "http://www.google.com/?a=1", "match": match})
     assert c.check() is result
 
 

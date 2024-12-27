@@ -1,4 +1,4 @@
-from birder.tasks import queue_trigger, process
+from birder.tasks import process, queue_trigger
 
 
 def test_task_execute(monitor):

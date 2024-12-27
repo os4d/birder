@@ -1,4 +1,5 @@
 import uuid
+from typing import TYPE_CHECKING
 
 from django.contrib.auth.models import AbstractUser, Group
 from django.core.cache import cache
@@ -8,8 +9,6 @@ from django_stubs_ext.db.models import TypedModelMeta
 from strategy_field.fields import StrategyField
 
 from birder.checks.registry import registry
-
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from birder.checks.base import BaseCheck

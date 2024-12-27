@@ -1,12 +1,11 @@
 from unittest.mock import Mock
 
-import psycopg2
+import pexpect.pxssh
 import pytest
 
-from birder.checks import PostgresCheck
 from birder.checks.ssh import SSHCheck
 from birder.exceptions import CheckError
-import pexpect.pxssh
+
 
 def test_ssh():
     c = SSHCheck(configuration={"server": "localhost", "username": "test"})

@@ -9,6 +9,7 @@ from django.shortcuts import render
 from .models import Monitor, Project, User
 from .tasks import queue_trigger
 
+
 @admin.register(User)
 class UserAdmin(_UserAdmin[User]):
     search_fields = ("username",)
