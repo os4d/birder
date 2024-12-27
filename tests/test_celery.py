@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from birder.config.celery import init_sentry
-from birder.tasks import execute
+from birder.tasks import queue_trigger
 
 if TYPE_CHECKING:
     from celery import Celery
@@ -38,5 +38,5 @@ def test_celery_init_sentry() -> None:
 def test_tasks_success(
     transactional_db, celery_app: "Celery", celery_worker: "CeleryTestWorker", monitor: "Monitor"
 ) -> None:
-    res = execute.delay(monitor.pk)
+    res = queue_trigger.delay(monitor.pk)
     assert res
