@@ -1,12 +1,18 @@
 import uuid
 
 from django.contrib.auth.models import AbstractUser, Group
+from django.core.cache import cache
 from django.db import models
 from django.db.models.functions.text import Lower
 from django_stubs_ext.db.models import TypedModelMeta
 from strategy_field.fields import StrategyField
 
 from birder.checks.registry import registry
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from birder.checks.base import BaseCheck
 
 
 class User(AbstractUser):
@@ -35,6 +41,7 @@ class UserRole(models.Model):
 
 
 class Monitor(models.Model):
+    strategy: "BaseCheck"
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=True)
     strategy = StrategyField(registry=registry)
@@ -55,14 +62,14 @@ class Monitor(models.Model):
     def __str__(self) -> str:
         return self.name
 
-    @classmethod
-    def from_conn_string(cls, uri: str) -> "Monitor":
-        checker = registry.from_conn_string(uri)
-        config = checker.config_from_uri(uri)
-        return Monitor(strategy=checker, configuration=config)
+    def trigger(self) -> bool:
+        result = self.strategy.check()
+        cache.set(self.pk, result)
+        return result
 
-    def trigger(self) -> None:
-        return self.strategy.check()
+    @property
+    def status(self) -> bool:
+        return cache.get(self.pk)
 
     def regenerate_token(self, save: bool = True) -> None:
         self.token = uuid.uuid4()

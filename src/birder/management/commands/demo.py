@@ -4,7 +4,7 @@ from typing import Any
 from django.core.management import BaseCommand
 from strategy_field.utils import fqn
 
-from birder.checks import HttpCheck
+from birder.checks.registry import registry
 from birder.models import Monitor, Project
 
 logger = logging.getLogger(__name__)
@@ -26,15 +26,16 @@ class Command(BaseCommand):
             "https://www.djangoproject.com/",
             "https://mail.google.com/",
             "redis://localhost",
+            "postgres://localhost/demo",
+            "ftp://localhost",
+            "mysql://localhost/demo",
+            "https+json://json.org",
+            "ssh://localhost",
         ]:
+            checker, config = registry.from_conn_string(url)
             Monitor.objects.get_or_create(
                 project=demo,
                 name=url,
-                strategy=fqn(HttpCheck),
-                configuration={
-                    "url": "http://www.google.com/?a=1",
-                    "match": "",
-                    "timeout": 10,
-                    "status_success": "200",
-                },
+                strategy=fqn(checker),
+                defaults={"strategy": fqn(checker), "configuration": config},
             )

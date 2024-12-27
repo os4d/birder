@@ -2,11 +2,12 @@ from admin_extra_buttons.decorators import button
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin as _UserAdmin
+from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 
-from birder.models import Monitor, Project, User
-
+from .models import Monitor, Project, User
+from .tasks import queue_trigger
 
 @admin.register(User)
 class UserAdmin(_UserAdmin[User]):
@@ -21,6 +22,11 @@ class ProjectAdmin(admin.ModelAdmin[Project]):
 @admin.register(Monitor)
 class MonitorAdmin(ExtraButtonsMixin, admin.ModelAdmin[Monitor]):
     search_fields = ("name",)
+    actions = ["check_selected"]
+
+    def check_selected(self, request: HttpRequest, queryset: QuerySet[Monitor]) -> None:
+        for m in queryset.all():
+            queue_trigger.delay(m.id)
 
     def get_fields(self, request: HttpRequest, obj: Monitor | None = None) -> list[str]:
         if not obj:

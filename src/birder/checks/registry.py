@@ -1,9 +1,13 @@
 from functools import cached_property
+from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
 from strategy_field.registry import Registry
 
 from .base import BaseCheck
+
+if TYPE_CHECKING:
+    from birder.types import Json
 
 
 class CheckRegistry(Registry):
@@ -18,13 +22,13 @@ class CheckRegistry(Registry):
                 self._protocols[p.lower()] = entry
         return self._protocols
 
-    def from_conn_string(self, uri: str) -> BaseCheck:
+    def from_conn_string(self, uri: str) -> tuple[BaseCheck, "Json"]:
         o = urlparse(uri.strip())
         try:
-            t: BaseCheck = self.protocols[o.scheme]
-            return t
+            checker: BaseCheck = self.protocols[o.scheme]
         except KeyError as e:
-            raise ValueError(f"{uri} - Unknown protocol '{o.scheme}': {list(self.protocols.keys())}") from e
+            raise ValueError(f"{uri} - Unknown protocol '{o.scheme}'. Valid protocols are {list(self.protocols.keys())}") from e
+        return checker, checker.config_from_uri(uri)
 
 
 registry = CheckRegistry(BaseCheck)

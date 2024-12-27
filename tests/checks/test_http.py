@@ -1,28 +1,34 @@
 from unittest.mock import Mock
-from urllib.parse import ParseResult
 
 import pytest
+import requests
 from django.core.exceptions import ValidationError
 
 from birder.checks.http import HttpCheck, HttpConfig
+from birder.exceptions import CheckError
 
 
 def test_http():
     c = HttpCheck(Mock(configuration={"url": "http://www.google.com/?a=1", "timeout": 10, "status_success": "200"}))
     assert c.config
-    assert c.conn == ParseResult(scheme="http", netloc="www.google.com", path="/", params="", query="a=1", fragment="")
-    assert c.query == {"a": ["1"]}
     assert c.config["status_success"] == [200]
 
 
-def test_http_check(mocked_responses):
+def test_http_check_success(mocked_responses):
     mocked_responses.add("GET", "http://www.google.com/", status=200)
     c = HttpCheck(Mock(configuration={"url": "http://www.google.com/?a=1", "timeout": 10, "status_success": "200"}))
     assert c.check()
+
+
+def test_http_check_fail(monkeypatch, mocked_responses):
     mocked_responses.add("GET", "http://www.google.com/", status=404)
+
+    c = HttpCheck(Mock(configuration={"url": "http://a.b.xxx", "timeout": 10, "status_success": "200"}))
     assert not c.check()
-    c = HttpCheck(Mock(configuration={}))
-    assert not c.check()
+
+    monkeypatch.setattr("birder.checks.http.requests.get", Mock(side_effect=requests.exceptions.ConnectionError))
+    with pytest.raises(CheckError):
+        c.check(True)
 
 
 @pytest.mark.parametrize(("match", "result"), [("test", True), ("--", False)])

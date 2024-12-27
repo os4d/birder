@@ -41,6 +41,8 @@ dependencies = [
     "sentry-sdk>=2.19.2",
     "social-auth-app-django>=5.4.2",
     "python-redis-lock[django]>=4.0.0",
+    "pexpect>=4.9.0",
+    "jmespath>=1.0.1",
 ]
 [tool.mypy]
 mypy_path = "$MYPY_CONFIG_FILE_DIR/stubs"

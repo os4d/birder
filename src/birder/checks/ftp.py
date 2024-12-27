@@ -31,22 +31,19 @@ class SeparatedValuesField(forms.Field):
         return self.separator.join(map(str, value))
 
 
-class BaseHttpConfig(ConfigForm):
+class FtpConfig(ConfigForm):
     url = forms.URLField(validators=[URLValidator()])
-    timeout = forms.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)], initial=2)
+    timeout = forms.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)], initial=10)
+    match = forms.CharField(required=False)
     status_success = SeparatedValuesField(required=True, initial="200")
     username = forms.CharField(required=False)
     password = forms.CharField(required=False, widget=forms.PasswordInput)
 
 
-class HttpConfig(BaseHttpConfig):
-    match = forms.CharField(required=False)
-
-
-class HttpCheck(BaseCheck):
-    icon = "http.svg"
-    pragma = ["http", "https"]
-    config_class = HttpConfig
+class FtpCheck(BaseCheck):
+    icon = "ftp.svg"
+    pragma = ["ftp", "ftps"]
+    config_class = FtpConfig
 
     @classmethod
     def config_from_uri(cls, uri: str) -> dict[str, Any]:
@@ -67,5 +64,5 @@ class HttpCheck(BaseCheck):
             return not (match and str(match) not in str(res.content))
         except (forms.ValidationError, requests.exceptions.RequestException) as e:
             if raise_error:
-                raise CheckError("HTTP check failed") from e
+                raise CheckError("FTP check failed") from e
         return False

@@ -3,11 +3,11 @@ from birder.models import Monitor
 
 
 @app.task
-def execute(pk: str) -> None:
+def queue_trigger(pk: str) -> None:
     Monitor.objects.get(active=True, pk=pk).trigger()
 
 
 @app.task
 def process() -> None:
     for m in Monitor.objects.filter(active=True):
-        execute.delay(m.pk)
+        queue_trigger.delay(m.pk)

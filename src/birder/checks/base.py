@@ -3,11 +3,11 @@ from urllib.parse import parse_qsl, urlparse
 
 from django import forms
 from django.forms.forms import DeclarativeFieldsMetaclass
+from django.utils.functional import SimpleLazyObject
 
 if TYPE_CHECKING:
     from birder.models import Monitor
-
-    Json: type = dict[str, "Json"] | list["Json"] | str | int | float | bool | None
+    from birder.types import Json
 
 
 class DefaultsMetaclass(DeclarativeFieldsMetaclass):
@@ -28,10 +28,14 @@ class BaseCheck:
     pragma: list[str]
     config_class: type[ConfigForm]
 
-    def __init__(self, owner: "Monitor") -> None:
+    def __init__(self, owner: "Monitor|None" = None, configuration: "Json | None" = None) -> None:
+        if owner:
+            self._configuration = SimpleLazyObject(lambda: owner.configuration)
+        elif configuration:
+            self._configuration = configuration
+        else:
+            raise ValueError("Must specify a configuration")  # pragma: no cover
         self.monitor: Monitor = owner
-        if owner.pk:
-            self.ready()
 
     @classmethod
     def parse_uri(cls, uri: str) -> dict[str, str | Any]:
@@ -57,17 +61,14 @@ class BaseCheck:
             return frm.cleaned_data
         raise forms.ValidationError(frm.errors)
 
-    def ready(self) -> None:
-        """Post initialization hook."""
-
     @property
     def config(self) -> dict[str, Any]:
-        cfg = {}
-        cfg.update(self.monitor.configuration)
+        cfg = {**self.config_class.DEFAULTS, **self._configuration}
+
         frm = self.config_class(cfg)
         if frm.is_valid():
             return frm.cleaned_data
-        return {}
+        raise forms.ValidationError(frm.errors)
 
-    def check(self) -> bool:
+    def check(self, raise_error: bool = False) -> bool:
         """Perform the check."""
