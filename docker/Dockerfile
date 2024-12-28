@@ -69,7 +69,7 @@ LABEL org.opencontainers.image.created="$BUILD_DATE"
 LABEL org.opencontainers.image.version="$VERSION"
 
 ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin \
-    DJANGO_SETTINGS_MODULE=country_workspace.config.settings \
+    DJANGO_SETTINGS_MODULE=birder.config.settings \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     UV_PROJECT_ENVIRONMENT=/venv \
@@ -93,7 +93,7 @@ RUN --mount=type=cache,target=/root/.uv-cache \
 # ------- production only deps-------
 FROM builder AS production
 ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin \
-    DJANGO_SETTINGS_MODULE=country_workspace.config.settings \
+    DJANGO_SETTINGS_MODULE=birder.config.settings \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     UV_PROJECT_ENVIRONMENT=/venv \
@@ -139,7 +139,6 @@ RUN <<EOF cat> /RELEASE
 }
 EOF
 WORKDIR /app
-COPY docker/conf /conf/
 COPY docker/bin/* /usr/local/bin/
 
 COPY . /app/
