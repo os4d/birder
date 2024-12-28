@@ -31,8 +31,10 @@
                 <ul class="md:flex items-center justify-between text-base pt-4 md:pt-0">
                     <li><a class="inline-block no-underline hover:underline py-2 px-4"
                            href="/">Home</a></li>
+                    {% if user.is_staff %}
                     <li><a class="inline-block no-underline  hover:underline py-2 px-4"
                            href="{% url "admin:index" %}">{% translate "Admin" %}</a></li>
+                    {% endif %}
                 </ul>
             </nav>
         </div>
@@ -47,9 +49,12 @@
         <div class="order-2 md:order-3 flex items-center" id="nav-content">
             {% if user.is_authenticated %}
                 <div class="hidden sm:flex">{% translate "Hi" %}, {{ user }}&nbsp;&nbsp;</div>
-                <a class="inline-block no-underline " href="{% url "logout" %}">logout</a>
-            {% else %}
-                <a class="inline-block no-underline " href="{% url "login" %}">login</a>
+                <form method="post" action="{% url "logout" %}" id="logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-link">logout</button>
+                </form>
+                {% else %}
+                    <a class="inline-block no-underline " href="{% url "login" %}">login</a>
             {% endif %}
             <a class="px-2" href="/it-it/{{ request.get_full_path|slice:"7:" }}">ita</a>
             <a class="px-2" href="/en-us/{{ request.get_full_path|slice:"7:" }}">eng</a>
@@ -64,11 +69,7 @@
         <div class="container flex px-3">
             <div class="flow-root w-full">
                 <div class="px-2 md:px-0 block md:float-left">
-                    <div class="inline-flex">Copyright</div>
-                    -
-                    <div class="inline-flex">Privacy</div>
-                    -
-                    <div class="inline-flex">Cookies Policy</div>
+                    <div class="inline-flex">Copyright (c) 2019-2024 OS4D ltd</div>
                 </div>
             </div>
             <img id="darkmode" class="w-8 cursor-pointer" src="{% static "images/off.svg" %}">

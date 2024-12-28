@@ -1,3 +1,5 @@
+import sys
+import traceback
 import uuid
 from typing import TYPE_CHECKING
 
@@ -10,6 +12,7 @@ from django_stubs_ext.db.models import TypedModelMeta
 from strategy_field.fields import StrategyField
 
 from birder.checks.registry import registry
+from birder.exceptions import CheckError
 
 if TYPE_CHECKING:
     from birder.checks.base import BaseCheck
@@ -41,9 +44,17 @@ class UserRole(models.Model):
 
 
 class Monitor(models.Model):
+    class Verbosity(models.IntegerChoices):
+        NONE = (0, "None")
+        ERROR = (1, "ERRROR")
+        FULL = (2, "FULL")
+
     strategy: "BaseCheck"
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=True)
+    position = models.PositiveIntegerField(default=0)
+    description = models.CharField(max_length=1000)
+
     strategy = StrategyField(registry=registry)
     configuration = models.JSONField(default=dict)
 
@@ -53,8 +64,10 @@ class Monitor(models.Model):
 
     active = models.BooleanField(default=True)
     grace_period = models.PositiveIntegerField(default=5)
+    verbosity = models.IntegerField(choices=Verbosity.choices, default=Verbosity.NONE)
 
     class Meta(TypedModelMeta):
+        ordering = ("name", )
         constraints = [
             models.UniqueConstraint("project", Lower("name"), name="unique_project_monitor_name"),
         ]
@@ -63,7 +76,19 @@ class Monitor(models.Model):
         return self.name
 
     def trigger(self) -> bool:
-        result = self.strategy.check()
+        try:
+            result = self.strategy.check(True)
+            if self.verbosity >= self.Verbosity.FULL:
+                LogCheck.objects.create(monitor=self, status=True, result="")
+        except CheckError as e:
+            if self.verbosity >= self.Verbosity.ERROR:
+                t, value, tb = sys.exc_info()
+                message = f"""{t}: {value}
+
+{''.join(traceback.format_exception(e))}
+"""
+                LogCheck.objects.create(monitor=self, status=False, result=message)
+            result = False
         cache.set(f"monitor:{self.pk}", result, timeout=86400)
         cache.set(f"monitor:check{self.pk}", timezone.now().strftime("%Y %b %d %H:%M"), timeout=86400)
         return result
@@ -80,3 +105,16 @@ class Monitor(models.Model):
         self.token = uuid.uuid4()
         if save:
             self.save()
+
+
+class LogCheck(models.Model):
+    monitor = models.ForeignKey(Monitor, on_delete=models.CASCADE, related_name="logs")
+    status = models.BooleanField(default=None, null=True)
+    timestamp = models.DateTimeField(default=timezone.now)
+    result = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ["-timestamp"]
+
+    def __str__(self) -> str:
+        return self.monitor.name

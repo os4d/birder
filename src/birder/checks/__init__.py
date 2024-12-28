@@ -1,7 +1,9 @@
 from typing import Any
 from urllib.parse import parse_qsl, urlparse
 
+from .amqp import AmqpCheck
 from .base import BaseCheck
+from .celery import CeleryCheck
 from .ftp import FtpCheck
 from .http import HttpCheck
 from .json import JsonCheck
@@ -11,6 +13,7 @@ from .pg import PostgresCheck
 from .redis import RedisCheck
 from .registry import registry
 from .ssh import SSHCheck
+from .tcp import TCPCheck
 
 registry.register(HttpCheck)
 registry.register(RedisCheck)
@@ -20,12 +23,16 @@ registry.register(FtpCheck)
 registry.register(JsonCheck)
 registry.register(SSHCheck)
 registry.register(MemCacheCheck)
+registry.register(AmqpCheck)
+registry.register(CeleryCheck)
+registry.register(TCPCheck)
 
 
 def parse_uri(uri: str) -> dict[str, str | Any]:
     o = urlparse(uri)
     cfg = {
         **dict(parse_qsl(o.query)),
+        "hostname": o.hostname,
         "host": o.hostname,
         "scheme": o.scheme,
         "username": o.username,

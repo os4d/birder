@@ -5,6 +5,7 @@ from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator, URLValidator
 
 from ..exceptions import CheckError
+from ..widgets import TokenInput
 from .base import BaseCheck, ConfigForm
 
 
@@ -34,7 +35,7 @@ class BaseHttpConfig(ConfigForm):
     timeout = forms.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)], initial=2)
     status_success = SeparatedValuesField(required=True, initial="200")
     username = forms.CharField(required=False)
-    password = forms.CharField(required=False, widget=forms.PasswordInput)
+    password = forms.CharField(required=False, widget=TokenInput)
 
 
 class HttpConfig(BaseHttpConfig):
@@ -51,6 +52,10 @@ class HttpCheck(BaseCheck):
         if not cfg.get("url"):
             cfg["url"] = cfg.get("address", "")
         return cfg
+
+    @property
+    def address(self) -> str:
+        return self.config.get("url")
 
     def check(self, raise_error: bool = False) -> bool:
         try:

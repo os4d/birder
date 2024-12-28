@@ -3,22 +3,25 @@ services:
     image: "redis:alpine"
     ports:
       - "26379:6379"
+
   memcached:
     image: "memcached:alpine3.21"
     ports:
       - "21121:11211"
+
   http:
     image: "kennethreitz/httpbin"
     ports:
       - "28000:80"
+
   ftp:
     image: "delfer/alpine-ftp-server"
     ports:
       - "2221:21"
       - "21000-21010:21000-21010"
     environment:
-      USERS: "user|password"
       ADDRESS: "localhost"
+
   mariadb:
     image: "bitnami/mariadb"
     ports:
@@ -38,3 +41,12 @@ services:
     image: "postgres:alpine"
     ports:
       - "25432:5432"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD=trust: 1
+      POSTGRES_PASSWORD: pwd
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "25672:5672"
+      - "21567:15672"

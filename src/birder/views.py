@@ -20,7 +20,7 @@ class Index(CommonContextMixin, TemplateView):
     template_name = "index.html"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        kwargs["monitors"] = Monitor.objects.all()
+        kwargs["monitors"] = Monitor.objects.order_by("position", "name")
         return super().get_context_data(**kwargs)
 
 

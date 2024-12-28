@@ -8,6 +8,7 @@ if TYPE_CHECKING:
     from birder.models import Monitor
     from birder.types import Json
 
+
 class DefaultsMetaclass(DeclarativeFieldsMetaclass):
     def __new__(cls, name: str, bases: tuple[type, ...], attrs: Any) -> type:
         new_class = super().__new__(cls, name, bases, attrs)
@@ -23,8 +24,10 @@ class ConfigForm(forms.Form, metaclass=DefaultsMetaclass):
 
 
 class BaseCheck:
+    icon: str
     pragma: list[str]
     config_class: type[ConfigForm]
+    address_format: str = ""
 
     def __init__(self, owner: "Monitor|None" = None, configuration: "Json | None" = None) -> None:
         if owner:
@@ -34,8 +37,6 @@ class BaseCheck:
         else:
             raise ValueError("Must specify a configuration")  # pragma: no cover
         self.monitor: Monitor = owner
-
-
 
     @classmethod
     def clean_config(cls, cfg: dict[str, Any]) -> dict[str, Any]:
@@ -48,6 +49,10 @@ class BaseCheck:
         if frm.is_valid():
             return frm.cleaned_data
         raise forms.ValidationError(frm.errors)
+
+    @property
+    def address(self) -> str:
+        return self.address_format.format(**self.config)
 
     def check(self, raise_error: bool = False) -> bool:
         """Perform the check."""

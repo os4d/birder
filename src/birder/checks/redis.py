@@ -4,21 +4,23 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from redis import Redis as RedisClient
 
 from ..exceptions import CheckError
+from ..widgets import TokenInput
 from .base import BaseCheck, ConfigForm
 
 
 class RedisConfig(ConfigForm):
-    host = forms.CharField(required=True, help_text="Redis Server hostname or IP Address")
+    host = forms.CharField(required=True, help_text="Server hostname or IP Address")
     port = forms.IntegerField(validators=[MinValueValidator(1)], initial=6379)
     socket_timeout = forms.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], initial=2)
     socket_connect_timeout = forms.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], initial=2)
-    password = forms.CharField(required=False, widget=forms.PasswordInput)
+    password = forms.CharField(required=False, widget=TokenInput)
 
 
 class RedisCheck(BaseCheck):
     icon = "redis.svg"
     pragma = ["redis"]
     config_class = RedisConfig
+    address_format = "{host}:{port}"
 
     def check(self, raise_error: bool = False) -> bool:
         try:

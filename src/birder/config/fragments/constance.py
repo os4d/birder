@@ -10,6 +10,10 @@ CONSTANCE_ADDITIONAL_FIELDS = {
         "birder.utils.constance.GroupChoiceField",
         {"initial": None},
     ],
+    "duration": [
+        "birder.utils.constance.DurationField",
+        {"initial": None},
+    ],
     "read_only_text": [
         "django.forms.fields.CharField",
         {
@@ -41,4 +45,5 @@ CONSTANCE_CONFIG = {
         "group_select",
     ),
     "HARD_THRESHOLD": (86400, "System Wide Threshold", int),
+    "RETENTION_POLICY": ("1 month", "System Wide Threshold", "duration"),
 }

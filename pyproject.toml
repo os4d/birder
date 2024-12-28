@@ -44,6 +44,9 @@ dependencies = [
     "pexpect>=4.9.0",
     "jmespath>=1.0.1",
     "pymemcache>=4.0.0",
+    "django-adminfilters>=2.5.2",
+    "durations-nlp>=1.0.1",
+    "kombu>=5.4.2",
 ]
 [tool.mypy]
 mypy_path = "$MYPY_CONFIG_FILE_DIR/stubs"

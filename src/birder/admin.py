@@ -1,12 +1,14 @@
 from admin_extra_buttons.decorators import button
 from admin_extra_buttons.mixins import ExtraButtonsMixin
+from adminfilters.filters import AutoCompleteFilter
+from adminfilters.mixin import AdminFiltersMixin
 from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin as _UserAdmin
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 
-from .models import Monitor, Project, User
+from .models import LogCheck, Monitor, Project, User
 from .tasks import queue_trigger
 
 
@@ -23,7 +25,7 @@ class ProjectAdmin(admin.ModelAdmin[Project]):
 @admin.register(Monitor)
 class MonitorAdmin(ExtraButtonsMixin, admin.ModelAdmin[Monitor]):
     search_fields = ("name",)
-    list_display = ("name", "status", "checker")
+    list_display = ("name", "status", "checker", "verbosity")
     list_filter = ("project",)
     actions = ["check_selected"]
 
@@ -40,9 +42,7 @@ class MonitorAdmin(ExtraButtonsMixin, admin.ModelAdmin[Monitor]):
             queue_trigger.delay(m.id)
 
     def get_fields(self, request: HttpRequest, obj: Monitor | None = None) -> list[str]:
-        if not obj:
-            return ["name", "strategy", "project"]
-        return ["name", "strategy", "project"]
+        return ["name", "strategy", "project", "verbosity", "active", "grace_period"]
 
     @button(label="Check")
     def manual_check(self, request: HttpRequest, pk: str) -> HttpResponse:
@@ -74,3 +74,10 @@ class MonitorAdmin(ExtraButtonsMixin, admin.ModelAdmin[Monitor]):
             form = monitor.strategy.config_class(initial=monitor.configuration)
         ctx["form"] = form
         return render(request, "admin/monitor/configure.html", ctx)
+
+
+@admin.register(LogCheck)
+class LogCheckAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[LogCheck]):
+    list_display = ("timestamp", "monitor", "status")
+    list_filter = ("status", "timestamp", ("monitor", AutoCompleteFilter))
+    readonly_fields = ("timestamp", "monitor", "status", "result")

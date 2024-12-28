@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 
 from django import forms
@@ -5,14 +6,17 @@ from django.core.validators import MinValueValidator
 from pexpect import pxssh
 
 from ..exceptions import CheckError
+from ..widgets import TokenInput
 from .base import BaseCheck, ConfigForm
+
+logger = logging.getLogger(__name__)
 
 
 class SSHConfig(ConfigForm):
     server = forms.CharField(required=True)
     port = forms.IntegerField(validators=[MinValueValidator(1)], initial=22)
     username = forms.CharField(required=False)
-    password = forms.CharField(required=False, widget=forms.PasswordInput)
+    password = forms.CharField(required=False, widget=TokenInput)
     login_timeout = forms.IntegerField(initial=2)
 
 
@@ -20,6 +24,7 @@ class SSHCheck(BaseCheck):
     icon = "ssh.svg"
     pragma = ["ssh"]
     config_class = SSHConfig
+    address_format = "{server}:{port}"
 
     @classmethod
     def clean_config(cls, cfg: dict[str, Any]) -> dict[str, Any]:
@@ -31,6 +36,7 @@ class SSHCheck(BaseCheck):
             s = pxssh.pxssh()
             return s.login(**self.config)
         except pxssh.ExceptionPexpect as e:
+            logger.exception(e)
             if raise_error:
-                raise CheckError("Postgres check failed") from e
+                raise CheckError("SSH check failed") from e
         return False

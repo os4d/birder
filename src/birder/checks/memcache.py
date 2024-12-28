@@ -7,7 +7,7 @@ from .base import BaseCheck, ConfigForm
 
 
 class MemCacheConfig(ConfigForm):
-    host = forms.CharField(required=True, help_text="MemCache Server hostname or IP Address")
+    host = forms.CharField(required=True, help_text="Server hostname or IP Address")
     port = forms.IntegerField(validators=[MinValueValidator(1)], initial=11211)
     connect_timeout = forms.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], initial=2)
     timeout = forms.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], initial=2)
@@ -17,6 +17,7 @@ class MemCacheCheck(BaseCheck):
     icon = "memcache.svg"
     pragma = ["memcache"]
     config_class = MemCacheConfig
+    address_format = "{host}:{port}"
 
     def check(self, raise_error: bool = False) -> bool:
         try:

@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from . import env
@@ -17,7 +18,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "admin_extra_buttons",
+    "adminfilters",
     "constance",
     "flags",
     "social_django",
@@ -62,13 +63,13 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "birder.context_processors.birder",
             ],
         },
     },
 ]
 
 WSGI_APPLICATION = "birder.config.wsgi.application"
-
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -87,6 +88,7 @@ CACHES = {
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
 
 AUTH_USER_MODEL = "birder.User"
 
@@ -121,7 +123,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
@@ -131,6 +132,37 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+def get_log_level_for(app: str) -> str:
+    return os.environ.get(f"{app.upper()}_LOG_LEVEL", env("LOG_LEVEL"))
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": get_log_level_for("django"),
+            "propagate": False,
+        },
+        "birder": {
+            "handlers": ["console"],
+            "level": get_log_level_for("birder"),
+            "propagate": False,
+        },
+    },
+}
 
 from .fragments.app import *  # noqa
 from .fragments.celery import *  # noqa

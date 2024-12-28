@@ -19,6 +19,7 @@ CONFIG: "dict[str, ConfigItem]" = {
     "EXTRA_APPS": (list, []),
     "GOOGLE_CLIENT_ID": (str, ""),
     "GOOGLE_CLIENT_SECRET": (str, ""),
+    "LOG_LEVEL": (str, "ERROR"),
     "SOCIAL_AUTH_REDIRECT_IS_HTTPS": (bool, False),
     "SOCIAL_AUTH_RAISE_EXCEPTIONS": (bool, False),
     "SOCIAL_AUTH_LOGIN_URL": (str, "/login/"),

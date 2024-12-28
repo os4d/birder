@@ -62,6 +62,7 @@ dependencies = [
     { name = "colour" },
     { name = "django" },
     { name = "django-admin-extra-buttons" },
+    { name = "django-adminfilters" },
     { name = "django-celery-beat" },
     { name = "django-celery-results" },
     { name = "django-constance" },
@@ -74,7 +75,9 @@ dependencies = [
     { name = "django-stubs-ext" },
     { name = "django-tailwind" },
     { name = "djangorestframework" },
+    { name = "durations-nlp" },
     { name = "jmespath" },
+    { name = "kombu" },
     { name = "pandas" },
     { name = "pexpect" },
     { name = "pip" },
@@ -114,6 +117,7 @@ requires-dist = [
     { name = "colour", specifier = ">=0.1.5" },
     { name = "django", specifier = ">=5.1.4" },
     { name = "django-admin-extra-buttons", specifier = ">=1.6.0" },
+    { name = "django-adminfilters", specifier = ">=2.5.2" },
     { name = "django-celery-beat", specifier = ">=2.7.0" },
     { name = "django-celery-results", specifier = ">=2.5.1" },
     { name = "django-constance", specifier = ">=4.1.3" },
@@ -126,7 +130,9 @@ requires-dist = [
     { name = "django-stubs-ext", specifier = ">=5.1.1" },
     { name = "django-tailwind", specifier = ">=3.8.0" },
     { name = "djangorestframework", specifier = ">=3.15.2" },
+    { name = "durations-nlp", specifier = ">=1.0.1" },
     { name = "jmespath", specifier = ">=1.0.1" },
+    { name = "kombu", specifier = ">=5.4.2" },
     { name = "pandas", specifier = ">=2.2.3" },
     { name = "pexpect", specifier = ">=4.9.0" },
     { name = "pip", specifier = ">=24.3.1" },
@@ -455,6 +461,15 @@ wheels = [
 ]
 
 [[package]]
+name = "django-adminfilters"
+version = "2.5.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/43/e6/bcf3341161b2d363281d0ddb9924ce27e31f7e8b370564b63c7f200e398c/django_adminfilters-2.5.2.tar.gz", hash = "sha256:2d4982490631cf198734e83337280ca831d5f559995198843103b30202104a29", size = 58865 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f0/eb/2965d0ae94edc46e8a3ec0328c3ec71f580afd57084a785a8e99d39c0a55/django_adminfilters-2.5.2-py2.py3-none-any.whl", hash = "sha256:c1f19c8215b4573159359eaa1231ecdb5f5d9edbfca93f44e4dce27636630596", size = 49246 },
+]
+
+[[package]]
 name = "django-celery-beat"
 version = "2.7.0"
 source = { registry = "https://pypi.org/simple" }
@@ -627,6 +642,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/91/9b/4a2ea29aeba62471211598dac5d96825bb49348fa07e906ea930394a83ce/docker-7.1.0.tar.gz", hash = "sha256:ad8c70e6e3f8926cb8a92619b832b4ea5299e2831c14284663184e200546fa6c", size = 117834 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e3/26/57c6fb270950d476074c087527a558ccb6f4436657314bfb6cdf484114c4/docker-7.1.0-py3-none-any.whl", hash = "sha256:c96b93b7f0a746f9e77d325bcfb87422a3d8bd4f03136ae8a85b37f1898d5fc0", size = 147774 },
+]
+
+[[package]]
+name = "durations-nlp"
+version = "1.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a1/82/b07a77f35f4e96216b95eac3b474b4ecb724f89be8a57128497a7f6eaecd/durations_nlp-1.0.1.tar.gz", hash = "sha256:25a87a372ddabf5fb45ed1da8fc711a53a0236c2954dc9c51590cee35dbf3136", size = 6023 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/67/0b/393d5c30135849cc94993ddbb2a191e16cc38ff37e41cdf0d209ef6f991e/durations_nlp-1.0.1-py3-none-any.whl", hash = "sha256:91b411a2d92986c63c125c81b91181aed9ba70f5c9efded9401387783631f022", size = 7367 },
 ]
 
 [[package]]

@@ -1,5 +1,8 @@
 {% extends "layout.html" %}{% load i18n icons %}
 {% block content %}
+    <div class="float-right px-2 lg:px-10 font-xs">
+        == {{ birder.system.last_check }} ==
+    </div>
     <div class="" id="monitor-grid">
         {% for monitor in monitors %}
             <a class="cursor-pointer h-full" href="{% url "monitor-detail" monitor.pk %}">
@@ -11,6 +14,9 @@
                         <img class="status status-{{ monitor.status }}" src="{% status monitor.status %}">
                     </div>
                     <div class=" content-end text-xs ">
+                        <div class="float-left">
+                            {{ monitor.strategy.address }}
+                        </div>
                         <div class="float-right">
                             {{ monitor.last_check }}
                         </div>
