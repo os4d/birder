@@ -4,9 +4,12 @@
 export MEDIA_ROOT="${MEDIA_ROOT:-/var/run/app/media}"
 export STATIC_ROOT="${STATIC_ROOT:-/var/run/app/static}"
 export UWSGI_PROCESSES="${UWSGI_PROCESSES:-"4"}"
-export DJANGO_SETTINGS_MODULE="country_workspace.config.settings"
+export DJANGO_SETTINGS_MODULE="birder.config.settings"
 
 case "$1" in
+    circus)
+      circusd --ini /conf/circus.ini
+      ;;
     run)
       django-admin upgrade --with-check
 	    set -- tini -- "$@"
@@ -17,7 +20,7 @@ case "$1" in
       set -- tini -- "$@"
 	    set -- uwsgi --http :8000 \
 	          -H /venv \
-	          --module country_workspace.config.wsgi \
+	          --module birder.config.wsgi \
 	          --mimefile=/conf/mime.types \
 	          --uid brd \
 	          --gid os4d \
@@ -30,16 +33,16 @@ case "$1" in
       ;;
     worker)
       set -- tini -- "$@"
-      set -- gosu brd:os4d celery -A country_workspace.config.celery worker --statedb worker -E --loglevel=ERROR
+      set -- gosu brd:os4d celery -A birder.config.celery worker --statedb worker -E --loglevel=ERROR
       ;;
     beat)
       set -- tini -- "$@"
-      set -- gosu brd:os4d celery -A country_workspace.config.celery beat --loglevel=ERROR --scheduler django_celery_beat.schedulers:DatabaseScheduler
+      set -- gosu brd:os4d celery -A birder.config.celery beat --loglevel=ERROR --scheduler django_celery_beat.schedulers:DatabaseScheduler
       ;;
     flower)
       export DATABASE_URL="sqlite://:memory:"
       set -- tini -- "$@"
-      set -- gosu brd:os4d celery -A country_workspace.config.celery flower
+      set -- gosu brd:os4d celery -A birder.config.celery flower
       ;;
 esac
 
@@ -69,10 +72,10 @@ exec "$@"
 #      exec uwsgi --ini /conf/uwsgi.ini
 #      ;;
 #    worker)
-#      exec celery -A country_workspace.celery worker -E --loglevel=ERROR --concurrency=4
+#      exec celery -A birder.celery worker -E --loglevel=ERROR --concurrency=4
 #      ;;
 #    beat)
-#      exec celery -A country_workspace.celery beat -E --loglevel=ERROR ---scheduler django_celery_beat.schedulers:DatabaseScheduler
+#      exec celery -A birder.celery beat -E --loglevel=ERROR ---scheduler django_celery_beat.schedulers:DatabaseScheduler
 #      ;;
 #    dev)
 #      until pg_isready -h db -p 5432;

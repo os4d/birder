@@ -44,19 +44,6 @@ zlib1g-dev  \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends gnupg wget curl unzip && \
-    wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list && \
-    apt-get update -y && \
-    apt-get install -y --no-install-recommends google-chrome-stable && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /var/cache/apt/* && \
-    CHROME_VERSION=$(google-chrome --product-version) && \
-    wget -q --continue -P /chromedriver "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROME_VERSION/linux64/chromedriver-linux64.zip" && \
-    unzip /chromedriver/chromedriver* -d /usr/local/bin/ && \
-    rm -rf /chromedriver
-
 RUN pip install uv uwsgi
 
 # ------- tests -------
@@ -139,9 +126,11 @@ RUN <<EOF cat> /RELEASE
 }
 EOF
 WORKDIR /app
+COPY docker/conf /conf/
 COPY docker/bin/* /usr/local/bin/
 
-COPY . /app/
+COPY uv.lock README.md MANIFEST.in pyproject.toml /app/
+COPY src /app/src/
 
 COPY --chown=brd:os4d --from=production /venv /venv
 COPY --from=builder /usr/local/bin/uwsgi /usr/local/bin/uv /usr/local/bin/
@@ -157,13 +146,13 @@ CMD ["run"]
 
 LABEL maintainer="brd@os4d.org"
 LABEL org.opencontainers.image.authors="brd@os4d.org"
-LABEL org.opencontainers.image.description="brd Country Workspace"
-LABEL org.opencontainers.image.documentation="https://github.com/os4d/brd-country-workspace/"
+LABEL org.opencontainers.image.description="Birder"
+LABEL org.opencontainers.image.documentation="https://github.com/os4d/birder/"
 LABEL org.opencontainers.image.title="brd Country Workspace"
 LABEL org.opencontainers.image.licenses="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GIT_SHA:-master}/LICENSE"
 LABEL org.opencontainers.image.revision=$GIT_SHA
 LABEL org.opencontainers.image.source="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${GIT_SHA:-master}/"
-LABEL org.opencontainers.image.url="https://hub.docker.com/repository/docker/os4d/brd-country-workspace/tags/"
+LABEL org.opencontainers.image.url="https://hub.docker.com/repository/docker/os4d/bbirder/tags/"
 LABEL org.opencontainers.image.vendor="os4d"
 LABEL org.opencontainers.image.created="$BUILD_DATE"
 LABEL org.opencontainers.image.version="$VERSION"

@@ -47,6 +47,7 @@ help:
 			--build-arg BUILD_DATE=${BUILD_DATE} \
 			--build-arg GIT_SHA=${SOURCE_COMMIT} \
 			--target ${STAGE} \
+			--no-cache \
 			${BUILD_OPTIONS} \
 			-t ${DOCKER_IMAGE} \
 			-f docker/Dockerfile .
@@ -93,23 +94,13 @@ build5: dist
 	cd .. && docker run \
 	 		--rm \
 			-p 8000:8000 \
-			-e HOPE_API_TOKEN=${HOPE_API_TOKEN} \
-			-e ADMIN_EMAIL="${ADMIN_EMAIL}" \
-			-e ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
 			-e ALLOWED_HOSTS="*" \
-			-e AUTHENTICATION_BACKENDS=\
-			-e CACHE_URL="redis://192.168.66.66:6379/0" \
-			-e CELERY_BROKER_URL=redis://192.168.66.66:6379/0 \
-			-e CSRF_COOKIE_SECURE=False \
-			-e CSRF_TRUSTED_ORIGINS=http://localhost \
-			-e DATABASE_URL="${DATABASE_URL}" \
+			-e CACHE_URL="${CACHE_URL}" \
+			-e CELERY_BROKER_URL=${CELERY_BROKER_URL} \
 			-e DEBUG="1" \
-			-e DJANGO_ADMIN_URL=admin/ \
 			-e LOGGING_LEVEL="DEBUG" \
-			-e SECRET_KEY=liujhljhlkjhlkjhlkj \
-			-e SOCIAL_AUTH_REDIRECT_IS_HTTPS="False" \
-			-e SENTRY_DSN="${SENTRY_DSN}" \
-			-e SUPERUSERS="sax," \
+			-e SUPERUSERS=${SUPERUSERS} \
+			-v ${PWD}/conf:/conf \
 			${RUN_OPTIONS} \
 			-t ${DOCKER_IMAGE} \
 			${CMD}
