@@ -46,8 +46,10 @@ class UserRole(models.Model):
 class Monitor(models.Model):
     class Verbosity(models.IntegerChoices):
         NONE = (0, "None")
-        ERROR = (1, "ERRROR")
-        FULL = (2, "FULL")
+        SUCCESS = (1, "ERRROR")
+        FAIL = (2, "ERRROR")
+        ERROR = (3, "ERRROR")
+        FULL = (4, "FULL")
 
     strategy: "BaseCheck"
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -67,7 +69,7 @@ class Monitor(models.Model):
     verbosity = models.IntegerField(choices=Verbosity.choices, default=Verbosity.NONE)
 
     class Meta(TypedModelMeta):
-        ordering = ("name", )
+        ordering = ("name",)
         constraints = [
             models.UniqueConstraint("project", Lower("name"), name="unique_project_monitor_name"),
         ]
@@ -78,10 +80,14 @@ class Monitor(models.Model):
     def trigger(self) -> bool:
         try:
             result = self.strategy.check(True)
-            if self.verbosity >= self.Verbosity.FULL:
-                LogCheck.objects.create(monitor=self, status=True, result="")
+            if (
+                self.verbosity == self.Verbosity.FULL
+                or (result and self.verbosity == self.Verbosity.SUCCESS)
+                or (not result and self.verbosity == self.Verbosity.FAIL)
+            ):
+                LogCheck.objects.create(monitor=self, status=result, result="")
         except CheckError as e:
-            if self.verbosity >= self.Verbosity.ERROR:
+            if self.verbosity in [self.Verbosity.ERROR, self.Verbosity.FULL]:
                 t, value, tb = sys.exc_info()
                 message = f"""{t}: {value}
 

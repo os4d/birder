@@ -65,6 +65,7 @@ class MonitorAdmin(ExtraButtonsMixin, admin.ModelAdmin[Monitor]):
                     if not monitor.strategy.check():
                         self.message_user(request, "Check failed", level=messages.ERROR)
                     else:
+                        self.message_user(request, "Check success", level=messages.SUCCESS)
                         monitor.save()
                         return HttpResponseRedirect("..")
                 else:
@@ -81,3 +82,6 @@ class LogCheckAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[LogCh
     list_display = ("timestamp", "monitor", "status")
     list_filter = ("status", "timestamp", ("monitor", AutoCompleteFilter))
     readonly_fields = ("timestamp", "monitor", "status", "result")
+
+    def has_add_permission(self, request):
+        return False

@@ -18,15 +18,19 @@ class SeparatedValuesField(forms.Field):
         self.separator = separator
 
     def clean(self, data: dict[str, Any]) -> list[int | str]:
-        if isinstance(data, str):
+        if isinstance(data, str) and self.separator in data:
             self.value_list = data.split(self.separator)
-        else:
+        elif isinstance(data, (list | tuple)):
             self.value_list = data
+        else:
+            self.value_list = [data]
 
         base_field = self.base_field()
         return [base_field.clean(value) for value in self.value_list]
 
     def prepare_value(self, value: list[Any]) -> str:
+        if isinstance(value, str):
+            return value
         return self.separator.join(map(str, value))
 
 

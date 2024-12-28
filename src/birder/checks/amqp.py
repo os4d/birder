@@ -38,7 +38,7 @@ class AmqpCheck(BaseCheck):
             return True
         except OperationalError as e:
             if raise_error:
-                raise CheckError("JSON check failed") from e
+                raise CheckError("AMQP check failed") from e
         return False
 
 

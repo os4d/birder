@@ -51,10 +51,8 @@ def format_duration(d: Duration) -> str:
     entry: tuple[float, Scale]
     ret = []
     for entry in d.parsed_durations:
-        num = entry[0]
+        num = int(entry[0])
         a = entry[1].representation.long_singular
-        if entry[0] % int(entry[0]) == 0:
-            num = int(entry[0])
         if num > 1:
             a = entry[1].representation.long_plural
         ret.append(f"{num} {a}")

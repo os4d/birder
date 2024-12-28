@@ -1,4 +1,4 @@
-from birder.tasks import process, queue_trigger
+from birder.tasks import process, queue_trigger, clean_log
 
 
 def test_task_execute(monitor):
@@ -7,3 +7,7 @@ def test_task_execute(monitor):
 
 def test_task_process(monitor):
     process()
+
+
+def test_clean_log(db):
+    clean_log()

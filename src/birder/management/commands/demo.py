@@ -32,6 +32,7 @@ class Command(BaseCommand):
             "rabbitmq://localhost:25672",
             "celery://localhost:26379?broker=redis",
             "tcp://localhost:8000",
+            "http+xml://google.com",
         ]:
             try:
                 checker, config = parser(url)

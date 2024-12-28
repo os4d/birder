@@ -1,6 +1,7 @@
 from typing import Any
 
 from celery import Celery as CeleryApp
+from celery.exceptions import CeleryError
 from celery.app.control import Control
 from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -37,7 +38,7 @@ class CeleryCheck(BaseCheck):
             insp = c.inspect(timeout=self.config["timeout"])
             d = insp.stats()
             return bool(d)
-        except NotImplementedError as e:
+        except CeleryError as e:
             if raise_error:
                 raise CheckError("Celery check failed") from e
         return False

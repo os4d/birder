@@ -8,11 +8,6 @@
                 </div>
                 <img class="w-12 align-top status status-{{ monitor.status }}" src="{% status monitor.status %}">
             </div>
-            {#            <div class=" content-end text-xs ">#}
-            {#                <div class="float-right">#}
-            {#                    {{ monitor.last_check }}#}
-            {#                </div>#}
-            {#            </div>#}
             <div class="my-2">
                 {{ monitor.last_check }}
             </div>

@@ -19,6 +19,7 @@ its audience is web site users to display SLA compliance and systems availabilit
  - http/https
  - Postgres/Postgis
  - Redis
+ - RabbitMQ / AMQP
  - Celery (workers running not only broker)
  - MySQL/MariaDB
  - MemCached
@@ -28,23 +29,14 @@ its audience is web site users to display SLA compliance and systems availabilit
 ### Specialised Checkers
  
  - JSON
+ - XML
 
 
-Usage
------
+## Contributing
 
-The following is an example command for running the docker image monitoring a couple of
+Test locally:
 
-```
-docker run \
-    --rm \
-    --name=${CONTAINER_NAME} \
-    -p 5000:5000 \
-    birder
-```
-
-
-In progress
------------
- - RabbitMQ
- - amqp
+    docker compose -f services-compose.yml down
+    ./mamage.py upgrade
+    ./mamage.py demo
+    ./mamage.py runserver

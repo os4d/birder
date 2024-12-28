@@ -14,6 +14,7 @@ from .redis import RedisCheck
 from .registry import registry
 from .ssh import SSHCheck
 from .tcp import TCPCheck
+from .xml import XMLCheck
 
 registry.register(HttpCheck)
 registry.register(RedisCheck)
@@ -26,6 +27,7 @@ registry.register(MemCacheCheck)
 registry.register(AmqpCheck)
 registry.register(CeleryCheck)
 registry.register(TCPCheck)
+registry.register(XMLCheck)
 
 
 def parse_uri(uri: str) -> dict[str, str | Any]:

@@ -1,11 +1,10 @@
 from datetime import timedelta
-from linecache import cache
 from typing import Any
 
 from constance import config
+from django.core.cache import cache
 from django.utils import timezone
 from durations_nlp import Duration
-from django.core.cache import cache
 
 from birder.config.celery import app
 from birder.models import LogCheck, Monitor
@@ -14,7 +13,7 @@ from birder.models import LogCheck, Monitor
 @app.task
 def queue_trigger(pk: str) -> dict[str, bool]:
     res = Monitor.objects.get(active=True, pk=pk).trigger()
-    cache.set(f"system:last_check", timezone.now().strftime("%Y %b %d %H:%M"), timeout=86400)
+    cache.set("system:last_check", timezone.now().strftime("%Y %b %d %H:%M"), timeout=86400)
     return {"result": res}
 
 

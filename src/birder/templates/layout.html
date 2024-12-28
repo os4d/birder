@@ -31,10 +31,6 @@
                 <ul class="md:flex items-center justify-between text-base pt-4 md:pt-0">
                     <li><a class="inline-block no-underline hover:underline py-2 px-4"
                            href="/">Home</a></li>
-                    {% if user.is_staff %}
-                    <li><a class="inline-block no-underline  hover:underline py-2 px-4"
-                           href="{% url "admin:index" %}">{% translate "Admin" %}</a></li>
-                    {% endif %}
                 </ul>
             </nav>
         </div>
@@ -55,9 +51,11 @@
                 </form>
                 {% else %}
                     <a class="inline-block no-underline " href="{% url "login" %}">login</a>
-            {% endif %}
-            <a class="px-2" href="/it-it/{{ request.get_full_path|slice:"7:" }}">ita</a>
-            <a class="px-2" href="/en-us/{{ request.get_full_path|slice:"7:" }}">eng</a>
+                {% endif %}
+                {% if user.is_staff %}
+                    <a class="inline-block no-underline px-2"
+                       href="{% url "admin:index" %}">{% translate "admin" %}</a>
+                {% endif %}
         </div>
     </div>
 </nav>
