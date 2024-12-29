@@ -1,7 +1,8 @@
 from unittest.mock import Mock
 
-from birder.models import Monitor
 from requests.exceptions import RequestException
+
+from birder.models import Monitor
 
 
 def test_model_monitor(monitor: Monitor):
@@ -19,6 +20,7 @@ def test_model_trigger(monitor: Monitor, mocked_responses, monkeypatch):
 
     monitor.verbosity = Monitor.Verbosity.FULL
     assert monitor.trigger()
+
 
 def test_model_trigger_errors(monitor: Monitor, mocked_responses, monkeypatch):
     mocked_responses.add(mocked_responses.GET, "https://example.com", status=500)

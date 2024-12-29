@@ -5,15 +5,11 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 from unittest import mock
 
-from django.core.management import call_command
-
 import pytest
-from responses import RequestsMock
+from django.core.management import call_command
 
 if TYPE_CHECKING:
     from pytest_django.fixtures import SettingsWrapper
-
-    from country_workspace.models import User
 
 pytestmark = pytest.mark.django_db
 

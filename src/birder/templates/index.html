@@ -1,13 +1,12 @@
 {% extends "layout.html" %}{% load i18n icons %}
 {% block content %}
-    <div class="float-right px-2 lg:px-10 font-xs">
-        == {{ birder.system.last_check }} ==
-        == {{ birder }} ==
+    <div class="float-right px-3 lg:px-4 xl:px-8 text-xs" id="lastUpdate">
+        {{ birder.system.last_check }}
     </div>
     <div class="" id="monitor-grid">
         {% for monitor in monitors %}
             <a class="cursor-pointer h-full" href="{% url "monitor-detail" monitor.pk %}">
-                <div class="monitor-panel grid grid-cols-1">
+                <div class="monitor-panel grid grid-cols-1" id="monitor-{{ monitor.pk }}">
                     <div class="flex h-5 ">
                         <div class="flex-shrink"><img class="icon" src="{% icon monitor.strategy.icon %}"></div>
                         <div class="flex-grow w-max-2/3 overflow-clip pl-3">{{ monitor.name|truncatechars:"20" }}
@@ -18,7 +17,7 @@
                         <div class="float-left">
                             {{ monitor.strategy.address }}
                         </div>
-                        <div class="float-right">
+                        <div class="float-right last-check">
                             {{ monitor.last_check }}
                         </div>
                     </div>
@@ -26,4 +25,7 @@
             </a>
         {% endfor %}
     </div>
+    <script>
+
+    </script>
 {% endblock content %}

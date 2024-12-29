@@ -1,7 +1,6 @@
 from unittest.mock import Mock
 
 import pytest
-import requests
 
 from birder.checks.tcp import TCPCheck, TCPConfig
 from birder.exceptions import CheckError

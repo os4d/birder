@@ -1,7 +1,8 @@
 from unittest.mock import Mock
 
-import pytest
 import celery.exceptions
+import pytest
+
 from birder.checks.celery import CeleryCheck, CeleryConfig
 from birder.exceptions import CheckError
 

@@ -22,7 +22,6 @@ its audience is web site users to display SLA compliance and systems availabilit
  - Postgres/Postgis
  - Redis
  - RabbitMQ / AMQP
- - Celery (workers running not only broker)
  - MySQL/MariaDB
  - MemCached
  - SSH
@@ -34,6 +33,7 @@ its audience is web site users to display SLA compliance and systems availabilit
  
  - JSON
  - XML
+ - Celery (workers running not only broker)
 
 
 ## Contributing

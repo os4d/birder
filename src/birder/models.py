@@ -78,6 +78,8 @@ class Monitor(models.Model):
         return self.name
 
     def trigger(self) -> bool:
+        from birder.ws.utils import notify_ui
+
         try:
             result = self.strategy.check(True)
             if (
@@ -97,6 +99,7 @@ class Monitor(models.Model):
             result = False
         cache.set(f"monitor:{self.pk}", result, timeout=86400)
         cache.set(f"monitor:check{self.pk}", timezone.now().strftime("%Y %b %d %H:%M"), timeout=86400)
+        notify_ui("update", self)
         return result
 
     @property

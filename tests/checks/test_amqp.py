@@ -1,7 +1,7 @@
 from unittest.mock import Mock
 
-import pytest
 import kombu.exceptions
+import pytest
 
 from birder.checks.amqp import AmqpCheck, AmqpConfig
 from birder.exceptions import CheckError
@@ -39,8 +39,6 @@ def test_amqp_config(config):
 
 
 def test_amqp_config_error():
-    c: AmqpConfig = AmqpCheck.config_class(
-        {"hostname": "localhost", "port": 5672, "connect_timeout": "--"}
-    )
+    c: AmqpConfig = AmqpCheck.config_class({"hostname": "localhost", "port": 5672, "connect_timeout": "--"})
     assert not c.is_valid()
     assert c.errors == {"connect_timeout": ["Enter a whole number."]}

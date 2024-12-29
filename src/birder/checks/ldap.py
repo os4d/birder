@@ -33,7 +33,6 @@ class LDAPCheck(BaseCheck):
                 conn.set_option(ldap.OPT_REFERRALS, 0)  # Disable referrals for AD
                 conn.protocol_version = self.config["protocol_version"]
                 conn.simple_bind_s(username, password)
-                # conn.unbind_s()
             return True
         except ldap.SERVER_DOWN as e:
             if raise_error:

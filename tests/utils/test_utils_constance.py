@@ -2,7 +2,7 @@ import pytest
 from constance.test import override_config
 from django.core.exceptions import ValidationError
 
-from birder.utils.constance import GroupChoiceField, ObfuscatedInput, WriteOnlyInput, WriteOnlyTextarea, DurationField
+from birder.utils.constance import DurationField, GroupChoiceField, ObfuscatedInput, WriteOnlyInput, WriteOnlyTextarea
 
 
 def test_utils_groupchoicefield(db):
@@ -31,7 +31,6 @@ def test_writeonlyinput(db):
     assert field.render("name", "value")
     assert field.value_from_datadict({"HARD_THRESHOLD": "***"}, {}, "HARD_THRESHOLD") == "abc"
     assert field.value_from_datadict({"HARD_THRESHOLD": "123"}, {}, "HARD_THRESHOLD") == "123"
-
 
 
 def test_durationfield(db):

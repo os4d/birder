@@ -8,12 +8,14 @@ from durations_nlp import Duration
 
 from birder.config.celery import app
 from birder.models import LogCheck, Monitor
+from birder.ws.utils import notify_ui
 
 
 @app.task
 def queue_trigger(pk: str) -> dict[str, bool]:
     res = Monitor.objects.get(active=True, pk=pk).trigger()
     cache.set("system:last_check", timezone.now().strftime("%Y %b %d %H:%M"), timeout=86400)
+    notify_ui("ping")
     return {"result": res}
 
 

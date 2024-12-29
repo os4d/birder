@@ -52,7 +52,7 @@ class ConfigForm(forms.Form, metaclass=DefaultsMetaclass):
         if self.is_bound:  # Stop further processing.
             for k, v in self.cleaned_data.items():
                 if isinstance(self.fields[k], WriteOnlyField) and v == WriteOnlyField.MASK:
-                    self.cleaned_data[k] = self.initial[k]
+                    self.cleaned_data[k] = self.initial.get(k)
 
 
 class BaseCheck:
