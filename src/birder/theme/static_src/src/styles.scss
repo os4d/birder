@@ -26,7 +26,13 @@ body {
     @apply w-16;
   }
 }
-
+.offline {
+  -webkit-filter: blur(4px);
+  -moz-filter: blur(4px);
+  -ms-filter: blur(4px);
+  -o-filter: blur(4px);
+  filter: blur(4px);
+}
 #monitor-grid {
   @apply w-full grid grid-cols-1 gap-8 px-4 sm:grid-cols-2 sm:gap-2 md:grid-cols-3 xl:grid-cols-4 xl:px-8;
   div.monitor-panel {
