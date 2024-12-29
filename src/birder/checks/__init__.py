@@ -7,11 +7,13 @@ from .celery import CeleryCheck
 from .ftp import FtpCheck
 from .http import HttpCheck
 from .json import JsonCheck
+from .ldap import LDAPCheck
 from .memcache import MemCacheCheck
 from .mysql import MySQLCheck
 from .pg import PostgresCheck
 from .redis import RedisCheck
 from .registry import registry
+from .smtp import SMTPCheck
 from .ssh import SSHCheck
 from .tcp import TCPCheck
 from .xml import XMLCheck
@@ -28,6 +30,8 @@ registry.register(AmqpCheck)
 registry.register(CeleryCheck)
 registry.register(TCPCheck)
 registry.register(XMLCheck)
+registry.register(SMTPCheck)
+registry.register(LDAPCheck)
 
 
 def parse_uri(uri: str) -> dict[str, str | Any]:

@@ -50,3 +50,26 @@ services:
     ports:
       - "25672:5672"
       - "21567:15672"
+  ldap:
+    image: bitnami/openldap
+    ports:
+      - '1389:1389'
+      - '1636:1636'
+    environment:
+      LDAP_ADMIN_USERNAME: admin
+      LDAP_ADMIN_PASSWORD: password
+      LDAP_USERS: user
+      LDAP_PASSWORDS: password
+      LDAP_ROOT: dc=birder,dc=org
+      LDAP_ADMIN_DN: cn=admin,dc=birder,dc=org
+
+  smtp:
+    image: bytemark/smtp
+    restart: always
+    ports:
+      - "2587:25"
+    environment:
+      RELAY_HOST: smtp.example.com
+      RELAY_PORT: 587
+      RELAY_USERNAME: admin
+      RELAY_PASSWORD: password

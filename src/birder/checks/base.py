@@ -1,3 +1,4 @@
+from functools import cached_property
 from typing import TYPE_CHECKING, Any
 
 from django import forms
@@ -19,8 +20,39 @@ class DefaultsMetaclass(DeclarativeFieldsMetaclass):
         return new_class
 
 
+class WriteOnlyWidget(forms.TextInput):
+    def __init__(self, attrs: dict[str, Any] | None = None, render_value: bool = False) -> None:
+        super().__init__(attrs)
+        self.render_value = render_value
+
+    def get_context(self, name: str, value: Any, attrs: Any) -> dict[str, Any]:
+        if not self.render_value:
+            value = WriteOnlyField.MASK
+        return super().get_context(name, value, attrs)
+
+
+class WriteOnlyField(forms.CharField):
+    widget = WriteOnlyWidget
+    MASK = "***"
+
+
 class ConfigForm(forms.Form, metaclass=DefaultsMetaclass):
-    pass
+    @cached_property
+    def changed_data(self) -> list[str]:
+        return [
+            name for name, bf in self._bound_items() if not isinstance(bf.field, WriteOnlyField) and bf._has_changed()
+        ] + [
+            name
+            for name, bf in self._bound_items()
+            if isinstance(bf.field, WriteOnlyField) and self.cleaned_data[name] != self.initial[name]
+        ]
+
+    def full_clean(self) -> None:
+        super().full_clean()
+        if self.is_bound:  # Stop further processing.
+            for k, v in self.cleaned_data.items():
+                if isinstance(self.fields[k], WriteOnlyField) and v == WriteOnlyField.MASK:
+                    self.cleaned_data[k] = self.initial[k]
 
 
 class BaseCheck:
@@ -42,7 +74,7 @@ class BaseCheck:
     def clean_config(cls, cfg: dict[str, Any]) -> dict[str, Any]:
         return cfg
 
-    @property
+    @cached_property
     def config(self) -> dict[str, Any]:
         cfg = {**self.config_class.DEFAULTS, **self._configuration}
         frm = self.config_class(cfg)

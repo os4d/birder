@@ -83,5 +83,5 @@ class LogCheckAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[LogCh
     list_filter = ("status", "timestamp", ("monitor", AutoCompleteFilter))
     readonly_fields = ("timestamp", "monitor", "status", "result")
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request:HttpRequest) -> bool:
         return False

@@ -4,8 +4,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from redis import Redis as RedisClient
 
 from ..exceptions import CheckError
-from ..widgets import TokenInput
-from .base import BaseCheck, ConfigForm
+from .base import BaseCheck, ConfigForm, WriteOnlyField
 
 
 class RedisConfig(ConfigForm):
@@ -13,7 +12,7 @@ class RedisConfig(ConfigForm):
     port = forms.IntegerField(validators=[MinValueValidator(1)], initial=6379)
     socket_timeout = forms.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], initial=2)
     socket_connect_timeout = forms.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], initial=2)
-    password = forms.CharField(required=False, widget=TokenInput)
+    password = WriteOnlyField(required=False)
 
 
 class RedisCheck(BaseCheck):

@@ -8,6 +8,8 @@
 [![Documentation](https://github.com/os4d/birder/actions/workflows/docs.yml/badge.svg)](https://os4d.github.io/birder/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/os4d/birder)](https://hub.docker.com/repository/docker/os4d/birder/tags)
 
+![screenshot](screenshot.png)
+
 
 Birder is an Open source service uptime monitor.
 It is not intended to be a replacement of Nagios or other system administrator's monitoring tools,
@@ -25,6 +27,8 @@ its audience is web site users to display SLA compliance and systems availabilit
  - MemCached
  - SSH
  - FTP
+ - SMTP
+ - LDAP / ActiveDirectory
 
 ### Specialised Checkers
  

@@ -6,8 +6,7 @@ from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 from ..exceptions import CheckError
-from ..widgets import TokenInput
-from .base import BaseCheck, ConfigForm
+from .base import BaseCheck, ConfigForm, WriteOnlyField
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +16,7 @@ class FtpConfig(ConfigForm):
     port = forms.IntegerField(validators=[MinValueValidator(1)], initial=21)
     timeout = forms.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], initial=2)
     user = forms.CharField(required=False)
-    passwd = forms.CharField(required=False, widget=TokenInput)
+    passwd = WriteOnlyField(required=False)
 
 
 class FtpCheck(BaseCheck):

@@ -6,8 +6,7 @@ from kombu import Connection as KombuConnection
 from kombu.exceptions import OperationalError
 
 from ..exceptions import CheckError
-from ..widgets import TokenInput
-from .base import BaseCheck, ConfigForm
+from .base import BaseCheck, ConfigForm, WriteOnlyField
 
 
 class AmqpConfig(ConfigForm):
@@ -16,7 +15,7 @@ class AmqpConfig(ConfigForm):
     ssl = forms.BooleanField(required=False, initial=False)
     connect_timeout = forms.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], initial=2)
     userid = forms.CharField(required=False)
-    password = forms.CharField(required=False, widget=TokenInput)
+    password = WriteOnlyField(required=False)
 
 
 class AmqpCheck(BaseCheck):

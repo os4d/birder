@@ -5,8 +5,7 @@ from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator, URLValidator
 
 from ..exceptions import CheckError
-from ..widgets import TokenInput
-from .base import BaseCheck, ConfigForm
+from .base import BaseCheck, ConfigForm, WriteOnlyField
 
 
 class SeparatedValuesField(forms.Field):
@@ -39,7 +38,7 @@ class BaseHttpConfig(ConfigForm):
     timeout = forms.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)], initial=2)
     status_success = SeparatedValuesField(required=True, initial="200")
     username = forms.CharField(required=False)
-    password = forms.CharField(required=False, widget=TokenInput)
+    password = WriteOnlyField(required=False)
 
 
 class HttpConfig(BaseHttpConfig):

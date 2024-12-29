@@ -1,8 +1,8 @@
 from typing import Any
 
 from celery import Celery as CeleryApp
-from celery.exceptions import CeleryError
 from celery.app.control import Control
+from celery.exceptions import CeleryError
 from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator
 

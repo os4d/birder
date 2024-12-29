@@ -6,8 +6,7 @@ from django.core.validators import MinValueValidator
 from pexpect import pxssh
 
 from ..exceptions import CheckError
-from ..widgets import TokenInput
-from .base import BaseCheck, ConfigForm
+from .base import BaseCheck, ConfigForm, WriteOnlyField
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +15,7 @@ class SSHConfig(ConfigForm):
     server = forms.CharField(required=True)
     port = forms.IntegerField(validators=[MinValueValidator(1)], initial=22)
     username = forms.CharField(required=False)
-    password = forms.CharField(required=False, widget=TokenInput)
+    password = WriteOnlyField(required=False)
     login_timeout = forms.IntegerField(initial=2)
 
 
