@@ -73,3 +73,14 @@ services:
       RELAY_PORT: 587
       RELAY_USERNAME: admin
       RELAY_PASSWORD: password
+
+  valkey:
+    image: valkey/valkey:alpine
+    restart: always
+    ports:
+      - "2587:25"
+    environment:
+      RELAY_HOST: smtp.example.com
+      RELAY_PORT: 587
+      RELAY_USERNAME: admin
+      RELAY_PASSWORD: password

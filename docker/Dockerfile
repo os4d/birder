@@ -33,9 +33,12 @@ git \
 libfontconfig1 \
 libgconf-2-4 \
 libglib2.0-0 \
+libldap2-dev \
 libnss3 \
+libsasl2-dev \
 libssl-dev \
 libxml2-dev  \
+libzbar-dev \
 python3-dev \
 zlib1g-dev  \
 " \

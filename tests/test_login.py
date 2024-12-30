@@ -14,7 +14,7 @@ def user(db):
     return UserFactory()
 
 
-@override_settings(SOCIAL_AUTH_GOOGLE_OAUTH2_KEY="1", SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET="2")
+@override_settings(SOCIAL_AUTH_GOOGLE_OAUTH2_KEY="1", SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET="2", SESSION_ENGINE = "django.contrib.sessions.backends.db")
 def test_login(db, client):
     session = client.session
     session["google-oauth2_state"] = "1"

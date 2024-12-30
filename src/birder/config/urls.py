@@ -11,6 +11,7 @@ urlpatterns = [
     path("login/", views.LoginView.as_view(), name="login"),
     path("logout/", LogoutView.as_view(), name="logout"),
     path("<int:pk>", views.MonitorDetail.as_view(), name="monitor-detail"),
+    path("trigger/<int:pk>/<str:token>/", views.trigger, name="trigger"),
     path("", views.Index.as_view(), name="index"),
 ]
 if "django_browser_reload" in settings.INSTALLED_APPS:  # pragma: no cover

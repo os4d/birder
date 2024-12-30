@@ -15,7 +15,7 @@ pytestmark = pytest.mark.django_db
 
 
 @pytest.fixture
-def environment() -> dict[str, str]:
+def env() -> dict[str, str]:
     return {
         "ADMIN_EMAIL": "test@example.com",
         "ADMIN_PASSWORD": "test",
@@ -38,7 +38,7 @@ def environment() -> dict[str, str]:
 
 def test_upgrade_init(
     monkeypatch: pytest.MonkeyPatch,
-    environment: dict[str, str],
+    env: dict[str, str],
     tmp_path: Path,
     settings: "SettingsWrapper",
 ) -> None:
@@ -46,7 +46,7 @@ def test_upgrade_init(
     assert not Path(static_root_path).exists()
     out = StringIO()
     settings.STATIC_ROOT = str(static_root_path.absolute())
-    with mock.patch.dict(os.environ, {**environment}, clear=True):
+    with mock.patch.dict(os.environ, {**env}, clear=True):
         call_command("upgrade", stdout=out)
         assert "error" not in str(out.getvalue())
         call_command("upgrade", stdout=out)

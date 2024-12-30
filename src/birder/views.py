@@ -1,11 +1,16 @@
+from gc import get_objects
 from typing import Any
 
 from django.contrib.auth.views import LoginView as LoginView_
+from django.http.request import HttpRequest
+from django.http.response import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView, TemplateView
 
 from birder.config import settings
 from birder.forms import LoginForm
 from birder.models import Monitor
+from birder.tasks import queue_trigger
 
 
 class CommonContextMixin:
@@ -32,3 +37,9 @@ class MonitorDetail(CommonContextMixin, DetailView):
 class LoginView(CommonContextMixin, LoginView_):
     template_name = "login.html"
     form_class = LoginForm
+
+
+def trigger(request: HttpRequest, pk: str, token:str) -> HttpResponse:
+    m: Monitor = get_object_or_404(Monitor, pk=pk, token=token)
+    queue_trigger(m.pk)
+    return HttpResponse("Ok")

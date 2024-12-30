@@ -39,13 +39,16 @@ var init = function () {
     }
 
     chatSocket.onmessage = function (e) {
-        const data = JSON.parse(e.data);
-        if (data.type === 'send.ping') {
-            $('#lastUpdate').text(data.content.healthcheck);
-        } else if (data.type === 'send.json') {
-            let $target = $('#monitor-' + data.content.id);
-            $target.find('.last-check').text(data.content.last_check);
-            if (data.content.status) {
+        const payload = JSON.parse(e.data);
+        console.log(111, "onmessage", payload);
+        if (payload.reason === 'update') {
+            window.location.reload();
+        }else if (payload.reason === 'ping') {
+            $('#lastUpdate').text(payload.ts);
+        } else if (payload.reason === 'status') {
+            let $target = $('#monitor-' + payload.content.id);
+            $target.find('.last-check').text(payload.content.last_check);
+            if (payload.content.status) {
                 $target.find('img.status').attr("src", "/static/images/ok.svg");
             } else {
                 $target.find('img.status').attr("src", "/static/images/ko.svg");

@@ -1,15 +1,14 @@
 from .base import get_factory_for_model
-from .django_celery_beat import PeriodicTaskFactory
 from .logcheck import LogCheckFactory
 from .monitor import MonitorFactory
-from .project import ProjectFactory
+from .project import ProjectFactory, EnvironmentFactory
 from .user import SuperUserFactory, UserFactory
 from .userrole import UserRoleFactory
 
 __all__ = [
+    "EnvironmentFactory",
     "LogCheckFactory",
     "MonitorFactory",
-    "PeriodicTaskFactory",
     "ProjectFactory",
     "SuperUserFactory",
     "UserFactory",

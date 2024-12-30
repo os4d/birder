@@ -29,12 +29,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "admin_extra_buttons",
+    "django_dramatiq",
+    "dramatiq_crontab",
     "adminfilters",
     "constance",
     "flags",
     "social_django",
-    "django_celery_beat",
-    "django_celery_results",
     "tailwind",
     "birder",
     "birder.theme",
@@ -51,6 +51,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_COOKIE_NAME = "birder_sessionid"
 
 ROOT_URLCONF = "birder.config.urls"
 
@@ -177,7 +180,9 @@ LOGGING = {
 }
 
 from .fragments.app import *  # noqa
-from .fragments.celery import *  # noqa
+
+# from .fragments.celery import *  # noqa
+from .fragments.dramatiq import *  # noqa
 from .fragments.constance import *  # noqa
 from .fragments.social_auth import *  # noqa
 from .fragments.tailwind import *  # noqa

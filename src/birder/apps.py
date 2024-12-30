@@ -7,3 +7,4 @@ class Config(AppConfig):
 
     def ready(self) -> None:
         from . import tasks  # noqa
+        from . import signals  # noqa
