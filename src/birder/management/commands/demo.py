@@ -48,6 +48,15 @@ class Command(BaseCommand):
                     strategy=fqn(checker),
                     defaults={"strategy": fqn(checker), "configuration": config},
                     verbosity=Monitor.Verbosity.FULL,
+                    notes = f"""
+## {checker.pragma[0]}
+
+{fqn(checker)}
+
+url: `{url}`
+
+
+"""
                 )
                 m.trigger()
                 if frm.is_valid():

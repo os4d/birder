@@ -117,6 +117,7 @@ dependencies = [
     { name = "django-dramatiq" },
     { name = "django-environ" },
     { name = "django-flags" },
+    { name = "django-markdown-deux" },
     { name = "django-redis" },
     { name = "django-regex" },
     { name = "django-strategy-field" },
@@ -182,6 +183,7 @@ requires-dist = [
     { name = "django-dramatiq", specifier = ">=0.12.0" },
     { name = "django-environ", specifier = ">=0.11.2" },
     { name = "django-flags", specifier = ">=5.0.13" },
+    { name = "django-markdown-deux", specifier = ">=1.0.6" },
     { name = "django-redis", specifier = ">=5.4.0" },
     { name = "django-regex", specifier = ">=0.5.0" },
     { name = "django-strategy-field", specifier = ">=3.1.0" },
@@ -646,6 +648,15 @@ wheels = [
 ]
 
 [[package]]
+name = "django-markdown-deux"
+version = "1.0.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "markdown2" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/26/af/3ed785b661e4545709ba1618926bb33bd585d1fd2faa42a548756743e874/django-markdown-deux-1.0.6.zip", hash = "sha256:1f7b4da6b4dd1a9a84e3da90887d356f8afdd9a1e7d6468c081b8ac50a7980b1", size = 18157 }
+
+[[package]]
 name = "django-redis"
 version = "5.4.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1020,6 +1031,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/b6/17/71e9984cf0570cd202ac0a1c9ed5c1b8889b0fc8dc736f5ef0ffb181c284/lxml-5.3.0-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:df5c7333167b9674aa8ae1d4008fa4bc17a313cc490b2cca27838bbdcc6bb15b", size = 5011053 },
     { url = "https://files.pythonhosted.org/packages/69/68/9f7e6d3312a91e30829368c2b3217e750adef12a6f8eb10498249f4e8d72/lxml-5.3.0-cp313-cp313-win32.whl", hash = "sha256:c802e1c2ed9f0c06a65bc4ed0189d000ada8049312cfeab6ca635e39c9608957", size = 3485634 },
     { url = "https://files.pythonhosted.org/packages/7d/db/214290d58ad68c587bd5d6af3d34e56830438733d0d0856c0275fde43652/lxml-5.3.0-cp313-cp313-win_amd64.whl", hash = "sha256:406246b96d552e0503e17a1006fd27edac678b3fcc9f1be71a2f94b4ff61528d", size = 3814417 },
+]
+
+[[package]]
+name = "markdown2"
+version = "2.5.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a0/61/d3c0c21280ba1fc348822a4410847cf78f99bba8625755a5062a44d2e228/markdown2-2.5.2.tar.gz", hash = "sha256:3ac02226a901c4b2f6fc21dbd17c26d118d2c25bcbb28cee093a1f8b5c46f3f1", size = 141583 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/68/53/baf1f8bd93a9cd5a1b6116041f17dba742bef57cbddb0484f792753c3a2e/markdown2-2.5.2-py3-none-any.whl", hash = "sha256:bed80d301a33845be633acde47a67cf265c57ddf9cbe3cb11c49c18016c2f581", size = 48517 },
 ]
 
 [[package]]

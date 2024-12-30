@@ -1,4 +1,4 @@
-{% extends "layout.html" %}{% load i18n icons %}
+{% extends "layout.html" %}{% load i18n icons markdown_deux_tags %}
 {% block content %}
     <div class="px-2 sm:px-10 md:px-32 xl:px-80">
         <div id="monitor-detail">
@@ -14,10 +14,11 @@
             <div class="my-2">
                 {{ monitor.strategy.address }}
             </div>
-            <div class="">
-
+            <div class="my-2">
+                {{ monitor.notes|markdown }}
             </div>
-        <div class="font-mono text-sm mt-10">
+            <div class="border-b">&nbsp</div>
+        <div class="font-mono text-sm mt-3">
             {% for entry in monitor.logs.all %}
                 <div class="w-full my-2 align-middle">
                 <div class="inline-flex flex-shrink">{{ entry.timestamp }}</div>

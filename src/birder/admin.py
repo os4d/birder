@@ -42,7 +42,7 @@ class MonitorAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[Monito
             queue_trigger.send(m.id)
 
     def get_fields(self, request: HttpRequest, obj: Monitor | None = None) -> list[str]:
-        return ["name", "strategy", "project", "verbosity", "active", "grace_period"]
+        return ["name", "strategy", "project", "verbosity", "active", "grace_period", "notes"]
 
     @button(label="Refresh Token")
     def regenerate_token(self, request: HttpRequest, pk: str) -> HttpResponse:
