@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from django_webtest import DjangoTestApp
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
 
-    from birder.models import User, Monitor
+    from birder.models import Monitor, User
 
 here = Path(__file__).parent
 sys.path.insert(0, str(here / "../src"))
@@ -21,6 +21,7 @@ def pytest_configure(config):
     os.environ["DJANGO_SETTINGS_MODULE"] = "birder.config.settings"
     os.environ["SECRET_KEY"] = "super-secret"
     import django
+
     django.setup()
 
 
@@ -41,12 +42,14 @@ def mocked_responses():
 @pytest.fixture
 def environment(db):
     from testutils.factories import EnvironmentFactory
+
     return EnvironmentFactory()
 
 
 @pytest.fixture
 def project(db):
     from testutils.factories import ProjectFactory
+
     return ProjectFactory()
 
 

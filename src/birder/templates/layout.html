@@ -39,7 +39,7 @@
 
         <div class="order-1 md:order-2">
             <div class="flex items-center tracking-wide no-underline hover:no-underline font-bold  text-xl">
-                <img class="w-16 " src="{% static "images/birder.svg" %}">
+                <img class="w-16 birder-logo" src="{% static "images/birder.svg" %}">
                 Birder
             </div>
         </div>
@@ -55,7 +55,7 @@
                     <a class="inline-block no-underline " href="{% url "login" %}">login</a>
                 {% endif %}
                 {% if user.is_staff %}
-                    <a class="inline-block no-underline px-2"
+                    <a class="inline-block no-underline px-2" target="_admin"
                        href="{% url "admin:index" %}">{% translate "admin" %}</a>
                 {% endif %}
         </div>

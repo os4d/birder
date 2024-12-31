@@ -1,11 +1,13 @@
 import traceback
-import uuid
+from functools import cached_property
 from typing import TYPE_CHECKING
 
 from django.contrib.auth.models import AbstractUser, Group
 from django.core.cache import cache
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models.functions.text import Lower
+from django.templatetags.static import static
 from django.utils import timezone
 from django_stubs_ext.db.models import TypedModelMeta
 from strategy_field.fields import StrategyField
@@ -13,6 +15,7 @@ from strategy_field.fields import StrategyField
 from birder.checks.registry import registry
 from birder.exceptions import CheckError
 from birder.utils.security import get_random_token
+from birder.ws.utils import notify_ui
 
 if TYPE_CHECKING:
     from birder.checks.base import BaseCheck
@@ -56,6 +59,10 @@ class UserRole(models.Model):
 
 
 class Monitor(models.Model):
+    SUCCESS = "ok"
+    WARN = "warn"
+    FAIL = "ko"
+
     class Verbosity(models.IntegerChoices):
         NONE = (0, "None")
         SUCCESS = (1, "Success")
@@ -68,7 +75,9 @@ class Monitor(models.Model):
     env = models.ForeignKey(Environment, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=255, unique=True)
     position = models.PositiveIntegerField(default=0)
-    notes = models.TextField(blank=True, help_text="short description do display in the monitor detail page")
+    description = models.TextField(blank=True, help_text="short description  do display in the monitor detail page")
+    notes = models.TextField(blank=True, help_text="Notes about the monitor. Only visible to Staff")
+    custom_icon = models.CharField(blank=True, default="", max_length=255)
 
     strategy = StrategyField(registry=registry)
     configuration = models.JSONField(default=dict, help_text="Checker configuration")
@@ -76,14 +85,21 @@ class Monitor(models.Model):
     data = models.BinaryField(blank=True, null=True, default=None)
     data_file = models.FileField(blank=True, null=True, default=None)
 
-    token = models.CharField(default=get_random_token,
-                             null=True,
-                             blank=True,
-                             max_length=255,
-                             editable=False, help_text="Token to use for external API invocation")
+    token = models.CharField(
+        default=get_random_token,
+        blank=True,
+        max_length=1000,
+        editable=False,
+        help_text="Token to use for external API invocation",
+    )
 
     active = models.BooleanField(default=True)
-    grace_period = models.PositiveIntegerField(default=5)
+    warn_threshold = models.PositiveIntegerField(default=1,
+                                                 validators=[MinValueValidator(0), MaxValueValidator(9)],
+                                                 help_text="how many consecutive failures produce an error")
+    err_threshold = models.PositiveIntegerField(default=5,
+                                                validators=[MinValueValidator(0), MaxValueValidator(9)],
+                                                help_text="how many consecutive failures produce an error")
     verbosity = models.IntegerField(choices=Verbosity.choices, default=Verbosity.NONE)
 
     class Meta(TypedModelMeta):
@@ -95,11 +111,44 @@ class Monitor(models.Model):
     def __str__(self) -> str:
         return self.name
 
-    def count(self, result: bool) -> None:
-        cache.set(f"monitor:{self.pk}", result, timeout=86400)
-        cache.set(f"monitor:check{self.pk}", timezone.now().strftime("%Y %b %d %H:%M"), timeout=86400)
+    @cached_property
+    def icon(self) -> str:
+        if self.custom_icon and self.custom_icon.startswith("http"):
+            return self.custom_icon
+        if self.custom_icon:
+            return static(f"images/icons/{self.custom_icon}")
+        return static(f"images/icons/{self.strategy.icon}")
 
-    def log(self, status: bool, exc: Exception | None = None) -> None:
+    def process(self, result: bool) -> None:
+        key = f"monitor:{self.pk}:count"
+        ts = timezone.now().strftime("%Y %b %d %H:%M")
+        cache.set(f"monitor:{self.pk}:last_check", ts, timeout=86400)
+
+        if result:
+            cache.set(key, 0)
+            current = 0
+            cache.set(f"monitor:{self.pk}:last_success", ts, timeout=86400)
+        else:
+            cache.set(f"monitor:{self.pk}:last_error", ts, timeout=86400)
+            try:
+                cache.incr(key, 1)
+                current = cache.get(key)
+            except ValueError:
+                cache.set(key, 1)
+                current = 1
+        if current > self.err_threshold:
+            st = Monitor.FAIL
+        elif current > self.warn_threshold:
+            st = Monitor.WARN
+        else:
+            st = Monitor.SUCCESS
+        cache.set(f"monitor:{self.pk}", st, timeout=86400)
+        cache.set(key, current  , timeout=86400)
+
+        notify_ui("update", self)
+
+
+    def log(self, status: str, exc: Exception | None = None) -> None:
         if exc:
             message = f"""{exc.__class__.__name__}: {exc}
 
@@ -110,8 +159,6 @@ class Monitor(models.Model):
             LogCheck.objects.create(monitor=self, status=status)
 
     def trigger(self) -> bool:
-        from birder.ws.utils import notify_ui
-
         try:
             result = self.strategy.check(True)
             if (
@@ -119,14 +166,13 @@ class Monitor(models.Model):
                 or (result and self.verbosity == self.Verbosity.SUCCESS)
                 or (not result and self.verbosity == self.Verbosity.FAIL)
             ):
-                self.log(True)
+                self.log(Monitor.SUCCESS)
         except CheckError as e:
             if self.verbosity in [self.Verbosity.ERROR, self.Verbosity.FULL]:
-                self.log(False, e)
+                self.log(Monitor.FAIL, e)
             result = False
 
-        notify_ui("update", self)
-        self.count(result)
+        self.process(result)
         return result
 
     @property
@@ -134,8 +180,20 @@ class Monitor(models.Model):
         return cache.get(f"monitor:{self.pk}")
 
     @property
+    def failures(self) -> bool:
+        return cache.get(f"monitor:{self.pk}:count") or ""
+
+    @property
     def last_check(self) -> bool:
-        return cache.get(f"monitor:check{self.pk}")
+        return cache.get(f"monitor:{self.pk}:last_check") or ""
+
+    @property
+    def last_success(self) -> bool:
+        return cache.get(f"monitor:{self.pk}:last_success") or ""
+
+    @property
+    def last_error(self) -> bool:
+        return cache.get(f"monitor:{self.pk}:last_error") or ""
 
     def regenerate_token(self, save: bool = True) -> None:
         self.token = get_random_token()
@@ -145,7 +203,7 @@ class Monitor(models.Model):
 
 class LogCheck(models.Model):
     monitor = models.ForeignKey(Monitor, on_delete=models.CASCADE, related_name="logs")
-    status = models.BooleanField(default=None, null=True)
+    status = models.CharField(default="", null=True)
     timestamp = models.DateTimeField(default=timezone.now)
     payload = models.TextField(blank=True)
 

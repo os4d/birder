@@ -1,4 +1,7 @@
 {% extends "admin_extra_buttons/action_page.html" %}
+{% block extrahead %}{{ block.super }}
+    {{ form.media }}
+{% endblock %}
 
 {% block action-content %}
     <form method="post" id="config_form">

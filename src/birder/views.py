@@ -1,4 +1,3 @@
-from gc import get_objects
 from typing import Any
 
 from django.contrib.auth.views import LoginView as LoginView_
@@ -39,7 +38,7 @@ class LoginView(CommonContextMixin, LoginView_):
     form_class = LoginForm
 
 
-def trigger(request: HttpRequest, pk: str, token:str) -> HttpResponse:
+def trigger(request: HttpRequest, pk: str, token: str) -> HttpResponse:
     m: Monitor = get_object_or_404(Monitor, pk=pk, token=token)
     queue_trigger(m.pk)
     return HttpResponse("Ok")

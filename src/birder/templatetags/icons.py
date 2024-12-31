@@ -5,12 +5,19 @@ register = template.Library()
 
 
 @register.simple_tag()
-def icon(image: str) -> str:
-    return static(f"images/{image}")
+def status(m: str) -> str:
+    if m:
+        return static(f"images/{m}.svg")
+    return ""
+    # if m == "ko":
+    #     return static("images/ko.svg")
+    # elif m == "warn":
+    #     return static("images/warn.svg")
+    # return static("images/ok.svg")
 
 
 @register.simple_tag()
-def status(m: bool) -> str:
-    if m:
-        return static("images/ok.svg")
-    return static("images/ko.svg")
+def number(m: int) -> str:
+    if m > 9:
+        return static(f"images/numbers/#.svg")
+    return static(f"images/numbers/{m}.svg")

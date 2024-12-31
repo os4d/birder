@@ -37,6 +37,19 @@ class WriteOnlyField(forms.CharField):
 
 
 class ConfigForm(forms.Form, metaclass=DefaultsMetaclass):
+    @property
+    def media(self) -> forms.Media:
+        media = super().media
+        media += forms.Media(
+            js=[
+                "admin/js/vendor/jquery/jquery.js",
+                "admin/js/jquery.init.js",
+                "change-icon.js",
+            ],
+            css={"screen": ["birder-admin.css"]},
+        )
+        return media
+
     @cached_property
     def changed_data(self) -> list[str]:
         return [
@@ -80,7 +93,7 @@ class BaseCheck:
         frm = self.config_class(cfg)
         if frm.is_valid():
             return frm.cleaned_data
-        raise forms.ValidationError(frm.errors)
+        return self.config_class.DEFAULTS
 
     @property
     def address(self) -> str:

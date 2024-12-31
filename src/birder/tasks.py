@@ -19,7 +19,7 @@ def queue_trigger(pk: str) -> dict[str, bool]:
     notify_ui("ping")
 
 
-@cron("*/5 * * * *")  # every 5 minutes
+@cron("*/1 * * * *")  # every 5 minutes
 @dramatiq.actor
 def process() -> None:
     for m in Monitor.objects.filter(active=True):

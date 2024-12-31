@@ -16,7 +16,7 @@ CONFIG: "dict[str, ConfigItem]" = {
     "GOOGLE_CLIENT_ID": (str, ""),
     "GOOGLE_CLIENT_SECRET": (str, ""),
     "LOG_LEVEL": (str, "ERROR"),
-    "REDIS_URL": (str, ""),
+    "VALKEY_URL": (str, ""),
     "SOCIAL_AUTH_REDIRECT_IS_HTTPS": (bool, False),
     "SOCIAL_AUTH_RAISE_EXCEPTIONS": (bool, False),
     "SOCIAL_AUTH_WHITELISTED_DOMAINS": (list, []),

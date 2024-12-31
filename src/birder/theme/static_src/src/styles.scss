@@ -15,7 +15,7 @@ body {
   @apply hover:bg-gray-400;
 }
 
-#monitor-detail {
+.monitor-detail {
   @apply rounded-md border-gray-400 border p-2;
   @apply grid grid-cols-1;
   @apply md:px-4;
@@ -23,6 +23,9 @@ body {
     @apply w-16;
   }
   .status{
+    @apply w-16;
+  }
+  .counter{
     @apply w-16;
   }
 }
@@ -47,10 +50,14 @@ body {
   }
 }
 .dark{
+  .birder-logo{
+    filter: invert(99%) sepia(65%) saturate(0%) hue-rotate(200deg) brightness(110%) contrast(100%);
+
+  }
   .icon{
     filter: invert(99%) sepia(65%) saturate(0%) hue-rotate(200deg) brightness(110%) contrast(100%);
   }
-  .status.status{
+  .status.status2{
     filter: invert(22%) sepia(65%) saturate(7444%) hue-rotate(355deg) brightness(108%) contrast(129%);
   }
 }

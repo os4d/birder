@@ -1,7 +1,7 @@
 from .base import get_factory_for_model
 from .logcheck import LogCheckFactory
 from .monitor import MonitorFactory
-from .project import ProjectFactory, EnvironmentFactory
+from .project import EnvironmentFactory, ProjectFactory
 from .user import SuperUserFactory, UserFactory
 from .userrole import UserRoleFactory
 

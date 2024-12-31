@@ -1,5 +1,3 @@
-import factory
-
 from birder.models import Environment, Project
 
 from .base import AutoRegisterModelFactory

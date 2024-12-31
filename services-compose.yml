@@ -37,13 +37,13 @@ services:
       USERS: "user|password"
       ADDRESS: localhost
 
-  postgres:
-    image: "postgres:alpine"
-    ports:
-      - "25432:5432"
-    environment:
-      POSTGRES_HOST_AUTH_METHOD=trust: 1
-      POSTGRES_PASSWORD: pwd
+#  postgres:
+#    image: "postgres:alpine"
+#    ports:
+#      - "25432:5432"
+#    environment:
+#      POSTGRES_HOST_AUTH_METHOD=trust: 1
+#      POSTGRES_PASSWORD: pwd
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -74,13 +74,22 @@ services:
       RELAY_USERNAME: admin
       RELAY_PASSWORD: password
 
-  valkey:
-    image: valkey/valkey:alpine
-    restart: always
+#  valkey:
+#    image: valkey/valkey:alpine
+#    restart: always
+#    ports:
+#      - "2587:25"
+#    environment:
+#      RELAY_HOST: smtp.example.com
+#      RELAY_PORT: 587
+#      RELAY_USERNAME: admin
+#      RELAY_PASSWORD: password
+
+  minio:
+    image: quay.io/minio/minio
     ports:
-      - "2587:25"
+      - "9000:9000"
+      - "9001:9001"
     environment:
-      RELAY_HOST: smtp.example.com
-      RELAY_PORT: 587
-      RELAY_USERNAME: admin
-      RELAY_PASSWORD: password
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: password

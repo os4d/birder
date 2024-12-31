@@ -3,6 +3,7 @@ from typing import Any
 import requests
 from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator, URLValidator
+from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 
 from ..exceptions import CheckError
 from .base import BaseCheck, ConfigForm, WriteOnlyField
@@ -39,6 +40,15 @@ class BaseHttpConfig(ConfigForm):
     status_success = SeparatedValuesField(required=True, initial="200")
     username = forms.CharField(required=False)
     password = WriteOnlyField(required=False)
+    auth_type = forms.ChoiceField(
+        choices=(
+            ("", "None"),
+            ("basic", "Basic"),
+            ("digest", "Digest"),
+            ("token", "Token"),
+        ),
+        required=False,
+    )
 
 
 class HttpConfig(BaseHttpConfig):
@@ -49,6 +59,7 @@ class HttpCheck(BaseCheck):
     icon = "http.svg"
     pragma = ["http", "https"]
     config_class = HttpConfig
+    address_format: str = "{url}"
 
     @classmethod
     def clean_config(cls, cfg: dict[str, Any]) -> dict[str, Any]:
@@ -56,15 +67,22 @@ class HttpCheck(BaseCheck):
             cfg["url"] = cfg.get("address", "")
         return cfg
 
-    @property
-    def address(self) -> str:
-        return self.config.get("url")
-
     def check(self, raise_error: bool = False) -> bool:
         try:
             timeout = self.config["timeout"]
             match = self.config["match"]
-            res = requests.get(self.config["url"], timeout=timeout)
+            username, password = self.config["username"], self.config["password"]
+            headers = {}
+            if self.config["auth_type"] == "basic":
+                auth = HTTPBasicAuth(username, password)
+            elif self.config["auth_type"] == "digest":
+                auth = HTTPDigestAuth(username, password)
+            elif self.config["auth_type"] == "token":
+                auth = None
+                headers = {"Authorization": "access_token myToken"}
+            else:
+                auth = None
+            res = requests.get(self.config["url"], timeout=timeout, auth=auth, headers=headers)
             if res.status_code not in self.config["status_success"]:
                 return False
             return not (match and str(match) not in str(res.content))

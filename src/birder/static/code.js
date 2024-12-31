@@ -22,6 +22,7 @@ setDarkMode()
 const address = 'ws://' + window.location.host + '/ws/checks/';
 let interval = null;
 
+
 var init = function () {
     chatSocket = new WebSocket(address);
     chatSocket.onclose = function () {
@@ -35,24 +36,22 @@ var init = function () {
         $('body').removeClass('offline');
         if (interval){
             clearInterval(interval);
+            interval=null;
         }
     }
 
     chatSocket.onmessage = function (e) {
         const payload = JSON.parse(e.data);
-        console.log(111, "onmessage", payload);
         if (payload.reason === 'update') {
             window.location.reload();
         }else if (payload.reason === 'ping') {
             $('#lastUpdate').text(payload.ts);
         } else if (payload.reason === 'status') {
+            console.log(1111, payload.content.name, payload.content.status);
             let $target = $('#monitor-' + payload.content.id);
             $target.find('.last-check').text(payload.content.last_check);
-            if (payload.content.status) {
-                $target.find('img.status').attr("src", "/static/images/ok.svg");
-            } else {
-                $target.find('img.status').attr("src", "/static/images/ko.svg");
-            }
+            $target.find('img.icon').attr("src", payload.content.icon);
+            $target.find('img.status').attr("src", "/static/images/" +  payload.content.status + ".svg");
         }
     };
 

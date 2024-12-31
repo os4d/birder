@@ -34,3 +34,12 @@ clean: ## clean development tree
 
 lint:
 	pre-commit run --all-files
+
+reset_migrations:
+	rm -f src/birder/migrations/00*
+	dropdb --if-exists birder
+	createdb birder
+	./manage.py makemigrations birder
+	git add src/birder/migrations/*
+	./manage.py upgrade
+	./manage.py demo

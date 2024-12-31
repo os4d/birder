@@ -1,7 +1,11 @@
+from pathlib import Path
+
 from admin_extra_buttons.decorators import button
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
 from adminfilters.mixin import AdminFiltersMixin
+from django import forms
+from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin as _UserAdmin
 from django.db.models import QuerySet
@@ -10,6 +14,7 @@ from django.shortcuts import render
 
 from .models import Environment, LogCheck, Monitor, Project, User
 from .tasks import queue_trigger
+from .ws.utils import notify_ui
 
 
 @admin.register(User)
@@ -22,16 +27,29 @@ class ProjectAdmin(admin.ModelAdmin[Project]):
     search_fields = ("name",)
 
 
+class ChangeIconForm(forms.Form):
+    icon = forms.CharField(required=False)
+
+    @property
+    def media(self) -> forms.Media:
+        media = super().media
+        media += forms.Media(
+            js=[
+                "admin/js/vendor/jquery/jquery.js",
+                "admin/js/jquery.init.js",
+                "change-icon.js",
+            ],
+            css={"screen": ["birder-admin.css"]},
+        )
+        return media
+
+
 @admin.register(Monitor)
 class MonitorAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[Monitor]):
     search_fields = ("name",)
-    list_display = ("name", "status", "checker", "verbosity")
+    list_display = ("name", "status", "checker", "verbosity", "status")
     list_filter = (("env", LinkedAutoCompleteFilter.factory(parent=None)),)
     actions = ["check_selected"]
-
-    @admin.display(boolean=True)
-    def status(self, obj: Monitor) -> bool:
-        return obj.status
 
     @admin.display(ordering="strategy")
     def checker(self, obj: Monitor) -> bool:
@@ -42,12 +60,41 @@ class MonitorAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[Monito
             queue_trigger.send(m.id)
 
     def get_fields(self, request: HttpRequest, obj: Monitor | None = None) -> list[str]:
-        return ["name", "strategy", "project", "verbosity", "active", "grace_period", "notes"]
+        return [
+            "name",
+            "strategy",
+            "project",
+            "verbosity",
+            "active",
+            "warn_threshold",
+            "err_threshold",
+            "custom_icon",
+            "description",
+            "notes",
+        ]
 
     @button(label="Refresh Token")
     def regenerate_token(self, request: HttpRequest, pk: str) -> HttpResponse:
         self.get_common_context(request, pk)
         self.object.regenerate_token(True)
+
+    @button(label="Change Icon")
+    def change_icon(self, request: HttpRequest, pk: str) -> HttpResponse:
+        ctx = self.get_common_context(request, pk)
+        ctx["icons"] = sorted(
+            [p.name for p in (Path(settings.PACKAGE_DIR) / "static" / "images" / "icons").glob("*.*")]
+        )
+        if request.method == "POST":
+            form = ChangeIconForm(request.POST)
+            if form.is_valid():
+                self.object.custom_icon = form.cleaned_data["icon"]
+                self.object.save()
+                notify_ui("refresh", monitor=self.object, crud="update")
+                return HttpResponseRedirect("..")
+        form = ChangeIconForm(initial={"icon": self.object.custom_icon})
+        ctx["form"] = form
+
+        return render(request, "admin/birder/monitor/change_icon.html", ctx)
 
     @button(label="Check")
     def manual_check(self, request: HttpRequest, pk: str) -> HttpResponse:
@@ -79,7 +126,7 @@ class MonitorAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[Monito
         else:
             form = monitor.strategy.config_class(initial=monitor.configuration)
         ctx["form"] = form
-        return render(request, "admin/monitor/configure.html", ctx)
+        return render(request, "admin/birder/monitor/configure.html", ctx)
 
 
 @admin.register(LogCheck)

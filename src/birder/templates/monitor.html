@@ -1,33 +1,56 @@
-{% extends "layout.html" %}{% load i18n icons markdown_deux_tags %}
+{% extends "layout.html" %}{% load i18n icons markdown_deux_tags static %}
 {% block content %}
     <div class="px-2 sm:px-10 md:px-32 xl:px-80">
-        <div id="monitor-detail">
+        <div id="monitor-{{ monitor.pk }}" class="monitor-detail">
             <div class="flex items-start mb-4">
-                <div class="flex-shrink "><img class="icon" src="{% icon monitor.strategy.icon %}"></div>
-                <div class="flex-grow w-max-2/3 text-5xl overflow-clip pl-3">{{ monitor.name|truncatechars:"20" }}
+                <div class="flex-shrink "><img class="icon" src="{{ monitor.icon }}"></div>
+                <div class="flex-grow w-max-2/3 text-5xl overflow-clip pl-3">{{ monitor.name|truncatechars:"20" }}</div>
+                <div class="flex-shrink text-center text-sm">
+                    <img class="w-12 align-top status status-{{ monitor.status }}" src="{% status monitor.status %}">
+                    <img class="w-12 align-top counter" src="{% number monitor.failures %}">
+                    {% if user.is_staff %}
+                        <a class="mt-4" target="_admin"
+                           href="{% url "admin:birder_monitor_change" monitor.pk %}">admin</a>
+                    {% endif %}
                 </div>
-                <img class="w-12 align-top status status-{{ monitor.status }}" src="{% status monitor.status %}">
             </div>
-            <div class="my-2">
-                {{ monitor.last_check }}
+
+            <div class="my-2 flex text-xs">
+                <img class="w-4" src="{% static 'images/clock.svg' %}">
+                <div class="ml-2 last-check">{{ monitor.last_check }}</div>
             </div>
+            <div class="my-2 flex text-xs">
+                <img class="w-4" src="{% static 'images/ok.svg' %}">
+                <div class="ml-2 last-check">{{ monitor.last_success }}</div>
+            </div>
+            <div class="my-2 flex text-xs">
+                <img class="w-4" src="{% static 'images/ko.svg' %}">
+                <div class="ml-2 last-check">{{ monitor.last_failure }}</div>
+            </div>
+
+
             <div class="my-2">
                 {{ monitor.strategy.address }}
             </div>
             <div class="my-2">
-                {{ monitor.notes|markdown }}
+                {{ monitor.description|markdown }}
             </div>
+            {% if user.is_staff %}
+                <div class="my-2 border rounded-sm p-2 border-gray-400 bg-gray-400 text-black">
+                    {{ monitor.notes|markdown }}
+                </div>
+            {% endif %}
             <div class="border-b">&nbsp</div>
-        <div class="font-mono text-sm mt-3">
-            {% for entry in monitor.logs.all %}
-                <div class="w-full my-2 align-middle">
-                <div class="inline-flex flex-shrink">{{ entry.timestamp }}</div>
-                <div class="inline-flex flex-grow">
-                    <img class="w-4 align-top" src="{% status entry.status %}">
-                </div>
-                </div>
-            {% endfor %}
-        </div>
+            <div class="font-mono text-sm mt-3">
+                {% for entry in monitor.logs.all %}
+                    <div class="w-full my-2 align-middle">
+                        <div class="inline-flex flex-shrink">{{ entry.timestamp }}</div>
+                        <div class="inline-flex flex-grow">
+                            <img class="w-4 align-top" src="{% status entry.status %}">
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
 
     </div>

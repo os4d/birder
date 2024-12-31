@@ -8,19 +8,22 @@
             <a class="cursor-pointer h-full" href="{% url "monitor-detail" monitor.pk %}">
                 <div class="monitor-panel grid grid-cols-1" id="monitor-{{ monitor.pk }}">
                     <div class="flex h-5 ">
-                        <div class="flex-shrink"><img class="icon" src="{% icon monitor.strategy.icon %}"></div>
+                        <div class="flex-shrink"><img class="icon" src="{{ monitor.icon }}"></div>
                         <div class="flex-grow w-max-2/3 overflow-clip pl-3">{{ monitor.name|truncatechars:"20" }}
                         </div>
                         <img class="status status-{{ monitor.status }}" src="{% status monitor.status %}">
                     </div>
-                    <div class=" content-end text-xs ">
-                        <div class="float-left">
-                            {{ monitor.strategy.address }}
-                        </div>
-                        <div class="float-right last-check">
-                            {{ monitor.last_check }}
-                        </div>
-                    </div>
+{#                    <div class="content-end text-xs flex">#}
+{#                        <div class="inline-flex flex-shrink last-success">#}
+{#                            {{ monitor.last_success }}#}
+{#                        </div>#}
+{#                        <div class="inline-flex  flex-grow last-check text-center">#}
+{#                            {{ monitor.last_check }}#}
+{#                        </div>#}
+{#                        <div class="inline-flex  float-end flex-shrink  last-error">#}
+{#                            {{ monitor.last_error }}#}
+{#                        </div>#}
+{#                    </div>#}
                 </div>
             </a>
         {% endfor %}
