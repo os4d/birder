@@ -47,9 +47,14 @@ class ChangeIconForm(forms.Form):
 @admin.register(Monitor)
 class MonitorAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[Monitor]):
     search_fields = ("name",)
-    list_display = ("name", "status", "checker", "verbosity", "status")
-    list_filter = (("env", LinkedAutoCompleteFilter.factory(parent=None)),)
+    list_display = ("name", "status", "checker", "verbosity", "active")
+    list_filter = (
+        ("env", LinkedAutoCompleteFilter.factory(parent=None)),
+        "strategy",
+        "active",
+    )
     actions = ["check_selected"]
+    autocomplete_fields = ("env", "project")
 
     @admin.display(ordering="strategy")
     def checker(self, obj: Monitor) -> bool:
@@ -64,6 +69,7 @@ class MonitorAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[Monito
             "name",
             "strategy",
             "project",
+            "env",
             "verbosity",
             "active",
             "warn_threshold",
@@ -109,23 +115,25 @@ class MonitorAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[Monito
     def configure(self, request: HttpRequest, pk: str) -> HttpResponse:
         ctx = self.get_common_context(request, pk)
         monitor: Monitor = self.object
-        if request.method == "POST":
-            form = monitor.strategy.config_class(request.POST, initial=monitor.configuration)
-            if form.is_valid():
-                monitor.configuration = form.cleaned_data
-                if "check" in request.POST:
-                    if not monitor.strategy.check():
-                        self.message_user(request, "Check failed", level=messages.ERROR)
+        if monitor.strategy.config_class:
+            if request.method == "POST":
+                form = monitor.strategy.config_class(request.POST, initial=monitor.configuration)
+                if form.is_valid():
+                    monitor.configuration = form.cleaned_data
+                    if "check" in request.POST:
+                        if not monitor.strategy.check():
+                            self.message_user(request, "Check failed", level=messages.ERROR)
+                        else:
+                            self.message_user(request, "Check success", level=messages.SUCCESS)
+                            monitor.save()
+                            return HttpResponseRedirect("..")
                     else:
-                        self.message_user(request, "Check success", level=messages.SUCCESS)
                         monitor.save()
                         return HttpResponseRedirect("..")
-                else:
-                    monitor.save()
-                    return HttpResponseRedirect("..")
-        else:
-            form = monitor.strategy.config_class(initial=monitor.configuration)
-        ctx["form"] = form
+            else:
+                form = monitor.strategy.config_class(initial=monitor.configuration)
+            ctx["form"] = form
+            ctx["form_help"] = form.render_help(ctx, request=request, monitor=self.object)
         return render(request, "admin/birder/monitor/configure.html", ctx)
 
 
@@ -142,3 +150,4 @@ class LogCheckAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[LogCh
 @admin.register(Environment)
 class EnvironmentAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[LogCheck]):
     list_display = ("name",)
+    search_fields = ("name",)

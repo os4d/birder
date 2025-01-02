@@ -3,7 +3,11 @@ from typing import TYPE_CHECKING, Any
 
 from django import forms
 from django.forms.forms import DeclarativeFieldsMetaclass
+from django.template.base import Template
+from django.template.context import Context
 from django.utils.functional import SimpleLazyObject
+from django.utils.safestring import mark_safe
+from markdown_deux import markdown
 
 if TYPE_CHECKING:
     from birder.models import Monitor
@@ -37,6 +41,17 @@ class WriteOnlyField(forms.CharField):
 
 
 class ConfigForm(forms.Form, metaclass=DefaultsMetaclass):
+    help_text = ""
+
+    def render_help(self, context: dict[str, Any], **extra_context: Any) -> str:
+        return mark_safe(  # noqa: S308
+            markdown(
+                Template("{%% load birder %%}%s" % self.help_text)  # noqa: UP031
+                .render(Context({**context, **extra_context}))
+                .strip()
+            )
+        )
+
     @property
     def media(self) -> forms.Media:
         media = super().media
@@ -69,10 +84,15 @@ class ConfigForm(forms.Form, metaclass=DefaultsMetaclass):
 
 
 class BaseCheck:
+    MODE_ACTIVE = 1
+    MODE_PASSIVE = 2
+
     icon: str
     pragma: list[str]
     config_class: type[ConfigForm]
+    mode = MODE_ACTIVE
     address_format: str = ""
+    verbose_name = None
 
     def __init__(self, owner: "Monitor|None" = None, configuration: "Json | None" = None) -> None:
         if owner:

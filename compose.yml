@@ -1,0 +1,50 @@
+x-env: &env
+  environment:
+    - DEBUG: ${DEBUG:-true}
+#    - ALLOWED_HOSTS=localhost
+#    - CSRF_COOKIE_SECURE=False
+#    - CSRF_TRUSTED_ORIGINS=http://localhost
+#    - AUTHENTICATION_BACKENDS=country_workspace.security.backends.AnyUserAuthBackend
+#    - SECRET_KEY=sensitive-secret-key
+#    - POSTGRES_USER=db
+#    - POSTGRES_PASSWORD=password
+#    - POSTGRES_DB=booking
+#    - DATABASE_URL=postgres://db:password@db:5432/birder
+#    - ADMIN_USER=admin@example.com
+#    - ADMIN_PASSWORD=password
+#    - GOOGLE_CLIENT_ID=
+#    - GOOGLE_CLIENT_SECRET=
+
+x-common: &common
+  build:
+    context: .
+    dockerfile: docker/Dockerfile
+    target: dist
+  restart: always
+  depends_on:
+    db:
+      condition: service_healthy
+
+services:
+  backend:
+    <<:  [*common, *env]
+    ports:
+      - 8000:8000
+    command: run
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/healthcheck" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  db:
+    image: postgres:15
+    <<:  [*env]
+    restart: always
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "db", "-d", "booking" ]
+      start_period: 5s
+      start_interval: 1s
+      interval: 5s
+      timeout: 4s
+      retries: 5

@@ -6,12 +6,12 @@ if TYPE_CHECKING:
     ConfigItem: type = tuple[type, str]
 
 CONFIG: "dict[str, ConfigItem]" = {
+    "ALLOWED_HOSTS": (list, []),
     "AZURE_CLIENT_SECRET": (str, ""),
     "AZURE_TENANT_ID": (str, ""),
     "AZURE_CLIENT_KEY": (str, ""),
-    "CELERY_BROKER_URL": (str, ""),
     "DATABASE_URL": (str, "sqlite:///birder.sqlite3"),
-    "DEBUG": (bool, True),
+    "DEBUG": (bool, False),
     "EXTRA_APPS": (list, []),
     "GOOGLE_CLIENT_ID": (str, ""),
     "GOOGLE_CLIENT_SECRET": (str, ""),
@@ -21,6 +21,7 @@ CONFIG: "dict[str, ConfigItem]" = {
     "SOCIAL_AUTH_RAISE_EXCEPTIONS": (bool, False),
     "SOCIAL_AUTH_WHITELISTED_DOMAINS": (list, []),
     "SOCIAL_AUTH_LOGIN_URL": (str, "/login/"),
+    "STATIC_ROOT": (str, "/app/static/"),
     "SECRET_KEY": (str, "super-secret-key"),
     "SUPERUSERS": (list, []),
 }

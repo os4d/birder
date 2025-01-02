@@ -30,7 +30,7 @@ its audience is web site users to display SLA compliance and systems availabilit
  - LDAP / ActiveDirectory
 
 ### Specialised Checkers
- 
+
  - JSON
  - XML
  - Celery (workers running not only broker)

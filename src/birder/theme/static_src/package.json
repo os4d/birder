@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "start": "npm run dev",
-    "sass": "cross-env NODE_ENV=production sass ./src/styles.scss --style compressed ./src/styles.css",
+    "sass": "cross-env NODE_ENV=production sass ./src/styles.scss --style compressed ./src/styles.css; ",
     "build": "npm run build:clean && npm run build:tailwind && npm run copy-static",
     "copy-static": "cp ./src/sorting-icons.svg ../static/css/",
     "build:clean": "rimraf ../static/css",

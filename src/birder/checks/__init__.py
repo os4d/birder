@@ -10,6 +10,7 @@ from .json import JsonCheck
 from .ldap import LDAPCheck
 from .memcache import MemCacheCheck
 from .mysql import MySQLCheck
+from .passive import HealthCheck
 from .pg import PostgresCheck
 from .redis import RedisCheck
 from .registry import registry
@@ -18,6 +19,7 @@ from .ssh import SSHCheck
 from .tcp import TCPCheck
 from .xml import XMLCheck
 
+registry.register(HealthCheck)
 registry.register(HttpCheck)
 registry.register(RedisCheck)
 registry.register(MySQLCheck)

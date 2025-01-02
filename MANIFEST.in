@@ -22,7 +22,9 @@ exclude .demo-sax
 exclude .DS_Store
 
 recursive-exclude docker *
-recursive-exclude . ~*
+recursive-exclude **/node_modules *
+recursive-exclude **/static_src *
+recursive-exclude **/~* *
 recursive-exclude .tx *
 recursive-exclude extras *
 recursive-exclude plugins *

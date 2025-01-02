@@ -34,6 +34,22 @@ form#config_form{
   }
 
 }
+.submit-row a.button {
+    display: block;
+    background: #417690;
+    border-radius: 4px;
+    padding: 0.625rem 0.9375rem;
+    height: 0.9375rem;
+    line-height: 0.9375rem;
+    color: var(--button-fg);
+
+}
+.monitor-url{
+  color: black;
+  padding: 5px;
+  margin-bottom: 10px;
+  background-color: rgba(255, 255, 255, 0.6);
+}
 .icon-list {
   display: grid;
 

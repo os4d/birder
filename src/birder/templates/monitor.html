@@ -1,4 +1,12 @@
-{% extends "layout.html" %}{% load i18n icons markdown_deux_tags static %}
+{% extends "layout.html" %}{% load birder i18n markdown_deux_tags static %}
+{% block extrahead %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"
+            integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="{% static "chart.js" %}"></script>
+
+{% endblock extrahead %}
+
 {% block content %}
     <div class="px-2 sm:px-10 md:px-32 xl:px-80">
         <div id="monitor-{{ monitor.pk }}" class="monitor-detail">
@@ -14,7 +22,10 @@
                     {% endif %}
                 </div>
             </div>
-
+            <div class="chart-container w-full text-white ">
+                <canvas id="barChart" class="p-2"></canvas>
+            </div>
+            <script>doit({{ labels }}, {{ data }}, {{ group_by }}, "{% if monitor.strategy.mode == 1 %}red{% else %}green{% endif %}")</script>
             <div class="my-2 flex text-xs">
                 <img class="w-4" src="{% static 'images/clock.svg' %}">
                 <div class="ml-2 last-check">{{ monitor.last_check }}</div>
@@ -50,6 +61,9 @@
                         </div>
                     </div>
                 {% endfor %}
+            </div>
+            <div>
+
             </div>
         </div>
 

@@ -1,7 +1,7 @@
+import dramatiq.brokers.redis
 import valkey
 
 from ..settings import env
-import dramatiq.brokers.redis
 
 dramatiq.brokers.redis.redis = valkey
 
@@ -12,7 +12,7 @@ DRAMATIQ_BROKER = {
         "connection_pool": valkey.ConnectionPool.from_url(DRAMATIQ_VALKEY_URL),
     },
     "MIDDLEWARE": [
-        "dramatiq.middleware.Prometheus",
+        # "dramatiq.middleware.Prometheus",
         "dramatiq.middleware.AgeLimit",
         "dramatiq.middleware.TimeLimit",
         "dramatiq.middleware.Callbacks",

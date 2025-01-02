@@ -32,5 +32,5 @@ class SMTPCheck(BaseCheck):
             return True
         except (ConnectionRefusedError, smtplib.SMTPException) as e:
             if raise_error:
-                raise CheckError("Redis check failed") from e
+                raise CheckError("SMTP check failed") from e
         return False

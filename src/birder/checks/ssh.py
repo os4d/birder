@@ -35,7 +35,6 @@ class SSHCheck(BaseCheck):
             s = pxssh.pxssh()
             return s.login(**self.config)
         except pxssh.ExceptionPexpect as e:
-            logger.exception(e)
             if raise_error:
                 raise CheckError("SSH check failed") from e
         return False

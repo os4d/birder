@@ -14,9 +14,9 @@ PROJECT_DIR = PACKAGE_DIR.parent.parent  # git project root
 SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 
 # Application definition
 
@@ -82,7 +82,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [env("VALKEY_URL")],
         },
     },
 }
@@ -142,7 +142,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = env("STATIC_URL")
+STATIC_ROOT = env("STATIC_ROOT")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -181,9 +182,9 @@ LOGGING = {
 }
 
 from .fragments.app import *  # noqa
+from .fragments.constance import *  # noqa
 
 # from .fragments.celery import *  # noqa
 from .fragments.dramatiq import *  # noqa
-from .fragments.constance import *  # noqa
 from .fragments.social_auth import *  # noqa
 from .fragments.tailwind import *  # noqa

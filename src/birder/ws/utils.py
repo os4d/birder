@@ -1,15 +1,16 @@
+import json
 import logging
-from typing import Any
+from datetime import date, datetime
+from json import JSONEncoder
+from typing import TYPE_CHECKING, Any
 
 import channels.layers
 from asgiref.sync import async_to_sync
 from django.core.cache import cache
+from django.urls.base import reverse
 from strategy_field.utils import fqn
 
-
 from .consumers import GROUP
-
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from birder.models import Monitor
@@ -46,23 +47,34 @@ def _ping() -> None:
     )
 
 
+class AAA(JSONEncoder):
+    def default(self, obj: Any) -> Any:
+        from birder.models import Monitor
+
+        if isinstance(obj, Monitor):
+            return {
+                "id": obj.id,
+                "url": reverse("monitor-detail", args=[obj.pk]),
+                "status": obj.status,
+                "active": obj.active,
+                "name": obj.name,
+                "last_check": json.dumps(obj.last_check, cls=AAA),
+                "last_error": json.dumps(obj.last_error, cls=AAA),
+                "last_success": json.dumps(obj.last_success, cls=AAA),
+                "fqn": fqn(obj.strategy),
+                "icon": obj.icon,
+                "failures": obj.failures,
+            }
+        if isinstance(obj, datetime):
+            return (obj.strftime("%Y-%m-%d %H:%M:%S"),)
+        if isinstance(obj, date):
+            return (obj.strftime("%Y-%m-%d"),)
+        return json.JSONEncoder.default(self, obj)
+
+
 def _update(monitor: "Monitor") -> None:
     channel_layer = channels.layers.get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         GROUP,
-        {
-            "type": "send.json",
-            "reason": "status",
-            "content": {
-                "id": monitor.id,
-                "status": monitor.status,
-                "name": monitor.name,
-                "last_check": monitor.last_check,
-                "last_error": monitor.last_error,
-                "last_success": monitor.last_success,
-                "fqn": fqn(monitor.strategy),
-                "icon": monitor.icon,
-                "failures": monitor.failures,
-            },
-        },
+        {"type": "send.json", "reason": "status", "monitor": json.dumps(monitor, cls=AAA)},
     )

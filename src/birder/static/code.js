@@ -21,22 +21,29 @@ toggler.addEventListener("click", function () {
 setDarkMode()
 const address = 'ws://' + window.location.host + '/ws/checks/';
 let interval = null;
-
+let connectionError = 0;
 
 var init = function () {
-    chatSocket = new WebSocket(address);
+    if (connectionError >= 6) {
+        clearInterval(interval);
+        console.log("Connection Error: Aborted");
+        return
+    }
+    let chatSocket = new WebSocket(address);
     chatSocket.onclose = function () {
         $('body').addClass('offline');
-        interval = setInterval( init, 10000)
+        interval = setInterval(init, 10000);
+        connectionError++;
     }
     chatSocket.onerror = function () {
         $('body').addClass('offline');
+        chatSocket.close();
     }
     chatSocket.onopen = function () {
         $('body').removeClass('offline');
-        if (interval){
+        if (interval) {
             clearInterval(interval);
-            interval=null;
+            interval = null;
         }
     }
 
@@ -44,14 +51,19 @@ var init = function () {
         const payload = JSON.parse(e.data);
         if (payload.reason === 'update') {
             window.location.reload();
-        }else if (payload.reason === 'ping') {
+        } else if (payload.reason === 'ping') {
             $('#lastUpdate').text(payload.ts);
         } else if (payload.reason === 'status') {
-            console.log(1111, payload.content.name, payload.content.status);
-            let $target = $('#monitor-' + payload.content.id);
-            $target.find('.last-check').text(payload.content.last_check);
-            $target.find('img.icon').attr("src", payload.content.icon);
-            $target.find('img.status').attr("src", "/static/images/" +  payload.content.status + ".svg");
+            let $target = $('#monitor-' + payload.monitor.id);
+            console.log(payload.monitor);
+            $target.find('.last-check').text(payload.monitor.last_check);
+            $target.find('img.icon').attr("src", payload.monitor.icon);
+            $target.find('img.status').attr("src", "/static/images/" + payload.monitor.status + ".svg");
+            if (payload.monitor.active) {
+                $target.removeClass("offline")
+            } else {
+                $target.addClass("offline");
+            }
         }
     };
 

@@ -5,7 +5,8 @@ from django.core.exceptions import ValidationError
 from django.core.management import BaseCommand
 from strategy_field.utils import fqn
 
-from birder.checks import parser
+from birder.checks import HealthCheck, parser
+from birder.exceptions import CeleryError
 from birder.models import Monitor, Project
 
 logger = logging.getLogger(__name__)
@@ -20,6 +21,12 @@ class Command(BaseCommand):
 
         Monitor.objects.all().delete()
         demo, __ = Project.objects.get_or_create(name="Demo")
+        Monitor.objects.get_or_create(
+            project=demo,
+            name="Remote",
+            defaults={"strategy": fqn(HealthCheck)},
+            verbosity=Monitor.Verbosity.NONE,
+        )
         for url in [
             "https://google.com",
             "redis://localhost:26379",
@@ -47,7 +54,7 @@ class Command(BaseCommand):
                     name=checker.pragma[0],
                     strategy=fqn(checker),
                     defaults={"strategy": fqn(checker), "configuration": config},
-                    verbosity=Monitor.Verbosity.FULL,
+                    verbosity=Monitor.Verbosity.NONE,
                     notes=f"""
 ## {checker.pragma[0]}
 
@@ -58,9 +65,12 @@ url: `{url}`
 
 """,
                 )
-                m.trigger()
-                if frm.is_valid():
-                    if not checker(configuration=config).check():
-                        self.stdout.write(self.style.WARNING(f"{checker.__name__}: {frm.cleaned_data}"))
-                else:
+                try:
+                    if frm.is_valid():
+                        if not checker(configuration=config).check():
+                            self.stdout.write(self.style.WARNING(f"{checker.__name__}: {frm.cleaned_data}"))
+                    else:
+                        self.stdout.write(self.style.ERROR(f"{checker.__name__}: {frm.errors}"))
+
+                except CeleryError:
                     self.stdout.write(self.style.ERROR(f"{checker.__name__}: {frm.errors}"))

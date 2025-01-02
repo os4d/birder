@@ -1,3 +1,4 @@
+import kombu.exceptions
 import redis.exceptions
 from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -26,7 +27,7 @@ class RedisCheck(BaseCheck):
             client = RedisClient(**self.config)
             client.ping()
             return True
-        except redis.exceptions.ConnectionError as e:
+        except (redis.exceptions.ConnectionError, ConnectionRefusedError, kombu.exceptions.KombuError) as e:
             if raise_error:
                 raise CheckError("Redis check failed") from e
         return False

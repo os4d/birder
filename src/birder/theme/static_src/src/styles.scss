@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 body {
   @apply bg-white text-gray-600 leading-normal text-base tracking-normal;
   @apply dark:bg-slate-800 dark:text-white;
@@ -13,6 +14,9 @@ body {
   @apply focus:outline-none hover:shadow focus:shadow-sm;
   @apply bg-gray-300 text-black;
   @apply hover:bg-gray-400;
+}
+.chart-hour{
+
 }
 
 .monitor-detail {

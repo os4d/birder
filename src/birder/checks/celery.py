@@ -1,5 +1,8 @@
 from typing import Any
 
+import amqp.exceptions
+import kombu.exceptions
+import redis.exceptions
 from celery import Celery as CeleryApp
 from celery.app.control import Control
 from celery.exceptions import CeleryError
@@ -38,7 +41,7 @@ class CeleryCheck(BaseCheck):
             insp = c.inspect(timeout=self.config["timeout"])
             d = insp.stats()
             return bool(d)
-        except CeleryError as e:
+        except (CeleryError, redis.exceptions.RedisError, kombu.exceptions.KombuError, amqp.exceptions.AMQPError) as e:
             if raise_error:
                 raise CheckError("Celery check failed") from e
         return False

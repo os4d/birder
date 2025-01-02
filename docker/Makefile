@@ -2,8 +2,8 @@
 .ONESHELL:
 
 #BASE?=$(shell echo "${VERSION}" | sed "s/\([0-9]*\)\.\([0-9]*\)\.\(.*\)/\1.\2/g" )
-VERSION := $(shell grep -m 1 version ../pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
-RELEASE = $(shell grep -m 1 version ../pyproject.toml | tr -s ' ' | tr -d '"' | tr -d "'" | cut -d' ' -f3)
+VERSION := $(shell grep '__version__' ../src/birder/__init__.py | cut -d'"' -f2)
+RELEASE := $(shell grep '__version__' ../src/birder/__init__.py | cut -d'"' -f2)
 LOCK_CHECKSUM?=$(shell sha1sum ../uv.lock | awk '{print $$1}')
 LOCK_HASH?=$(shell echo ${LOCK_CHECKSUM} | cut -c 1-8)
 
@@ -94,12 +94,16 @@ build5: dist
 	cd .. && docker run \
 	 		--rm \
 			-p 8000:8000 \
+			-p 8888:8888 \
 			-e ALLOWED_HOSTS="*" \
+			-e DEBUG="0" \
 			-e CACHE_URL="${CACHE_URL}" \
-			-e CELERY_BROKER_URL=${CELERY_BROKER_URL} \
-			-e DEBUG="1" \
+			-e VALKEY_URL="${VALKEY_URL}" \
 			-e LOGGING_LEVEL="DEBUG" \
 			-e SUPERUSERS=${SUPERUSERS} \
+			-e DATABASE_URL=${DATABASE_URL} \
+			-e STATIC_URL="static/" \
+			-v ${PWD}/bin/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh \
 			-v ${PWD}/conf:/conf \
 			${RUN_OPTIONS} \
 			-t ${DOCKER_IMAGE} \

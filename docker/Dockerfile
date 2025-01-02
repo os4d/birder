@@ -5,8 +5,11 @@ ARG GOSU_SHA256=bbc4136d03ab138b1ad66fa4fc051bafc6cc7ffae632b069a53657279a450de3
 
 RUN set -x \
   && runtimeDeps=" \
+    nginx \
+    gettext \
     libmagic1 \
     libxml2 \
+    libldap-2.5-0 \
   " \
   && buildDeps=" \
 wget \
@@ -139,7 +142,7 @@ COPY --chown=brd:os4d --from=production /venv /venv
 COPY --from=builder /usr/local/bin/uwsgi /usr/local/bin/uv /usr/local/bin/
 RUN --mount=type=cache,target=/root/.uv-cache \
     uv --cache-dir=/root/.uv-cache  pip install --no-deps . \
-    && rm -fr /app
+    && rm -fr /app/*
 
 
 EXPOSE 8000
@@ -152,9 +155,9 @@ LABEL org.opencontainers.image.authors="brd@os4d.org"
 LABEL org.opencontainers.image.description="Birder"
 LABEL org.opencontainers.image.documentation="https://github.com/os4d/birder/"
 LABEL org.opencontainers.image.title="brd Country Workspace"
-LABEL org.opencontainers.image.licenses="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GIT_SHA:-master}/LICENSE"
+LABEL org.opencontainers.image.licenses="https://github.com/os4d/birder/blob/master/LICENSE"
 LABEL org.opencontainers.image.revision=$GIT_SHA
-LABEL org.opencontainers.image.source="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${GIT_SHA:-master}/"
+LABEL org.opencontainers.image.source="https://github.com/os4d/birder"
 LABEL org.opencontainers.image.url="https://hub.docker.com/repository/docker/os4d/bbirder/tags/"
 LABEL org.opencontainers.image.vendor="os4d"
 LABEL org.opencontainers.image.created="$BUILD_DATE"

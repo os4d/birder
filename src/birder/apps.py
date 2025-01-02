@@ -6,5 +6,5 @@ class Config(AppConfig):
     name = "birder"
 
     def ready(self) -> None:
-        from . import tasks  # noqa
         from . import signals  # noqa
+        from . import tasks  # noqa
