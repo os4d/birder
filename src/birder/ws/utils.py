@@ -1,7 +1,7 @@
 import json
 import logging
 from datetime import date, datetime
-from json import JSONEncoder
+from json import JSONEncoder as JSONEncoder_
 from typing import TYPE_CHECKING, Any
 
 import channels.layers
@@ -47,7 +47,7 @@ def _ping() -> None:
     )
 
 
-class AAA(JSONEncoder):
+class JSONEncoder(JSONEncoder_):
     def default(self, obj: Any) -> Any:
         from birder.models import Monitor
 
@@ -58,17 +58,17 @@ class AAA(JSONEncoder):
                 "status": obj.status,
                 "active": obj.active,
                 "name": obj.name,
-                "last_check": json.dumps(obj.last_check, cls=AAA),
-                "last_error": json.dumps(obj.last_error, cls=AAA),
-                "last_success": json.dumps(obj.last_success, cls=AAA),
+                "last_check": json.loads(json.dumps(obj.last_check, cls=JSONEncoder)),
+                "last_error": json.loads(json.dumps(obj.last_error, cls=JSONEncoder)),
+                "last_success": json.loads(json.dumps(obj.last_success, cls=JSONEncoder)),
                 "fqn": fqn(obj.strategy),
                 "icon": obj.icon,
                 "failures": obj.failures,
             }
         if isinstance(obj, datetime):
-            return (obj.strftime("%Y-%m-%d %H:%M:%S"),)
+            return obj.strftime("%Y-%m-%d %H:%M:%S")
         if isinstance(obj, date):
-            return (obj.strftime("%Y-%m-%d"),)
+            return obj.strftime("%Y-%m-%d")
         return json.JSONEncoder.default(self, obj)
 
 
@@ -76,5 +76,5 @@ def _update(monitor: "Monitor") -> None:
     channel_layer = channels.layers.get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         GROUP,
-        {"type": "send.json", "reason": "status", "monitor": json.dumps(monitor, cls=AAA)},
+        {"type": "send.json", "reason": "status", "monitor": json.loads(json.dumps(monitor, cls=JSONEncoder))},
     )

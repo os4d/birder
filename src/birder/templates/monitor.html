@@ -15,7 +15,7 @@
                 <div class="flex-grow w-max-2/3 text-5xl overflow-clip pl-3">{{ monitor.name|truncatechars:"20" }}</div>
                 <div class="flex-shrink text-center text-sm">
                     <img class="w-12 align-top status status-{{ monitor.status }}" src="{% status monitor.status %}">
-                    <img class="w-12 align-top counter" src="{% number monitor.failures %}">
+                    <img class="w-4 align-top counter" src="{% number monitor.failures %}">
                     {% if user.is_staff %}
                         <a class="mt-4" target="_admin"
                            href="{% url "admin:birder_monitor_change" monitor.pk %}">admin</a>
@@ -27,21 +27,26 @@
             </div>
             <script>doit({{ labels }}, {{ data }}, {{ group_by }}, "{% if monitor.strategy.mode == 1 %}red{% else %}green{% endif %}")</script>
             <div class="my-2 flex text-xs">
-                <img class="w-4" src="{% static 'images/clock.svg' %}">
-                <div class="ml-2 last-check">{{ monitor.last_check }}</div>
+                <img class="w-4 mr-5" src="{% static 'images/clock.svg' %}">
+                <div class="w-32">Last check: </div>
+                <div class="ml-2 last-check">{{ monitor.last_check|default_if_none:"-" }}</div>
             </div>
             <div class="my-2 flex text-xs">
-                <img class="w-4" src="{% static 'images/ok.svg' %}">
-                <div class="ml-2 last-check">{{ monitor.last_success }}</div>
+                <img class="w-4 mr-5" src="{% static 'images/ok.svg' %}">
+                <div class="w-32">Last success: </div>
+                <div class="ml-2 last-check">{{ monitor.last_success|default_if_none:"-" }}</div>
             </div>
             <div class="my-2 flex text-xs">
-                <img class="w-4" src="{% static 'images/ko.svg' %}">
-                <div class="ml-2 last-check">{{ monitor.last_failure }}</div>
+                <img class="w-4 mr-5" src="{% static 'images/ko.svg' %}">
+                <div class="w-32">Last failure: </div>
+                <div class="ml-2 last-check">{{ monitor.last_failure|default_if_none:"-" }}</div>
             </div>
 
 
-            <div class="my-2">
-                {{ monitor.strategy.address }}
+            <div class="my-2 flex text-xs">
+                <img class="w-4 mr-5" src="{% static 'images/icons/host1.svg' %}">
+                <div class="w-32">System address </div>
+                <div class="w-32">{{ monitor.strategy.address }} </div>
             </div>
             <div class="my-2">
                 {{ monitor.description|markdown }}

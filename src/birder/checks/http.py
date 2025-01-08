@@ -35,7 +35,7 @@ class SeparatedValuesField(forms.Field):
 
 
 class BaseHttpConfig(ConfigForm):
-    url = forms.URLField(validators=[URLValidator()])
+    url = forms.URLField(assume_scheme="https", validators=[URLValidator()])
     timeout = forms.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)], initial=2)
     status_success = SeparatedValuesField(required=True, initial="200")
     username = forms.CharField(required=False)

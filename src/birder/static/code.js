@@ -59,6 +59,10 @@ var init = function () {
             $target.find('.last-check').text(payload.monitor.last_check);
             $target.find('img.icon').attr("src", payload.monitor.icon);
             $target.find('img.status').attr("src", "/static/images/" + payload.monitor.status + ".svg");
+            console.log(111111, "payload", payload)
+            console.log(111111, "payload.monitor", payload.monitor)
+            console.log(111111, "payload.monitor.status", payload.monitor.status)
+            console.log(111111, "/static/images/" + payload.monitor.status + ".svg")
             if (payload.monitor.active) {
                 $target.removeClass("offline")
             } else {
