@@ -15,7 +15,7 @@ class Command(BaseCommand):
     requires_migrations_checks = False
     requires_system_checks = ()
 
-    def add_arguments(self, parser: ArgumentParser)->None:
+    def add_arguments(self, parser: ArgumentParser) -> None:
         super().add_arguments(parser)
         parser.add_argument(
             "--force",
