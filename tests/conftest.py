@@ -20,6 +20,7 @@ sys.path.insert(0, str(here / "extras"))
 def pytest_configure(config):
     os.environ["DJANGO_SETTINGS_MODULE"] = "birder.config.settings"
     os.environ["SECRET_KEY"] = "super-secret"
+    os.environ["STATIC_URL"] = "static/"
     os.environ.setdefault("DATABASE_URL", "sqlite:///:memory:")
     import django
 
