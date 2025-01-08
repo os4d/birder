@@ -9,6 +9,6 @@ def test_monitor_detail(django_app, monitor):
     assert django_app.get(reverse("monitor-detail", kwargs={"pk": monitor.pk}))
 
 
-def test_monitor_api(django_app, monitor):
-    url = reverse("trigger", args=[monitor.pk, monitor.token])
+def test_monitor_api(django_app, passive_monitor):
+    url = reverse("trigger", args=[passive_monitor.pk, passive_monitor.token])
     assert django_app.get(url)

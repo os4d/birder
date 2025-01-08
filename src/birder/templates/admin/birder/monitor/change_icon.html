@@ -1,4 +1,4 @@
-{% extends "admin_extra_buttons/action_page.html" %}{% load birder %}
+{% extends "admin_extra_buttons/action_page.html" %}{% load birder static %}
 {% block extrahead %}{{ block.super }}
     {{ form.media }}
 {% endblock extrahead %}
@@ -21,6 +21,7 @@
             {% csrf_token %}
             {{ form }}
             <input type="submit" value="Save">
+            <input type="button" value="Cancel" onclick="javascript: location.href='..';">
         </form>
 
     </form>

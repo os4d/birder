@@ -2,7 +2,6 @@ from unittest.mock import Mock
 
 import pytest
 import requests
-from django.core.exceptions import ValidationError
 
 from birder.checks.http import HttpCheck, HttpConfig
 from birder.exceptions import CheckError
@@ -13,8 +12,7 @@ def test_http():
     assert c.config
     assert c.config["status_success"] == [200]
     c = HttpCheck(Mock(configuration={}))
-    with pytest.raises(ValidationError):
-        assert c.config
+    assert c.config == c.config_class.DEFAULTS
 
 
 def test_http_check_success(mocked_responses):

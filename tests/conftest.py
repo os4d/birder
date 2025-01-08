@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 import pytest
 import responses
 
+
 if TYPE_CHECKING:
     from django_webtest import DjangoTestApp
     from django_webtest.pytest_plugin import MixinWithInstanceVariables
@@ -67,3 +68,10 @@ def user_role(project):
     from testutils.factories import UserRoleFactory
 
     return UserRoleFactory(project=project)
+
+@pytest.fixture
+def passive_monitor(project) -> "Monitor":
+    from testutils.factories import MonitorFactory
+    from birder.checks import HealthCheck
+
+    return MonitorFactory(project=project, strategy=HealthCheck)

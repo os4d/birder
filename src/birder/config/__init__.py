@@ -21,6 +21,7 @@ CONFIG: "dict[str, ConfigItem]" = {
     "SOCIAL_AUTH_RAISE_EXCEPTIONS": (bool, False),
     "SOCIAL_AUTH_WHITELISTED_DOMAINS": (list, []),
     "SOCIAL_AUTH_LOGIN_URL": (str, "/login/"),
+    "STATIC_URL": (str, "static/"),
     "STATIC_ROOT": (str, "/app/static/"),
     "SECRET_KEY": (str, "super-secret-key"),
     "SUPERUSERS": (list, []),
