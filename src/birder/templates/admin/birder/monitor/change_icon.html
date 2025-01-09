@@ -1,0 +1,29 @@
+{% extends "admin_extra_buttons/action_page.html" %}{% load birder static %}
+{% block extrahead %}{{ block.super }}
+    {{ form.media }}
+{% endblock extrahead %}
+
+{% block action-content %}
+    <section>
+    <form method="post" id="config_form">
+        <div class="icon-list">
+            {% for i in icons %}
+                <div class="frame" data-icon="{{ i }}">
+                    <div>
+                        <img src="{% static "/images/icons/"|add:i %}">
+                    </div>
+                    <label>{{ i }}</label>
+                </div>
+            {% endfor %}
+
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit" value="Save">
+            <input type="button" value="Cancel" onclick="javascript: location.href='..';">
+        </form>
+
+    </form>
+</section>
+{% endblock action-content %}

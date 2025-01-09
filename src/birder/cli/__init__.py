@@ -1,50 +1,67 @@
-#  :copyright: Copyright (c) 2018-2020. OS4D Ltd - All Rights Reserved
-#  :license: Commercial
-#  Unauthorized copying of this file, via any medium is strictly prohibited
-#  Written by Stefano Apostolico <s.apostolico@gmail.com>, October 2020
+import os
+from typing import Any
+
 import click
-from click import ClickException
+from click import Context
+from tabulate import tabulate
 
 import birder
-from birder.core.registry import registry
-from ..core.queue import send
-
-
-class CheckParamType(click.ParamType):
-    name = 'check'
-
-    def convert(self, value, param, ctx):
-        try:
-            return registry[value]
-        except KeyError:
-            raise ClickException(f'Unknown check {value}')
-
-
-CheckParam = CheckParamType()
 
 
 @click.group()
 @click.version_option(version=birder.VERSION)
-@click.option('--init/--no-init', '-i/-n', default=True, is_flag=True)
 @click.pass_context
-def cli(ctx, init, **kwargs):
-    if init:
-        try:
-            registry.initialize()
-        except Exception as e:
-            click.secho(str(e))
+def cli(ctx: Context, **kwargs: Any) -> None:
+    import django
+
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "birder.config.settings")
+    django.setup()
+
+
+@cli.command(name="list")
+@click.pass_context
+def list_(ctx: Context, **kwargs: Any) -> None:
+    from birder.models import Monitor
+
+    data = Monitor.objects.values(
+        "id",
+        "project__name",
+        "name",
+        "strategy",
+        "active",
+    )
+    table = tabulate(data, [], tablefmt="grid")
+    click.echo(table)
+
+
+@cli.command()
+@click.argument("monitor_id", type=int)
+@click.pass_context
+def trigger(ctx: Context, monitor_id: int, **kwargs: Any) -> None:
+    from birder.models import Monitor
+
+    monitor = Monitor.objects.get(id=monitor_id)
+    monitor.trigger()
+
+
+@cli.command()
+@click.argument("monitor_id", type=int)
+@click.pass_context
+def refresh(ctx: Context, monitor_id: int, **kwargs: Any) -> None:
+    from birder.models import Monitor
+    from birder.ws.utils import notify_ui
+
+    monitor = Monitor.objects.get(id=monitor_id)
+    notify_ui("update", monitor=monitor)
 
 
 @cli.command()
 @click.pass_context
-def refresh(ctx, **kwargs):
-    send('--')
+def reset(ctx: Context, **kwargs: Any) -> None:
+    from django.core.cache import cache
+
+    cache.clear()
 
 
-
-from . import _monitor  # noqa
-from . import _registry  # noqa
-
-
-def main():  # pragma: no cover
+def main() -> None:
     cli(prog_name=birder.NAME, obj={}, max_content_width=100)

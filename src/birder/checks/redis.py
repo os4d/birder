@@ -1,19 +1,33 @@
+import kombu.exceptions
+import redis.exceptions
+from django import forms
+from django.core.validators import MaxValueValidator, MinValueValidator
 from redis import Redis as RedisClient
 
-from birder.core.check import BaseCheck
+from ..exceptions import CheckError
+from .base import BaseCheck, ConfigForm, WriteOnlyField
 
 
-class Redis(BaseCheck):
-    default_port = 6379
-    default_host = '127.0.0.1'
+class RedisConfig(ConfigForm):
+    host = forms.CharField(required=True, help_text="Server hostname or IP Address")
+    port = forms.IntegerField(validators=[MinValueValidator(1)], initial=6379)
+    socket_timeout = forms.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], initial=2)
+    socket_connect_timeout = forms.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], initial=2)
+    password = WriteOnlyField(required=False)
 
-    def check(self, **config):
-        timeout = config.get('timeout', self.timeout)
-        client = RedisClient(host=self.conn.hostname or self.default_host,
-                             port=self.conn.port or self.default_port,
-                             password=self.conn.password,
-                             db=self.conn.path.replace('/', ''),
-                             socket_connect_timeout=timeout,
-                             socket_timeout=timeout)
-        client.ping()
-        return True
+
+class RedisCheck(BaseCheck):
+    icon = "redis.svg"
+    pragma = ["redis"]
+    config_class = RedisConfig
+    address_format = "{host}:{port}"
+
+    def check(self, raise_error: bool = False) -> bool:
+        try:
+            client = RedisClient(**self.config)
+            client.ping()
+            return True
+        except (redis.exceptions.ConnectionError, ConnectionRefusedError, kombu.exceptions.KombuError) as e:
+            if raise_error:
+                raise CheckError("Redis check failed") from e
+        return False

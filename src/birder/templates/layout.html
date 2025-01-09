@@ -1,0 +1,82 @@
+{% load i18n static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Birder</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <script src="/static/admin/js/vendor/jquery/jquery.js"></script>
+    <script src="/static/admin/js/jquery.init.js"></script>
+    {% tailwind_css %}
+    {% block extrahead %}{% endblock %}
+</head>
+
+<body>
+
+<!--Nav-->
+<nav id="header" class="w-full z-30 top-0 py-1">
+    <div class="w-full container mx-auto flex flex-wrap items-center justify-between mt-0 px-6 py-3">
+
+        <label for="menu-toggle" class="cursor-pointer md:hidden block">
+            <svg class="fill-current " xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                 viewBox="0 0 20 20">
+                <title>menu</title>
+                <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"></path>
+            </svg>
+        </label>
+        <input class="hidden" type="checkbox" id="menu-toggle"/>
+        <div class="hidden z-30 md:flex md:items-center md:w-auto w-full order-3 md:order-1" id="menu">
+            <nav class="z-30">
+                <ul class="md:flex items-center justify-between text-base pt-4 md:pt-0">
+                    <li><a class="inline-block no-underline hover:underline py-2 px-4"
+                           href="/">Home</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <div class="order-1 md:order-2">
+            <div class="flex items-center tracking-wide no-underline hover:no-underline font-bold  text-xl">
+                <img class="w-16 birder-logo" src="{% static "images/birder.svg" %}">
+                Birder
+            </div>
+        </div>
+
+        <div class="order-2 md:order-3 flex items-center" id="nav-content">
+            {% if user.is_authenticated %}
+                <div class="hidden sm:flex">{% translate "Hi" %}, {{ user }}&nbsp;&nbsp;</div>
+                <form method="post" action="{% url "logout" %}" id="logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-link">logout</button>
+                </form>
+                {% else %}
+                    <a class="inline-block no-underline " href="{% url "login" %}">login</a>
+                {% endif %}
+                {% if user.is_staff %}
+                    <a class="inline-block no-underline px-2" target="_admin"
+                       href="{% url "admin:index" %}">{% translate "admin" %}</a>
+                {% endif %}
+        </div>
+    </div>
+</nav>
+{% block content %}
+
+{% endblock content %}
+{% block footer %}
+    <footer class="mx-4 bg-whitepy-2 border-t mt-10">
+        <div class="container flex px-3">
+            <div class="flow-root w-full">
+                <div class="px-2 md:px-0 block md:float-left">
+                    <div class="inline-flex">Copyright (c) 2019-2024 OS4D ltd</div>
+                </div>
+            </div>
+            <img id="darkmode" class="w-8 cursor-pointer" src="{% static "images/off.svg" %}">
+        </div>
+    </footer>
+{% endblock footer %}
+<script src="{% static "code.js" %}"></script>
+</body>
+</html>

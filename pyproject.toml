@@ -1,47 +1,103 @@
-[tool.poetry]
+[project]
 name = "birder"
-version = "1.0.13"
-description = ""
-authors = ["sax <s.apostolico@gmail.com>"]
-packages = [
-    { include = "birder", from = "src" },
+dynamic = ["version"]
+description = "Birder Healthcheck monitoring"
+authors = [
+    {name = "sax", email = "s.apostolico@gmail.com"},
 ]
+requires-python = "==3.12.*"
+readme = "README.md"
+license = {text = "MIT"}
+dependencies = [
+    "attrs>=24.3.0",
+    "beautifulsoup4>=4.12.3",
+    "boto3>=1.35.90",
+    "celery>=5.4.0",
+    "channels-redis>=4.2.1",
+    "channels>=4.2.0",
+    "circus>=0.18.0",
+    "daphne>=4.1.2",
+    "django-admin-extra-buttons>=1.6.0",
+    "django-adminfilters>=2.5.2",
+    "django-constance>=4.1.3",
+    "django-csp>=3.8",
+    "django-dramatiq>=0.12.0",
+    "django-environ>=0.11.2",
+    "django-flags>=5.0.13",
+    "django-markdown-deux>=1.0.6",
+    "django-redis>=5.4.0",
+    "django-regex>=0.5.0",
+    "django-strategy-field>=3.1.0",
+    "django-stubs-ext>=5.1.1",
+    "django-tailwind>=3.8.0",
+    "django-valkey[libvalkey]>=0.1.8",
+    "django>=5.1.4",
+    "djangorestframework>=3.15.2",
+    "dramatiq-crontab[sentry]>=1.0.8",
+    "dramatiq>=1.17.1",
+    "durations-nlp>=1.0.1",
+    "jmespath>=1.0.1",
+    "kombu>=5.4.2",
+    "lxml>=5.3.0",
+    "minio>=7.2.13",
+    "pandas>=2.2.3",
+    "pexpect>=4.9.0",
+    "pip>=24.3.1",
+    "prometheus-client==0.20.0",
+    "pymemcache>=4.0.0",
+    "pymysql>=1.1.1",
+    "python-ldap>=3.4.4",
+    "python-redis-lock[django]>=4.0.0",
+    "pytz>=2024.2",
+    "redis>=5.2.1",
+    "redis-timeseries>=0.1.9",
+    "requests>=2.32.3",
+    "sentry-sdk>=2.19.2",
+    "social-auth-app-django>=5.4.2",
+    "valkey[libvalkey]>=6.0.2",
+    "bitarray>=3.0.0",
+    "django-timezone-field>=7.0",
+    "psycopg2-binary>=2.9.10",
+    "click>=8.1.8",
+    "tabulate>=0.9.0",
+]
+[project.urls]
+repository = "https://github.com/os4d/birder"
 
-[tool.poetry.scripts]
+[tool.mypy]
+mypy_path = "$MYPY_CONFIG_FILE_DIR/stubs"
+plugins = ["mypy_django_plugin.main"]
+
+[tool.django-stubs]
+django_version = "3.12"
+django_apps = ["birder"]
+django_settings_module = "birder.config.settings"
+ignore_missing_settings = true
+ignore_missing_model_attributes = true
+
+[tool.setuptools.dynamic]
+version = {attr = "birder.__version__"}
+
+[project.scripts]
 birder = "birder.cli:main"
 
 
-[tool.poetry.dependencies]
-python = "^3.8"
-celery = "*"
-circus = "*"
-click = "*"
-colour = "*"
-eventlet = "*"
-flask = "*"
-flask-bootstrap4 = "*"
-flask-caching = "*"
-flask-cors = "*"
-flask-session = "*"
-gunicorn = "*"
-psycopg2-binary = "*"
-pymysql = "*"
-python-slugify = "*"
-pytz = "*"
-redis = "*"
-redis-timeseries = "*"
-requests = "*"
-attrs = "*"
-pyparsing = "^2.4.7"
-Flask-BasicAuth = "^0.2.0"
-sentry-sdk = {extras = ["flask"], version = "^0.18.0"}
-uwsgi = "^2.0.19"
-
-[tool.poetry.dev-dependencies]
-flake8 = "^3.8.3"
-isort = "^5.5.4"
-pytest = "^6.1.0"
-
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+[tool.uv]
+package = true
+dev-dependencies = [
+    "django-webtest>=1.9.12",
+    "factory-boy>=3.3.1",
+    "ipdb>=0.13.13",
+    "mypy>=1.14.0",
+    "pdbpp>=0.10.3",
+    "pytest-celery>=1.1.3",
+    "pytest-cov>=6.0.0",
+    "pytest-django>=4.9.0",
+    "pytest-docker-tools>=3.1.3",
+    "pytest-docker>=3.1.1",
+    "pytest-xdist>=3.6.1",
+    "pytest>=8.3.4",
+    "responses>=0.25.3",
+    "ruff>=0.9.0",
+    "watchdog[watchmedo]>=6.0.0",
+]

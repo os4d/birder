@@ -1,0 +1,28 @@
+{% extends "admin_extra_buttons/action_page.html" %}{% load birder markdown_deux_tags static %}
+{% block extrastyle %}
+    <link rel="stylesheet" href="{% static 'admin/css/forms.css' %}"></link>
+    <link rel="stylesheet" href="{% static 'birder-admin.css' %}"></link>
+{% endblock extrastyle %}
+
+{% block extrahead %}{{ block.super }}
+    {{ form.media }}
+{% endblock extrahead %}
+
+{% block action-content %}
+    {{ form_help }}
+    <form method="post" id="config_form">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+        </table>
+        <input type="submit" value="Save">
+        <input type="submit" value="Check + Save" name="check">
+    </form>
+    {# {% else %} #}
+    {# <div class="monitor-url">{% absolute_url "trigger" original.pk original.token %}</div> #}
+    {# <div class="submit-row"> #}
+    {# <a href=".." class="button default">Close</a> #}
+    {# <a href="{% url "admin:birder_monitor_regenerate_token" original.pk %}" class="button">Generate new token</a> #}
+    {# </div> #}
+    {# {% endif %} #}
+{% endblock action-content %}

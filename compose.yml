@@ -1,0 +1,57 @@
+x-env: &env
+  environment:
+    - DEBUG=false
+    - ALLOWED_HOSTS=*
+    - CSRF_COOKIE_SECURE=False
+    - CSRF_TRUSTED_ORIGINS=http://localhost:8000
+    - AUTHENTICATION_BACKENDS=country_workspace.security.backends.AnyUserAuthBackend
+    - SECRET_KEY=sensitive-secret-key
+    - CACHE_URL=redis://valkey/1
+    - VALKEY_URL=redis://valkey/2
+    - POSTGRES_USER=db
+    - POSTGRES_PASSWORD=password
+    - POSTGRES_DB=birder
+    - DATABASE_URL=postgres://db:password@db:5432/birder
+    - ADMIN_USER=admin@example.com
+    - ADMIN_PASSWORD=123
+    - GOOGLE_CLIENT_ID=
+    - GOOGLE_CLIENT_SECRET=
+
+x-common: &common
+  build:
+    context: .
+    dockerfile: docker/Dockerfile
+    target: dist
+  restart: always
+  depends_on:
+    db:
+      condition: service_healthy
+
+services:
+  birder:
+    <<:  [*common, *env]
+    ports:
+      - 8000:8000
+    command: run
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/healthcheck" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  db:
+    image: postgres:15
+    <<:  [*env]
+    restart: always
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "db", "-d", "birder" ]
+      start_period: 5s
+      start_interval: 1s
+      interval: 5s
+      timeout: 4s
+      retries: 5
+
+  valkey:
+    image: valkey/valkey:alpine3.21
+    <<:  [*env]
+    restart: always

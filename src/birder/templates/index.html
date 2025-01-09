@@ -1,0 +1,23 @@
+{% extends "layout.html" %}{% load birder i18n %}
+{% block content %}
+    <div class="float-right px-3 lg:px-4 xl:px-8 text-xs" id="lastUpdate">
+        {{ birder.system.last_check|default_if_none:"" }}
+    </div>
+    <div class="" id="monitor-grid">
+        {% for monitor in monitors %}
+            <a class="cursor-pointer h-full" href="{% if monitor.active %}{% url "monitor-detail" monitor.pk %}{% else %}#{% endif %}">
+                <div class="monitor-panel grid grid-cols-1 {% if not monitor.active %}offline{% endif %}" id="monitor-{{ monitor.pk }}">
+                    <div class="flex h-5 ">
+                        <div class="flex-shrink"><img class="icon" src="{{ monitor.icon }}"></div>
+                        <div class="flex-grow w-max-2/3 overflow-clip pl-3">{{ monitor.name|truncatechars:"20" }}
+                        </div>
+                        <img class="status status-{{ monitor.status }}" src="{% status monitor.status %}">
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+    <script>
+
+    </script>
+{% endblock content %}

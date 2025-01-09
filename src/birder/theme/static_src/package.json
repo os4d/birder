@@ -1,0 +1,30 @@
+{
+  "name": "theme",
+  "version": "3.8.0",
+  "description": "",
+  "scripts": {
+    "start": "npm run dev",
+    "sass": "cross-env NODE_ENV=production sass ./src/styles.scss --style compressed ./src/styles.css; ",
+    "build": "npm run build:clean && npm run build:tailwind && npm run copy-static",
+    "copy-static": "cp ./src/sorting-icons.svg ../static/css/",
+    "build:clean": "rimraf ../static/css",
+    "build:tailwind": "cross-env NODE_ENV=production tailwindcss --postcss -i ./src/styles.scss -o ../static/css/styles.css --minify",
+    "dev": "cross-env NODE_ENV=development tailwindcss --postcss -i ./src/styles.scss -o ../static/css/styles.css -w",
+    "tailwindcss": "node ./node_modules/tailwindcss/lib/cli.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.10",
+    "cross-env": "^7.0.3",
+    "postcss": "^8.4.32",
+    "postcss-import": "^15.1.0",
+    "postcss-nested": "^6.0.1",
+    "postcss-simple-vars": "^7.0.1",
+    "rimraf": "^5.0.5",
+    "tailwindcss": "^3.4.0"
+  }
+}

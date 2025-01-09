@@ -1,0 +1,95 @@
+services:
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "26379:6379"
+
+  memcached:
+    image: "memcached:alpine3.21"
+    ports:
+      - "21121:11211"
+
+  http:
+    image: "kennethreitz/httpbin"
+    ports:
+      - "28000:80"
+
+  ftp:
+    image: "delfer/alpine-ftp-server"
+    ports:
+      - "2221:21"
+      - "21000-21010:21000-21010"
+    environment:
+      ADDRESS: "localhost"
+
+  mariadb:
+    image: "bitnami/mariadb"
+    ports:
+      - "23306:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: password
+
+  ssh:
+    image: "ddev/test-ssh-server:v1.22.2"
+    ports:
+      - "2222:22"
+    environment:
+      USERS: "user|password"
+      ADDRESS: localhost
+
+#  postgres:
+#    image: "postgres:alpine"
+#    ports:
+#      - "25432:5432"
+#    environment:
+#      POSTGRES_HOST_AUTH_METHOD=trust: 1
+#      POSTGRES_PASSWORD: pwd
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "25672:5672"
+      - "21567:15672"
+  ldap:
+    image: bitnami/openldap
+    ports:
+      - '1389:1389'
+      - '1636:1636'
+    environment:
+      LDAP_ADMIN_USERNAME: admin
+      LDAP_ADMIN_PASSWORD: password
+      LDAP_USERS: user
+      LDAP_PASSWORDS: password
+      LDAP_ROOT: dc=birder,dc=org
+      LDAP_ADMIN_DN: cn=admin,dc=birder,dc=org
+
+  smtp:
+    image: bytemark/smtp
+    restart: always
+    ports:
+      - "2587:25"
+    environment:
+      RELAY_HOST: smtp.example.com
+      RELAY_PORT: 587
+      RELAY_USERNAME: admin
+      RELAY_PASSWORD: password
+
+#  valkey:
+#    image: valkey/valkey:alpine
+#    restart: always
+#    ports:
+#      - "2587:25"
+#    environment:
+#      RELAY_HOST: smtp.example.com
+#      RELAY_PORT: 587
+#      RELAY_USERNAME: admin
+#      RELAY_PASSWORD: password
+
+  minio:
+    image: quay.io/minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: password
