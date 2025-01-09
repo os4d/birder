@@ -1,6 +1,6 @@
 x-env: &env
   environment:
-    - DEBUG=${DEBUG:-true}
+    - DEBUG=false
     - ALLOWED_HOSTS=*
     - CSRF_COOKIE_SECURE=False
     - CSRF_TRUSTED_ORIGINS=http://localhost:8000

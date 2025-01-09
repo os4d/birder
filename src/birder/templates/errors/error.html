@@ -1,0 +1,17 @@
+{% extends "layout.html" %}{% load i18n static %}
+{% block content %}
+    <div class="py-10 bg-gray-100 dark:bg-gray-900 text-gray-900 justify-center">
+        <div class="p-10 mx-20 sm:mx-32 lg:mx-52 dark:bg-gray-500 bg-white shadow rounded-lg text-center p-5">
+            {# <div class="lg:w-1/2 xl:w-6/12 p-6 sm:p-12"> #}
+            {# <div class="mt-12 flex flex-col items-center"> #}
+            <h1 class="block text-3xl xl:text-3xl font-extrabold">
+                {{ error_code }}
+            </h1>
+            <div class=" block text-xl m-5">
+                {{ message }}
+            </div>
+            {# </div> #}
+            {# </div> #}
+        </div>
+    </div>
+{% endblock content %}

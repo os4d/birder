@@ -5,7 +5,7 @@ from typing import Any
 from django.contrib.auth.views import LoginView as LoginView_
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.utils.safestring import mark_safe
 from django.views.generic import DetailView, TemplateView
 
@@ -67,3 +67,19 @@ def trigger(request: HttpRequest, pk: str, token: str) -> HttpResponse:
         return HttpResponse("Check not enabled for remote call", status=400)
     m.trigger()
     return HttpResponse("Ok")
+
+
+def error_400(request: HttpRequest, exception: Exception = None) -> HttpResponse:
+    return render(request, "errors/400.html", {"error_code": 400, "message": "Bad Request"})
+
+
+def error_403(request: HttpRequest, exception: Exception = None) -> HttpResponse:
+    return render(request, "errors/403.html", {"error_code": 403, "message": "Forbidden"})
+
+
+def error_404(request: HttpRequest, exception: Exception = None) -> HttpResponse:
+    return render(request, "errors/404.html", {"error_code": 404, "message": "Page not found"})
+
+
+def error_500(request: HttpRequest, exception: Exception = None) -> HttpResponse:
+    return render(request, "errors/500.html", {"error_code": 500, "message": "Server Error"})

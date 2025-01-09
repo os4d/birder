@@ -132,16 +132,16 @@ RUN <<EOF cat> /RELEASE
 }
 EOF
 WORKDIR /app
-COPY docker/conf /conf/
-COPY docker/bin/* /usr/local/bin/
+ADD docker/conf /conf/
+ADD docker/bin/* /usr/local/bin/
 
-COPY uv.lock README.md MANIFEST.in pyproject.toml /app/
-COPY src /app/src/
+ADD uv.lock README.md MANIFEST.in pyproject.toml /app/
+ADD src /app/src/
 
 COPY --chown=brd:os4d --from=production /venv /venv
 COPY --from=builder /usr/local/bin/uwsgi /usr/local/bin/uv /usr/local/bin/
 RUN --mount=type=cache,target=/root/.uv-cache \
-    uv --cache-dir=/root/.uv-cache  pip install --no-deps . \
+    uv --cache-dir=/root/.uv-cache pip install --no-deps . \
     && rm -fr /app/*
 
 
