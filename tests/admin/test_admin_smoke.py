@@ -166,7 +166,7 @@ def test_admin_changelist(app: "DjangoTestApp", model_admin: "ModelAdmin[Model]"
 def show_error(res: Any) -> tuple[str]:
     errors = []
     for k, v in dict(res.context["adminform"].form.errors).items():
-        errors.append(f'{k}: {"".join(v)}')
+        errors.append(f"{k}: {''.join(v)}")
     return (f"Form submitting failed: {res.status_code}: {errors}",)
 
 

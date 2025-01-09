@@ -197,7 +197,7 @@ class Monitor(models.Model):
         if exc:
             message = f"""{exc.__class__.__name__}: {exc}
 
-            {''.join(traceback.format_tb(exc.__traceback__))}
+            {"".join(traceback.format_tb(exc.__traceback__))}
             """
             LogCheck.objects.create(monitor=self, status=status, payload=message)
         else:

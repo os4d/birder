@@ -32,7 +32,7 @@ def test_login(db, client):
         url += "?code=2&state=1"
         mock_request.return_value.json.return_value = {"access_token": "123"}
         with mock.patch(
-            "django.contrib.sessions.backends.base.SessionBase" ".set_expiry",
+            "django.contrib.sessions.backends.base.SessionBase.set_expiry",
             side_effect=[OverflowError, None],
         ):
             response = client.get(url)

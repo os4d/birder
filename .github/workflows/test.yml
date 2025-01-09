@@ -134,7 +134,7 @@ jobs:
 
       - name: Run Test suite
         run: |
-            mkdir output
+            mkdir -p output
             docker run --rm \
               --network host \
               -e PYTHONPATH=/app/src \
