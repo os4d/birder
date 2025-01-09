@@ -8,8 +8,8 @@ from django import forms
 from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin as _UserAdmin
-from django.db.models import QuerySet
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.db.models import Model, QuerySet
+from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 
 from .models import Environment, LogCheck, Monitor, Project, User
@@ -42,6 +42,11 @@ class ChangeIconForm(forms.Form):
             css={"screen": ["birder-admin.css"]},
         )
         return media
+
+
+def assert_object_or_404(obj: Model) -> None:
+    if not obj:
+        raise Http404
 
 
 @admin.register(Monitor)
@@ -87,6 +92,7 @@ class MonitorAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[Monito
     @button(label="Change Icon")
     def change_icon(self, request: HttpRequest, pk: str) -> HttpResponse:
         ctx = self.get_common_context(request, pk)
+        assert_object_or_404(self.object)
         ctx["icons"] = sorted(
             [p.name for p in (Path(settings.PACKAGE_DIR) / "static" / "images" / "icons").glob("*.*")]
         )
@@ -106,6 +112,8 @@ class MonitorAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[Monito
     def manual_check(self, request: HttpRequest, pk: str) -> HttpResponse:
         self.get_common_context(request, pk)
         monitor: Monitor = self.object
+        assert_object_or_404(monitor)
+
         if monitor.trigger():
             self.message_user(request, "Monitor checked", level=messages.SUCCESS)
         else:
@@ -115,6 +123,7 @@ class MonitorAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[Monito
     def configure(self, request: HttpRequest, pk: str) -> HttpResponse:
         ctx = self.get_common_context(request, pk)
         monitor: Monitor = self.object
+        assert_object_or_404(monitor)
         if monitor.strategy.config_class:
             if request.method == "POST":
                 form = monitor.strategy.config_class(request.POST, initial=monitor.configuration)

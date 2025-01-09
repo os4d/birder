@@ -1,10 +1,12 @@
 import logging
+import os
 from argparse import ArgumentParser
 from typing import Any
 
 from constance import config
 from django.core.cache import cache
 from django.core.management import BaseCommand, call_command
+from django.db import IntegrityError
 
 logger = logging.getLogger(__name__)
 
@@ -24,9 +26,13 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args: Any, **options: Any) -> None:
+        from birder.models import User
+
         redis_client = cache.client.get_client()
         if options["force"]:
             redis_client.delete(KEY)
+        if redis_client.get(KEY):
+            return
         if redis_client.set(KEY, "locked", nx=True, ex=86400):
             try:
                 call_command("migrate", interactive=False)
@@ -36,6 +42,15 @@ class Command(BaseCommand):
                 g, is_new = Group.objects.get_or_create(name="Default")
                 if is_new:
                     config.NEW_USER_DEFAULT_GROUP = g.pk
+                if (admin_user := os.environ.get("ADMIN_USER")) and os.environ.get("ADMIN_PASSWORD"):
+                    try:
+                        User.objects.create_superuser(
+                            username=admin_user, email=admin_user, password=os.environ.get("ADMIN_PASSWORD")
+                        )
+                        self.stdout.write(self.style.SUCCESS("Superuser created!"))
+                    except IntegrityError:
+                        self.stdout.write(self.style.WARNING("Exiting superuser found."))
+
             finally:
                 redis_client.delete(KEY)
         else:

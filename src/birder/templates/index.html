@@ -1,7 +1,7 @@
 {% extends "layout.html" %}{% load birder i18n %}
 {% block content %}
     <div class="float-right px-3 lg:px-4 xl:px-8 text-xs" id="lastUpdate">
-        {{ birder.system.last_check }}
+        {{ birder.system.last_check|default_if_none:"" }}
     </div>
     <div class="" id="monitor-grid">
         {% for monitor in monitors %}
@@ -13,17 +13,6 @@
                         </div>
                         <img class="status status-{{ monitor.status }}" src="{% status monitor.status %}">
                     </div>
-{# <div class="content-end text-xs flex"> #}
-{# <div class="inline-flex flex-shrink last-success"> #}
-{# {{ monitor.last_success }} #}
-{# </div> #}
-{# <div class="inline-flex  flex-grow last-check text-center"> #}
-{# {{ monitor.last_check }} #}
-{# </div> #}
-{# <div class="inline-flex  float-end flex-shrink  last-error"> #}
-{# {{ monitor.last_error }} #}
-{# </div> #}
-{# </div> #}
                 </div>
             </a>
         {% endfor %}

@@ -6,7 +6,7 @@ from django.core.management import BaseCommand
 from strategy_field.utils import fqn
 
 from birder.checks import HealthCheck, parser
-from birder.exceptions import CeleryError
+from birder.exceptions import CheckError
 from birder.models import Monitor, Project
 
 logger = logging.getLogger(__name__)
@@ -72,5 +72,5 @@ url: `{url}`
                     else:
                         self.stdout.write(self.style.ERROR(f"{checker.__name__}: {frm.errors}"))
 
-                except CeleryError:
+                except CheckError:
                     self.stdout.write(self.style.ERROR(f"{checker.__name__}: {frm.errors}"))
