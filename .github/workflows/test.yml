@@ -64,8 +64,22 @@ jobs:
         image: redis:7.4.0
         ports:
           - 16379:6379
+      db:
+        image: postgres:14
+        env:
+          POSTGRES_DATABASE: birder
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USERNAME: postgres
+        ports:
+          - 15432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5          -
     env:
       DOCKER_DEFAULT_PLATFORM: linux/amd64
+      DATABASE_URL: postgres://postgres:postgres@localhost:15432/birder
       DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
       VALKEY_URL: redis://localhost:16379/1
       CACHE_URL: redis://localhost:16379/2
