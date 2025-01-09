@@ -46,6 +46,7 @@ select = [
 ]
 extend-select = ["UP", "I"]
 ignore = [
+    "A005",  # Module `x` shadows a Python standard-library module
     "ANN401", # Dynamically typed expressions (typing.Any) are disallowed
 #    "B904",  # raise-without-from-inside-except: syntax not compatible with py2
     "COM812",
@@ -60,17 +61,7 @@ ignore = [
     "D203", # one-blank-line-before-class
     "D212", # multi-line-summary-first-line
     "D213", # multi-line-summary-second-line
-#    "E731",  # lambda-assignment: lambdas are substential in maintenance of py2/3 codebase
     "ISC001",  # conflicts with ruff format command
-#    "RUF005",  # collection-literal-concatenation: syntax not compatible with py2
-#    "RUF012", # mutable-class-default: typing is not available for py2
-#    "I001", # unsorted imports https://docs.astral.sh/ruff/rules/unsorted-imports/#unsorted-imports-i001
-#    "UP037", # [*] Remove quotes from type annotation
-#    "UP035", # Import from `collections.abc` instead: `Sequence`
-#    "UP031", # Use format specifiers instead of percent format
-#    "SIM108", # Use ternary operator instead of...
-#    "PLR2004", # Magic value used in comparison
-#    "DJ001", # Avoid using `null=True` on string-based fields such as `CharField`
 ]
 
 [format]
