@@ -67,7 +67,7 @@ jobs:
     env:
       DOCKER_DEFAULT_PLATFORM: linux/amd64
       DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
-      CELERY_BROKER_URL: redis://localhost:16379/1
+      VALKEY_URL: redis://localhost:16379/1
       CACHE_URL: redis://localhost:16379/2
       DOCKER_BUILDKIT: 1
     steps:
@@ -125,13 +125,9 @@ jobs:
               --network host \
               -e PYTHONPATH=/app/src \
               -e DATABASE_URL=${DATABASE_URL} \
-              -e CELERY_BROKER_URL=${CELERY_BROKER_URL} \
+              -e VALKEY_URL=${VALKEY_URL} \
               -e CACHE_URL=${CACHE_URL} \
               -e SECRET_KEY=super-secret-key-just-for-testing \
-              -e HOPE_API_URL="https://dev-hope.unitst.org/api/rest/" \
-              -e HOPE_API_TOKEN=${{ secrets.HOPE_API_TOKEN }} \
-              -e AURORA_API_URL="https://uni-hope-ukr-sr-dev.unitst.org/api/" \
-              -e AURORA_API_TOKEN=${{ secrets.AURORA_API_TOKEN }} \
               -v "./output/:/app/output" \
               -v "./src/:/app/src" \
               -v "./tests:/app/tests" \
