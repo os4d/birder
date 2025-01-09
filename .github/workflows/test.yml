@@ -65,7 +65,7 @@ jobs:
         ports:
           - 16379:6379
       db:
-        image: postgres:14
+        image: postgres:16
         env:
           POSTGRES_DATABASE: birder
           POSTGRES_PASSWORD: postgres
