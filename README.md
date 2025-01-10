@@ -8,7 +8,8 @@
 [![Documentation](https://github.com/os4d/birder/actions/workflows/docs.yml/badge.svg)](https://os4d.github.io/birder/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/os4d/birder)](https://hub.docker.com/repository/docker/os4d/birder/tags)
 
-![screenshot](screenshot.png)
+![screenshot](docs/src/img/screenshot.png)
+![screenshot](docs/src/img/smtp.png)
 
 
 Birder is an Open source service uptime monitor.

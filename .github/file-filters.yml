@@ -40,6 +40,6 @@ lint:
 
 docs:
   - added|modified: './docs/**/*'
-  - modified: './src/country_workspace/config/__init__.py'
+  - modified: './src/birder/config/__init__.py'
   - modified: './github/workflows/docs.yml'
   - modified: './github/file-filters.yml'
