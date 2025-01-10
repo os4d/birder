@@ -1,6 +1,3 @@
-from contextlib import suppress
-
-import ldap
 from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator
 from ldap3 import SYNC, Connection, Server
@@ -28,14 +25,13 @@ class LDAPCheck(BaseCheck):
 
     def check(self, raise_error: bool = False) -> bool:
         try:
-            with suppress(ldap.INVALID_DN_SYNTAX):
-                config = {**self.config}
-                host, port = config.pop("host"), config.pop("port")
-                uri = f"ldap://{host}:{port}"
-                server = Server(uri)
-                cfg = {**config, "client_strategy": self.client_strategy}
-                conn = Connection(server, **cfg)
-                conn.bind()
+            config = {**self.config}
+            host, port = config.pop("host"), config.pop("port")
+            uri = f"ldap://{host}:{port}"
+            server = Server(uri)
+            cfg = {**config, "client_strategy": self.client_strategy}
+            conn = Connection(server, **cfg)
+            conn.bind()
             return True
         except LDAPException as e:
             if raise_error:
