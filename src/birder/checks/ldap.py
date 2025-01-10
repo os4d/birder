@@ -1,3 +1,5 @@
+from typing import Any
+
 from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator
 from ldap3 import SYNC, Connection, Server
@@ -22,6 +24,14 @@ class LDAPCheck(BaseCheck):
     config_class = LDAPConfig
     address_format = "{host}:{port}"
     client_strategy = SYNC
+
+    @classmethod
+    def clean_config(cls, cfg: dict[str, Any]) -> dict[str, Any]:
+        if not cfg.get("password"):
+            cfg["password"] = cfg.get("password", "")
+        if not cfg.get("user"):
+            cfg["user"] = cfg.get("username", "")
+        return cfg
 
     def check(self, raise_error: bool = False) -> bool:
         try:

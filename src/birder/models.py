@@ -32,6 +32,8 @@ class User(AbstractUser):
 
 class Project(models.Model):
     name = models.CharField(max_length=255, unique=True)
+    public = models.BooleanField(default=False)
+    default = models.BooleanField(default=False)
     bitcaster_url = models.URLField(blank=True, help_text="The URL to the Bitcaster notification endpoint.")
 
     class Meta:

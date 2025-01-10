@@ -22,6 +22,7 @@ urlpatterns = [
     path("<int:pk>", views.MonitorDetail.as_view(), name="monitor-detail"),
     path("trigger/<int:pk>/<str:token>/", views.trigger, name="trigger"),
     path("", views.Index.as_view(), name="index"),
+    path("<int:project>/", views.Index.as_view(), name="project"),
 ]
 if "django_browser_reload" in settings.INSTALLED_APPS:  # pragma: no cover
     urlpatterns += [path(r"__reload__/", include("django_browser_reload.urls"))]

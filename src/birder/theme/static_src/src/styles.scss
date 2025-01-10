@@ -8,14 +8,25 @@ body {
   @apply dark:bg-slate-800 dark:text-white;
 
 }
+select.program-selection{
+  @apply p-1 text-sm w-64 m-1;
+  @apply dark:bg-slate-800 dark:text-white rounded-sm;
+  @apply dark:text-white ;
+}
+#login-form {
+    input[type=text], input[type=password] {
+    @apply p-2 text-sm rounded-md m-1 ;
+  }
+}
 
-.sso-login-button{
+.sso-login-button {
   @apply w-full max-w-xs font-bold shadow-sm rounded-lg py-3 flex items-center justify-center transition-all duration-300 ease-in-out;
   @apply focus:outline-none hover:shadow focus:shadow-sm;
   @apply bg-gray-300 text-black;
   @apply hover:bg-gray-400;
 }
-.chart-hour{
+
+.chart-hour {
 
 }
 
@@ -23,16 +34,19 @@ body {
   @apply rounded-md border-gray-400 border p-2;
   @apply grid grid-cols-1;
   @apply md:px-4;
-  .icon{
+  .icon {
     @apply w-16;
   }
-  .status{
+
+  .status {
     @apply w-16;
   }
-  .counter{
+
+  .counter {
     @apply w-16;
   }
 }
+
 .offline {
   -webkit-filter: blur(4px);
   -moz-filter: blur(4px);
@@ -40,28 +54,33 @@ body {
   -o-filter: blur(4px);
   filter: blur(4px);
 }
+
 #monitor-grid {
-  @apply w-full grid grid-cols-1 gap-8 px-4 sm:grid-cols-2 sm:gap-2 md:grid-cols-3 xl:grid-cols-4 xl:px-8;
+  @apply w-full grid grid-cols-1 gap-2 px-4 sm:grid-cols-2 sm:gap-2 md:grid-cols-3 xl:grid-cols-4 xl:px-8;
   div.monitor-panel {
     @apply w-full p-2 rounded-md border-gray-400 hover:shadow-2xl border m-1 h-32 dark:hover:shadow-gray-400 dark:hover:shadow-lg;
     .icon {
       @apply w-8 h-8;
       @apply dark:text-white;
     }
+
     .status {
       @apply w-10 h-10;
     }
   }
 }
-.dark{
-  .birder-logo{
+
+.dark {
+  .birder-logo {
     filter: invert(99%) sepia(65%) saturate(0%) hue-rotate(200deg) brightness(110%) contrast(100%);
 
   }
-  .icon{
+
+  .icon {
     filter: invert(99%) sepia(65%) saturate(0%) hue-rotate(200deg) brightness(110%) contrast(100%);
   }
-  .status.status2{
+
+  .status.status2 {
     filter: invert(22%) sepia(65%) saturate(7444%) hue-rotate(355deg) brightness(108%) contrast(129%);
   }
 }
@@ -77,6 +96,7 @@ body {
         @apply w-full;
       }
     }
+
     @apply pt-0;
   }
 }

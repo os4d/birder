@@ -25,6 +25,7 @@ class UserAdmin(_UserAdmin[User]):
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin[Project]):
     search_fields = ("name",)
+    list_display = ("name", "public", "default")
 
 
 class ChangeIconForm(forms.Form):

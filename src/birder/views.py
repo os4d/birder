@@ -12,7 +12,7 @@ from django.views.generic import DetailView, TemplateView
 from birder.checks.passive import HealthCheck
 from birder.config import settings
 from birder.forms import LoginForm
-from birder.models import Monitor
+from birder.models import Monitor, Project
 from birder.utils.dates import format_minutes_as_time, get_start_of_day
 
 
@@ -28,7 +28,16 @@ class Index(CommonContextMixin, TemplateView):
     template_name = "index.html"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        kwargs["monitors"] = Monitor.objects.order_by("position", "name")
+        filters = {}
+        if selected_project := self.kwargs.get("project"):
+            kwargs["selected_project"] = selected_project
+            filters = {"project": selected_project}
+        else:
+            selected_project = Project.objects.filter(public=True).order_by("default", "name").first()
+        if selected_project:
+            kwargs["monitors"] = Monitor.objects.filter(**filters).order_by("position", "name")
+
+        kwargs["projects"] = Project.objects.filter(public=True).order_by("default", "name")
         return super().get_context_data(**kwargs)
 
 
