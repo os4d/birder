@@ -43,3 +43,6 @@ reset_migrations:
 	git add src/birder/migrations/*
 	./manage.py upgrade
 	./manage.py demo
+
+docs:
+	mkdocs serve
