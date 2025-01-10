@@ -53,8 +53,9 @@ def assert_object_or_404(obj: Model) -> None:
 @admin.register(Monitor)
 class MonitorAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[Monitor]):
     search_fields = ("name",)
-    list_display = ("name", "status", "checker", "verbosity", "active")
+    list_display = ("name", "project", "status", "checker", "verbosity", "active")
     list_filter = (
+        ("project", LinkedAutoCompleteFilter.factory(parent=None)),
         ("env", LinkedAutoCompleteFilter.factory(parent=None)),
         "strategy",
         "active",

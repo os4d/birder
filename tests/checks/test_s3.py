@@ -10,22 +10,26 @@ from birder.exceptions import CheckError
 def test_s3():
     c = S3Check(
         configuration={
+            "endpoint_url": "http://example.com",
             "bucket_name": "bucket1",
-            "region_name": "us",
+            "region_name": "us-east-1",
             "aws_access_key_id": "key1",
             "aws_secret_access_key": "secret1",
+            "aws_session_token": "token1",
         }
     )
     assert c.config == {
+        "endpoint_url": "http://example.com",
         "bucket_name": "bucket1",
-        "region_name": "us",
+        "region_name": "us-east-1",
         "aws_access_key_id": "key1",
         "aws_secret_access_key": "secret1",
+        "aws_session_token": "token1",
     }
 
 
 def test_check_success(monkeypatch):
-    monkeypatch.setattr("birder.checks.s3.boto3.client", Mock())
+    monkeypatch.setattr("birder.checks.s3.boto3.resource", Mock())
     c = S3Check(
         configuration={
             "bucket_name": "bucket1",

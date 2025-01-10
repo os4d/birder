@@ -1,5 +1,4 @@
 import boto3
-from botocore.exceptions import ClientError
 from django import forms
 
 from ..exceptions import CheckError
@@ -8,10 +7,12 @@ from .base import ConfigForm, WriteOnlyField
 
 
 class S3Config(ConfigForm):
+    endpoint_url = forms.CharField(required=True)
     bucket_name = forms.CharField(required=True)
-    region_name = forms.CharField(required=True)
+    region_name = forms.CharField(required=False)
     aws_access_key_id = forms.CharField(required=True)
     aws_secret_access_key = WriteOnlyField(required=True)
+    aws_session_token = WriteOnlyField(required=False)
 
 
 class S3Check(HttpCheck):
@@ -22,10 +23,12 @@ class S3Check(HttpCheck):
 
     def check(self, raise_error: bool = False) -> bool:
         try:
-            client = boto3.client(service_name="s3", **self.config)
-            client.head_bucket(Bucket="bucket-does-not-exist")
+            cfg = {**self.config}
+            bucket_name = cfg.pop("bucket_name")
+            s3 = boto3.resource("s3", **cfg, config=boto3.session.Config(signature_version="s3v4"), verify=False)
+            s3.Bucket(bucket_name).check()
             return True
-        except ClientError as e:
+        except ValueError as e:
             if raise_error:
                 raise CheckError("JSON check failed") from e
         return False

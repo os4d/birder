@@ -93,3 +93,18 @@ services:
     environment:
       MINIO_ROOT_USER: admin
       MINIO_ROOT_PASSWORD: password
+      MINIO_ACCESS_KEY: AKIAIOSFODNN7EXAMPLE
+      MINIO_SECRET_KEY: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add myminio http://minio:9000 AKIAIOSFODNN7EXAMPLE wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY;
+      /usr/bin/mc rm -r --force myminio/bucket1;
+      /usr/bin/mc mb myminio/bucket1;
+      /usr/bin/mc policy set download myminio/bucket1;
+      exit 0;
+      "

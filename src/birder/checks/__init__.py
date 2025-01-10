@@ -14,26 +14,28 @@ from .passive import HealthCheck
 from .pg import PostgresCheck
 from .redis import RedisCheck
 from .registry import registry
+from .s3 import S3Check
 from .smtp import SMTPCheck
 from .ssh import SSHCheck
 from .tcp import TCPCheck
 from .xml import XMLCheck
 
-registry.register(HealthCheck)
-registry.register(HttpCheck)
-registry.register(RedisCheck)
-registry.register(MySQLCheck)
-registry.register(PostgresCheck)
-registry.register(FtpCheck)
-registry.register(JsonCheck)
-registry.register(SSHCheck)
-registry.register(MemCacheCheck)
 registry.register(AmqpCheck)
 registry.register(CeleryCheck)
+registry.register(FtpCheck)
+registry.register(HealthCheck)
+registry.register(HttpCheck)
+registry.register(JsonCheck)
+registry.register(LDAPCheck)
+registry.register(MemCacheCheck)
+registry.register(MySQLCheck)
+registry.register(PostgresCheck)
+registry.register(RedisCheck)
+registry.register(S3Check)
+registry.register(SMTPCheck)
+registry.register(SSHCheck)
 registry.register(TCPCheck)
 registry.register(XMLCheck)
-registry.register(SMTPCheck)
-registry.register(LDAPCheck)
 
 
 def parse_uri(uri: str) -> dict[str, str | Any]:
