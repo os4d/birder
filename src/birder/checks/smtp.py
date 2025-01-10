@@ -1,4 +1,4 @@
-import smtplib
+from smtplib import SMTP, SMTPException
 
 from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -23,14 +23,15 @@ class SMTPCheck(BaseCheck):
 
     def check(self, raise_error: bool = False) -> bool:
         try:
-            username, password = self.config.pop("username"), self.config.pop("password")
-            server = smtplib.SMTP(**self.config)
+            config = {**self.config}
+            username, password = config.pop("username"), config.pop("password")
+            server = SMTP(**config)
             server.starttls()
             if username and password:
                 server.login(username, password)
             server.quit()
             return True
-        except (ConnectionRefusedError, smtplib.SMTPException) as e:
+        except (ConnectionRefusedError, SMTPException) as e:
             if raise_error:
                 raise CheckError("SMTP check failed") from e
         return False
