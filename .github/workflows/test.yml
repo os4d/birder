@@ -28,31 +28,31 @@ permissions:
 
 
 jobs:
-#  changes:
-#    if: (github.event_name != 'pull_request'
-#            || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name)
-#            || github.event_name == 'create'
-#    runs-on: ubuntu-latest
-#    timeout-minutes: 1
-#    defaults:
-#      run:
-#        shell: bash
-#    outputs:
-#      run_tests: ${{ steps.changes.outputs.run_tests }}
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v4.1.7
-#      - id: changes
-#        name: Check for file changes
-#        uses: dorny/paths-filter@0bc4621a3135347011ad047f9ecf449bf72ce2bd # v3.0.0
-#        with:
-#          base: ${{ github.ref }}
-#          token: ${{ github.token }}
-#          filters: .github/file-filters.yml
+  changes:
+    if: (github.event_name != 'pull_request'
+            || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name)
+            || github.event_name == 'create'
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    defaults:
+      run:
+        shell: bash
+    outputs:
+      run_tests: ${{ steps.changes.outputs.run_tests }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
+      - id: changes
+        name: Check for file changes
+        uses: dorny/paths-filter@0bc4621a3135347011ad047f9ecf449bf72ce2bd # v3.0.0
+        with:
+          base: ${{ github.ref }}
+          token: ${{ github.token }}
+          filters: .github/file-filters.yml
 
   test:
-#    needs: [ changes ]
-#    if: needs.changes.outputs.run_tests == 'true'
+    needs: [ changes ]
+    if: needs.changes.outputs.run_tests == 'true'
     runs-on: ubuntu-latest
     outputs:
       image: ${{ env.IMAGE }}
