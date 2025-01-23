@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, render
 from django.utils.safestring import mark_safe
 from django.views.generic import DetailView, TemplateView
 
-from birder.checks.passive import HealthCheck
+from birder.checks import BaseCheck
 from birder.config import settings
 from birder.forms import LoginForm
 from birder.models import Monitor, Project
@@ -24,20 +24,30 @@ class CommonContextMixin:
         return super().get_context_data(**kwargs)
 
 
-class Index(CommonContextMixin, TemplateView):
+class IndexView(CommonContextMixin, TemplateView):
     template_name = "index.html"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        filters = {}
-        if selected_project := self.kwargs.get("project"):
-            kwargs["selected_project"] = selected_project
-            filters = {"project": selected_project}
-        else:
-            selected_project = Project.objects.filter(public=True).order_by("default", "name").first()
-        if selected_project:
-            kwargs["monitors"] = Monitor.objects.filter(**filters).order_by("position", "name")
+        kwargs["projects"] = Project.objects.filter(public=True)
+        return super().get_context_data(**kwargs)
 
-        kwargs["projects"] = Project.objects.filter(public=True).order_by("default", "name")
+
+class ProjectView(CommonContextMixin, TemplateView):
+    template_name = "project.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        filters = {}
+        project = Project.objects.get(pk=self.kwargs.get("project"))
+        if selection := self.kwargs.get("env"):
+            env = project.environments.get(name=selection)
+        else:
+            env = project.environments.first()
+
+        kwargs["selected_env"] = env
+        filters = {"environment": env}
+        kwargs["project"] = project
+        kwargs["monitors"] = Monitor.objects.filter(**filters).order_by("position", "name")
+        kwargs["environments"] = project.environments.order_by("name")
         return super().get_context_data(**kwargs)
 
 
@@ -72,9 +82,9 @@ def trigger(request: HttpRequest, pk: str, token: str) -> HttpResponse:
     m: Monitor = get_object_or_404(Monitor, pk=pk)
     if m.token != token:
         return HttpResponse("---", status=403)
-    if not isinstance(m.strategy, HealthCheck):
+    if m.strategy.mode != BaseCheck.REMOTE_INVOCATION:
         return HttpResponse("Check not enabled for remote call", status=400)
-    m.trigger()
+    m.get()
     return HttpResponse("Ok")
 
 

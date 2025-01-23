@@ -120,7 +120,7 @@ class Migration(migrations.Migration):
                 ("position", models.PositiveIntegerField(default=0)),
                 (
                     "description",
-                    models.TextField(blank=True, help_text="short description  do display in the monitor detail page"),
+                    models.TextField(blank=True, help_text="short description  to display in the monitor detail page"),
                 ),
                 ("notes", models.TextField(blank=True, help_text="Notes about the monitor. Only visible to Staff")),
                 ("custom_icon", models.CharField(blank=True, default="", max_length=255)),

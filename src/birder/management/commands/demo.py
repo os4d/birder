@@ -7,7 +7,7 @@ from strategy_field.utils import fqn
 
 from birder.checks import HealthCheck, parser
 from birder.exceptions import CheckError
-from birder.models import Monitor, Project
+from birder.models import Environment, Monitor, Project
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,10 @@ class Command(BaseCommand):
         logging.disable(logging.CRITICAL)
 
         Monitor.objects.all().delete()
-        demo, __ = Project.objects.get_or_create(name="Demo")
+        demo, __ = Project.objects.get_or_create(name="Demo", public=True)
+        demo.environments.add(*Environment.objects.all())
+        demo.save()
+        dev, __ = Environment.objects.get_or_create(name="development")
         Monitor.objects.get_or_create(
             project=demo,
             name="Remote",
@@ -51,6 +54,7 @@ class Command(BaseCommand):
             else:
                 m, __ = Monitor.objects.get_or_create(
                     project=demo,
+                    environment=dev,
                     name=checker.pragma[0],
                     strategy=fqn(checker),
                     defaults={"strategy": fqn(checker), "configuration": config},
@@ -72,5 +76,5 @@ url: `{url}`
                     else:
                         self.stdout.write(self.style.ERROR(f"{checker.__name__}: {frm.errors}"))
 
-                except CheckError:
+                except (CheckError, ValueError):
                     self.stdout.write(self.style.ERROR(f"{checker.__name__}: {frm.errors}"))

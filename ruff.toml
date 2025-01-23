@@ -61,6 +61,7 @@ ignore = [
     "D203", # one-blank-line-before-class
     "D212", # multi-line-summary-first-line
     "D213", # multi-line-summary-second-line
+    "DJ007", # Do not use `__all__` with `ModelForm`, use `fields` instead
     "ISC001",  # conflicts with ruff format command
 ]
 

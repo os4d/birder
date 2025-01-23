@@ -41,7 +41,7 @@ def trigger(ctx: Context, monitor_id: int, **kwargs: Any) -> None:
     from birder.models import Monitor
 
     monitor = Monitor.objects.get(id=monitor_id)
-    monitor.trigger()
+    monitor.run()
 
 
 @cli.command()

@@ -1,7 +1,8 @@
-import traceback
 from datetime import datetime
 from functools import cached_property
+from typing import Any
 
+from constance import config
 from django.contrib.auth.models import AbstractUser, Group
 from django.core.cache import cache
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -16,14 +17,21 @@ from timezone_field import TimeZoneField
 from birder.checks.base import BaseCheck
 from birder.checks.registry import registry
 from birder.exceptions import CheckError
+from birder.signals import monitor_update
 from birder.utils.security import get_random_token
 from birder.ws.utils import notify_ui
 
-KEY_ERROR_COUNT = "monitor:{0.pk}:count"
-KEY_STATUS = "monitor:{0.pk}:status"
-KEY_LAST_CHECK = "monitor:{0.pk}:last_check"
-KEY_LAST_SUCCESS = "monitor:{0.pk}:last_success"
-KEY_LAST_FAILURE = "monitor:{0.pk}:last_failure"
+KEY_ERROR_COUNT = "{0}:monitor:{1.pk}:count"
+KEY_STATUS = "{0}:monitor:{1.pk}:status"
+KEY_LAST_CHECK = "{0}:monitor:{1.pk}:last_check"
+KEY_LAST_SUCCESS = "{0}:monitor:{1.pk}:last_success"
+KEY_LAST_FAILURE = "{0}:monitor:{1.pk}:last_failure"
+KEY_SYSTEM_CHECK = "{0}:system:last_check"
+KEY_PROGRAM_STATUS = "{0}:program:{1.pk}:program_status"
+
+
+def get_cache_key(pattern: str, *args: Any) -> str:
+    return pattern.format(config.CACHE_PREFIX, *args)
 
 
 class User(AbstractUser):
@@ -33,10 +41,12 @@ class User(AbstractUser):
 class Project(models.Model):
     name = models.CharField(max_length=255, unique=True)
     public = models.BooleanField(default=False)
-    default = models.BooleanField(default=False)
     bitcaster_url = models.URLField(blank=True, help_text="The URL to the Bitcaster notification endpoint.")
+    environments = models.ManyToManyField("Environment", related_name="projects", blank=False)
+    icon = models.CharField(blank=True, default="", max_length=255)
 
     class Meta:
+        ordering = ["name"]
         constraints = [
             models.UniqueConstraint(Lower("name"), name="unique_program_name"),
         ]
@@ -44,11 +54,18 @@ class Project(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    def set_alarmed(self, alarmed: bool) -> None:
+        cache.set(get_cache_key(KEY_PROGRAM_STATUS, self), alarmed)
+
+    def is_alarmed(self, alarmed: bool) -> bool:
+        return cache.get(get_cache_key(KEY_PROGRAM_STATUS, self))
+
 
 class Environment(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
     class Meta:
+        ordering = ["name"]
         constraints = [
             models.UniqueConstraint(Lower("name"), name="unique_env_name"),
         ]
@@ -70,20 +87,14 @@ class Monitor(models.Model):
     SUCCESS = "ok"
     WARN = "warn"
     FAIL = "ko"
-
-    class Verbosity(models.IntegerChoices):
-        NONE = (0, "None")
-        SUCCESS = (1, "Success")
-        FAIL = (2, "Failure")
-        ERROR = (3, "Error")
-        FULL = (4, "Full")
+    UNKNOWN = "question"
 
     strategy: "BaseCheck"
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    env = models.ForeignKey(Environment, on_delete=models.SET_NULL, null=True, blank=True)
+    environment = models.ForeignKey(Environment, on_delete=models.SET_NULL, null=True, blank=False)
     name = models.CharField(max_length=255, unique=True)
     position = models.PositiveIntegerField(default=0)
-    description = models.TextField(blank=True, help_text="short description  do display in the monitor detail page")
+    description = models.TextField(blank=True, help_text="short description  to display in the monitor detail page")
     notes = models.TextField(blank=True, help_text="Notes about the monitor. Only visible to Staff")
     custom_icon = models.CharField(blank=True, default="", max_length=255)
 
@@ -114,7 +125,6 @@ class Monitor(models.Model):
         help_text="how many consecutive failures "
         "(or missing notifications in case or remote invocation) produce an error",
     )
-    verbosity = models.IntegerField(choices=Verbosity.choices, default=Verbosity.NONE)
 
     class Meta(TypedModelMeta):
         ordering = ("name",)
@@ -133,136 +143,126 @@ class Monitor(models.Model):
             return static(f"images/icons/{self.custom_icon}")
         return static(f"images/icons/{self.strategy.icon}")
 
-    def store_ping(self, timestamp: datetime) -> None:
+    def store_error(self, timestamp: datetime) -> None:
         """Set corresponding minute of the day's bit."""
         from .db import DataStore
 
         ds = DataStore(self)
-        ds.store_value(timestamp)
-
-    def process(self, result: bool) -> None:
-        if self.strategy.mode == BaseCheck.MODE_ACTIVE:
-            self.process_active(result)
-        else:
-            self.process_passive()
+        ds.store_error(timestamp)
 
     def get_current_errors(self) -> int:
-        return cache.get(KEY_ERROR_COUNT.format(self)) or 0
+        return cache.get(get_cache_key(KEY_ERROR_COUNT, self)) or 0
 
     def reset_current_errors(self) -> int:
-        cache.set(KEY_ERROR_COUNT.format(self), 0)
+        cache.set(get_cache_key(KEY_ERROR_COUNT, self), 0)
         return 0
 
     def incr_current_errors(self) -> int:
         try:
-            cache.incr(KEY_ERROR_COUNT.format(self), 1)
+            cache.incr(get_cache_key(KEY_ERROR_COUNT, self), 1)
         except ValueError:
-            cache.set(KEY_ERROR_COUNT.format(self), 1)
+            cache.set(get_cache_key(KEY_ERROR_COUNT, self), 1)
         return self.get_current_errors()
 
-    def check_status(self, error_count: int | None = None) -> str:
-        if error_count is None:
-            error_count = self.get_current_errors()
+    def get(self) -> None:
+        self.store_last_timestamp_success()
+        self.reset_current_errors()
+        timestamp = datetime.now()
+        self.store_error(timestamp)
+
+    def run(self) -> bool:
+        timestamp = datetime.now()
+        self.store_last_timestamp_check()
+        if self.strategy.mode == BaseCheck.LOCAL_TRIGGER:
+            try:
+                result = self.strategy.check(raise_error=True)
+            except CheckError:
+                result = False
+            if result:
+                self.reset_current_errors()
+            else:
+                self.store_error(timestamp)
+                self.store_last_timestamp_failure()
+                error_count = self.incr_current_errors()
+                if error_count >= self.err_threshold:
+                    st = Monitor.FAIL
+                elif error_count >= self.warn_threshold:
+                    st = Monitor.WARN
+                else:
+                    st = Monitor.SUCCESS
+                cache.set(get_cache_key(KEY_STATUS, self), st, timeout=86400)
+        else:
+            result = False
+            if self.last_timestamp_success:
+                time_difference = timestamp - self.last_timestamp_success
+                offset = int(time_difference.total_seconds() // 60)
+                if offset:
+                    self.incr_current_errors()
+                    self.store_last_timestamp_failure()
+                else:
+                    self.store_last_timestamp_success()
+            else:
+                self.incr_current_errors()
+                self.store_last_timestamp_failure()
+
+        notify_ui("update", self)
+        monitor_update.send(sender=Monitor, instance=self, result=result, timestamp=timestamp)
+        return result
+
+    @property
+    def counters(self) -> tuple[int, int, int]:
+        return self.failures, self.warn_threshold, self.err_threshold
+
+    @property
+    def status(self) -> str:
+        error_count = self.get_current_errors()
         if error_count >= self.err_threshold:
             st = Monitor.FAIL
         elif error_count >= self.warn_threshold:
             st = Monitor.WARN
+        elif not self.last_timestamp_check:
+            st = Monitor.UNKNOWN
         else:
             st = Monitor.SUCCESS
-        cache.set(KEY_STATUS.format(self), st, timeout=86400)
         return st
 
-    def process_passive(self) -> None:
+    @property
+    def failures(self) -> int:
+        return cache.get(get_cache_key(KEY_ERROR_COUNT, self)) or 0
+
+    def store_last_timestamp_check(self) -> None:
         timestamp = datetime.now()
-        self.reset_current_errors()
-        self.store_ping(timestamp)
-        self.mark_ts_success()
-        self.mark_ts_check()
-        self.check_status(0)
-        notify_ui("update", self)
+        ts = timestamp.strftime(config.DATETIME_FORMAT)
+        return cache.set(get_cache_key(KEY_LAST_CHECK, self), ts, timeout=86400)
 
-    def process_active(self, result: bool) -> None:
+    def store_last_timestamp_failure(self) -> None:
         timestamp = datetime.now()
-        self.mark_ts_check()
+        ts = timestamp.strftime(config.DATETIME_FORMAT)
+        return cache.set(get_cache_key(KEY_LAST_FAILURE, self), ts, timeout=86400)
 
-        if result:
-            current = self.reset_current_errors()
-            self.mark_ts_success()
-        else:
-            self.mark_ts_failure()
-            self.store_ping(timestamp)
-            current = self.incr_current_errors()
-        self.check_status(current)
-        notify_ui("update", self)
+    def store_last_timestamp_success(self) -> None:
+        timestamp = datetime.now()
+        ts = timestamp.strftime(config.DATETIME_FORMAT)
+        return cache.set(get_cache_key(KEY_LAST_SUCCESS, self), ts, timeout=86400)
 
-    def log(self, status: str, exc: Exception | None = None) -> None:
-        if exc:
-            message = f"""{exc.__class__.__name__}: {exc}
-
-            {"".join(traceback.format_tb(exc.__traceback__))}
-            """
-            LogCheck.objects.create(monitor=self, status=status, payload=message)
-        else:
-            LogCheck.objects.create(monitor=self, status=status)
-
-    def trigger(self) -> bool:
+    @property
+    def last_timestamp_check(self) -> datetime | None:
         try:
-            result = self.strategy.check(True)
-            if (
-                self.verbosity == self.Verbosity.FULL
-                or (result and self.verbosity == self.Verbosity.SUCCESS)
-                or (not result and self.verbosity == self.Verbosity.FAIL)
-            ):
-                self.log(Monitor.SUCCESS)
-        except CheckError as e:
-            if self.verbosity in [self.Verbosity.ERROR, self.Verbosity.FULL]:
-                self.log(Monitor.FAIL, e)
-            result = False
-
-        self.process(result)
-        return result
-
-    @property
-    def status(self) -> bool:
-        return cache.get(KEY_STATUS.format(self))
-
-    @property
-    def failures(self) -> bool:
-        return cache.get(KEY_ERROR_COUNT.format(self)) or 0
-
-    def mark_ts_check(self) -> None:
-        timestamp = datetime.now()
-        ts = timestamp.strftime("%Y %b %d %H:%M")
-        return cache.set(KEY_LAST_CHECK.format(self), ts, timeout=86400)
-
-    def mark_ts_failure(self) -> None:
-        timestamp = datetime.now()
-        ts = timestamp.strftime("%Y %b %d %H:%M")
-        return cache.set(KEY_LAST_FAILURE.format(self), ts, timeout=86400)
-
-    def mark_ts_success(self) -> None:
-        timestamp = datetime.now()
-        ts = timestamp.strftime("%Y %b %d %H:%M")
-        return cache.set(KEY_LAST_SUCCESS.format(self), ts, timeout=86400)
-
-    @property
-    def last_check(self) -> datetime | None:
-        try:
-            return datetime.strptime(cache.get(KEY_LAST_CHECK.format(self)), "%Y %b %d %H:%M")
+            return datetime.strptime(cache.get(get_cache_key(KEY_LAST_CHECK, self)), config.DATETIME_FORMAT)
         except (ValueError, TypeError):
             return None
 
     @property
-    def last_success(self) -> datetime | None:
+    def last_timestamp_success(self) -> datetime | None:
         try:
-            return datetime.strptime(cache.get(KEY_LAST_SUCCESS.format(self)), "%Y %b %d %H:%M")
+            return datetime.strptime(cache.get(get_cache_key(KEY_LAST_SUCCESS, self)), config.DATETIME_FORMAT)
         except (ValueError, TypeError):
             return None
 
     @property
-    def last_error(self) -> datetime | None:
+    def last_timestamp_failure(self) -> datetime | None:
         try:
-            return datetime.strptime(cache.get(KEY_LAST_FAILURE.format(self)), "%Y %b %d %H:%M")
+            return datetime.strptime(cache.get(get_cache_key(KEY_LAST_FAILURE, self)), config.DATETIME_FORMAT)
         except (ValueError, TypeError):
             return None
 
@@ -278,6 +278,7 @@ class DataHistory(models.Model):
     data = models.BinaryField(default=None, null=True)
 
     class Meta:
+        ordering = ["-date"]
         constraints = [
             models.UniqueConstraint("monitor", "date", name="unique_data_day_monitor"),
         ]

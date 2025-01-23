@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 import channels.layers
 from asgiref.sync import async_to_sync
-from django.core.cache import cache
+from constance import config
 from django.urls.base import reverse
 from strategy_field.utils import fqn
 
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 def notify_ui(msg: str, *args: Any, **kwargs: Any) -> None:
     if msg == "ping":
-        _ping()
+        _ping(kwargs["timestamp"])
     elif msg == "update":
         _update(*args, **kwargs)
     elif msg == "refresh":
@@ -39,11 +39,11 @@ def _refresh(monitor: "Monitor", crud: str) -> None:
     )
 
 
-def _ping() -> None:
+def _ping(timestamp: str) -> None:
     channel_layer = channels.layers.get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         GROUP,
-        {"type": "send.json", "reason": "ping", "ts": cache.get("system:last_check")},
+        {"type": "send.json", "reason": "ping", "ts": timestamp},
     )
 
 
@@ -54,21 +54,23 @@ class JSONEncoder(JSONEncoder_):
         if isinstance(obj, Monitor):
             return {
                 "id": obj.id,
+                "project_id": obj.project_id,
                 "url": reverse("monitor-detail", args=[obj.pk]),
                 "status": obj.status,
                 "active": obj.active,
                 "name": obj.name,
-                "last_check": json.loads(json.dumps(obj.last_check, cls=JSONEncoder)),
-                "last_error": json.loads(json.dumps(obj.last_error, cls=JSONEncoder)),
-                "last_success": json.loads(json.dumps(obj.last_success, cls=JSONEncoder)),
+                "last_check": json.loads(json.dumps(obj.last_timestamp_check, cls=JSONEncoder)),
+                "last_error": json.loads(json.dumps(obj.last_timestamp_failure, cls=JSONEncoder)),
+                "last_success": json.loads(json.dumps(obj.last_timestamp_success, cls=JSONEncoder)),
                 "fqn": fqn(obj.strategy),
                 "icon": obj.icon,
                 "failures": obj.failures,
+                "thresholds": [obj.warn_threshold, obj.err_threshold],
             }
         if isinstance(obj, datetime):
-            return obj.strftime("%Y-%m-%d %H:%M:%S")
+            return obj.strftime(config.DATETIME_FORMAT)
         if isinstance(obj, date):
-            return obj.strftime("%Y-%m-%d")
+            return obj.strftime(config.DATE_FORMAT)
         return json.JSONEncoder.default(self, obj)
 
 

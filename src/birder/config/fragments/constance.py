@@ -46,4 +46,7 @@ CONSTANCE_CONFIG = {
     ),
     "HARD_THRESHOLD": (86400, "System Wide Threshold", int),
     "RETENTION_POLICY": ("1 month", "System Wide Threshold", "duration"),
+    "CACHE_PREFIX": ("birder", "Cache global prefix", str),
+    "DATETIME_FORMAT": ("%Y %b %d %H:%M", "Datetime format", str),
+    "DATE_FORMAT": ("%Y %b %d", "Datetime format", str),
 }

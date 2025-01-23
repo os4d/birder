@@ -11,6 +11,8 @@
     <meta name="keywords" content="">
     <script src="/static/admin/js/vendor/jquery/jquery.js"></script>
     <script src="/static/admin/js/jquery.init.js"></script>
+    <script src="{% static "birder.js" %}"></script>
+
     {% tailwind_css %}
     {% block extrahead %}{% endblock %}
 </head>
@@ -32,8 +34,13 @@
         <div class="hidden z-30 md:flex md:items-center md:w-auto w-full order-3 md:order-1" id="menu">
             <nav class="z-30">
                 <ul class="md:flex items-center justify-between text-base pt-4 md:pt-0">
-                    <li><a class="inline-block no-underline hover:underline py-2 px-4"
-                           href="/">Home</a></li>
+                    <li><a class="inline-block no-underline hover:underline py-2 px-4" href="/">Home</a></li>
+                    {% if monitor %}
+                        <li><a class="inline-block no-underline hover:underline py-2 px-4 w-8"
+                               href="{% url "project-detail" monitor.project.pk %}">{{ monitor.project.name }}</a></li>
+                    {% else %}
+                        <li><span class="inline-block no-underline hover:underline py-2 px-4 w-8"></span></li>
+                    {% endif %}
                 </ul>
             </nav>
         </div>
@@ -52,13 +59,13 @@
                     {% csrf_token %}
                     <button type="submit" class="btn-link">logout</button>
                 </form>
-                {% else %}
-                    <a class="inline-block no-underline " href="{% url "login" %}">login</a>
-                {% endif %}
-                {% if user.is_staff %}
-                    <a class="inline-block no-underline px-2" target="_admin"
-                       href="{% url "admin:index" %}">{% translate "admin" %}</a>
-                {% endif %}
+            {% else %}
+                <a class="inline-block no-underline " href="{% url "login" %}">login</a>
+            {% endif %}
+            {% if user.is_staff %}
+                <a class="inline-block no-underline px-2" target="_admin"
+                   href="{% url "admin:index" %}">{% translate "admin" %}</a>
+            {% endif %}
         </div>
     </div>
 </nav>
@@ -77,6 +84,5 @@
         </div>
     </footer>
 {% endblock footer %}
-<script src="{% static "code.js" %}"></script>
 </body>
 </html>

@@ -26,7 +26,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args: Any, **options: Any) -> None:
-        from birder.models import User
+        from birder.models import Environment, User
 
         redis_client = cache.client.get_client()
         if options["force"]:
@@ -38,6 +38,10 @@ class Command(BaseCommand):
                 call_command("migrate", interactive=False)
                 call_command("collectstatic", interactive=False)
                 from django.contrib.auth.models import Group
+
+                Environment.objects.get_or_create(name="development")
+                Environment.objects.get_or_create(name="staging")
+                Environment.objects.get_or_create(name="production")
 
                 g, is_new = Group.objects.get_or_create(name="Default")
                 if is_new:

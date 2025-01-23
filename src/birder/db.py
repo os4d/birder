@@ -36,7 +36,7 @@ class DataStore:
             data = init_bitaarray(0)
         return data
 
-    def store_value(self, timestamp: datetime) -> None:
+    def store_error(self, timestamp: datetime) -> None:
         sig = timestamp.strftime("%Y-%m-%d")
         data = self._get_store_for_date(sig)
         absolute_minute = timestamp.hour * 60 + timestamp.minute

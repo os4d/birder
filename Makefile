@@ -36,7 +36,7 @@ lint:
 	pre-commit run --all-files
 
 reset_migrations:
-	rm -f src/birder/migrations/00*
+	rm -f src/birder/migrations/0002*
 	dropdb --if-exists birder
 	createdb birder
 	./manage.py makemigrations birder

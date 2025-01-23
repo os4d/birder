@@ -8,26 +8,18 @@
         <div class="float-right text-xs" id="lastUpdate">
             {{ birder.system.last_check|default_if_none:"" }}
         </div>
-        <div>
-            <select name="program" class="program-selection">
-                {% for prj in projects %}
-                    <option value="{% url "project" prj.pk %}"
-                            {% if prj.pk == selected_project %}selected{% endif %}>{{ prj.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
     </div>
-    <div class="" id="monitor-grid">
-        {% for monitor in monitors %}
+    <div class="" id="project-grid">
+        {% for project in projects %}
             <a class="cursor-pointer h-full"
-               href="{% if monitor.active %}{% url "monitor-detail" monitor.pk %}{% else %}#{% endif %}">
-                <div class="monitor-panel grid grid-cols-1 {% if not monitor.active %}offline{% endif %}"
-                     id="monitor-{{ monitor.pk }}">
+               href="{% url "project-detail" project.pk %}">
+                <div class="monitor-panel grid grid-cols-1"
+                     id="project-{{ project.pk }}">
                     <div class="flex h-5 ">
-                        <div class="flex-shrink"><img class="icon" src="{{ monitor.icon }}"></div>
-                        <div class="flex-grow w-max-2/3 overflow-clip pl-3">{{ monitor.name|truncatechars:"20" }}
+{# <div class="flex-shrink"><img class="icon" src="{{ monitor.icon }}"></div> #}
+                        <div class="flex-grow w-max-2/3 overflow-clip pl-3">{{ project.name|truncatechars:"20" }}
                         </div>
-                        <img class="status status-{{ monitor.status }}" src="{% status monitor.status %}">
+{# <img class="status status-{{ monitor.status }}" src="{% status monitor.status %}"> #}
                     </div>
                 </div>
             </a>

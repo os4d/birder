@@ -819,6 +819,10 @@ select {
   margin: 1.25rem;
 }
 
+.m-auto {
+  margin: auto;
+}
+
 .mx-20 {
   margin-left: 5rem;
   margin-right: 5rem;
@@ -1438,7 +1442,7 @@ select.program-selection:where(.dark, .dark *) {
   filter: blur(4px);
 }
 
-#monitor-grid {
+#project-grid, #monitor-grid {
   display: grid;
   width: 100%;
   grid-template-columns: repeat(1, minmax(0, 1fr));
@@ -1448,90 +1452,90 @@ select.program-selection:where(.dark, .dark *) {
 }
 
 @media (min-width: 640px) {
-  #monitor-grid {
+  #project-grid, #monitor-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.5rem;
   }
 }
 
 @media (min-width: 768px) {
-  #monitor-grid {
+  #project-grid, #monitor-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 1280px) {
-  #monitor-grid {
+  #project-grid, #monitor-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     padding-left: 2rem;
     padding-right: 2rem;
   }
 }
 
-#monitor-grid div.monitor-panel {
+#project-grid div.monitor-panel, #monitor-grid div.monitor-panel {
     margin: 0.25rem;
   }
 
-#monitor-grid div.monitor-panel {
+#project-grid div.monitor-panel, #monitor-grid div.monitor-panel {
     height: 8rem;
   }
 
-#monitor-grid div.monitor-panel {
+#project-grid div.monitor-panel, #monitor-grid div.monitor-panel {
     width: 100%;
   }
 
-#monitor-grid div.monitor-panel {
+#project-grid div.monitor-panel, #monitor-grid div.monitor-panel {
     border-radius: 0.375rem;
   }
 
-#monitor-grid div.monitor-panel {
+#project-grid div.monitor-panel, #monitor-grid div.monitor-panel {
     border-width: 1px;
   }
 
-#monitor-grid div.monitor-panel {
+#project-grid div.monitor-panel, #monitor-grid div.monitor-panel {
     --tw-border-opacity: 1;
     border-color: rgb(156 163 175 / var(--tw-border-opacity, 1));
   }
 
-#monitor-grid div.monitor-panel {
+#project-grid div.monitor-panel, #monitor-grid div.monitor-panel {
     padding: 0.5rem;
   }
 
-#monitor-grid div.monitor-panel:hover {
+#project-grid div.monitor-panel:hover, #monitor-grid div.monitor-panel:hover {
     --tw-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
     --tw-shadow-colored: 0 25px 50px -12px var(--tw-shadow-color);
     box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
   }
 
-#monitor-grid div.monitor-panel:hover:where(.dark, .dark *) {
+#project-grid div.monitor-panel:hover:where(.dark, .dark *), #monitor-grid div.monitor-panel:hover:where(.dark, .dark *) {
     --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
     --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
     box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
   }
 
-#monitor-grid div.monitor-panel:hover:where(.dark, .dark *) {
+#project-grid div.monitor-panel:hover:where(.dark, .dark *), #monitor-grid div.monitor-panel:hover:where(.dark, .dark *) {
     --tw-shadow-color: #9ca3af;
     --tw-shadow: var(--tw-shadow-colored);
   }
 
-#monitor-grid div.monitor-panel .icon {
+#project-grid div.monitor-panel .icon, #monitor-grid div.monitor-panel .icon {
       height: 2rem;
     }
 
-#monitor-grid div.monitor-panel .icon {
+#project-grid div.monitor-panel .icon, #monitor-grid div.monitor-panel .icon {
       width: 2rem;
     }
 
-#monitor-grid div.monitor-panel .icon:where(.dark, .dark *) {
+#project-grid div.monitor-panel .icon:where(.dark, .dark *), #monitor-grid div.monitor-panel .icon:where(.dark, .dark *) {
       --tw-text-opacity: 1;
       color: rgb(255 255 255 / var(--tw-text-opacity, 1));
     }
 
-#monitor-grid div.monitor-panel .status {
+#project-grid div.monitor-panel .status, #monitor-grid div.monitor-panel .status {
       height: 2.5rem;
     }
 
-#monitor-grid div.monitor-panel .status {
+#project-grid div.monitor-panel .status, #monitor-grid div.monitor-panel .status {
       width: 2.5rem;
     }
 

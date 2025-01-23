@@ -12,6 +12,7 @@ from django.db.models import Model, QuerySet
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 
+from .forms import MonitorForm
 from .models import Environment, LogCheck, Monitor, Project, User
 from .tasks import queue_trigger
 from .ws.utils import notify_ui
@@ -25,7 +26,16 @@ class UserAdmin(_UserAdmin[User]):
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin[Project]):
     search_fields = ("name",)
-    list_display = ("name", "public", "default")
+    list_display = (
+        "name",
+        "public",
+    )
+    filter_horizontal = ("environments",)
+
+    def get_changeform_initial_data(self, request: HttpRequest) -> dict:
+        initial = super().get_changeform_initial_data(request)
+        initial.setdefault("environments", (Environment.objects.first()))
+        return initial
 
 
 class ChangeIconForm(forms.Form):
@@ -53,19 +63,24 @@ def assert_object_or_404(obj: Model) -> None:
 @admin.register(Monitor)
 class MonitorAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[Monitor]):
     search_fields = ("name",)
-    list_display = ("name", "project", "status", "checker", "verbosity", "active")
+    list_display = ("name", "project", "environment", "counters", "checker", "active")
     list_filter = (
         ("project", LinkedAutoCompleteFilter.factory(parent=None)),
-        ("env", LinkedAutoCompleteFilter.factory(parent=None)),
+        ("environment", LinkedAutoCompleteFilter.factory(parent=None)),
         "strategy",
         "active",
     )
     actions = ["check_selected"]
-    autocomplete_fields = ("env", "project")
+    autocomplete_fields = ("environment", "project")
+    form = MonitorForm
 
     @admin.display(ordering="strategy")
     def checker(self, obj: Monitor) -> bool:
         return obj.strategy.__class__.__name__
+
+    @admin.display()
+    def counters(self, obj: Monitor) -> str:
+        return "{} / {} / {}".format(*obj.counters)
 
     def check_selected(self, request: HttpRequest, queryset: QuerySet[Monitor]) -> None:
         for m in queryset.all():
@@ -76,8 +91,7 @@ class MonitorAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[Monito
             "name",
             "strategy",
             "project",
-            "env",
-            "verbosity",
+            "environment",
             "active",
             "warn_threshold",
             "err_threshold",
@@ -116,7 +130,7 @@ class MonitorAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[Monito
         monitor: Monitor = self.object
         assert_object_or_404(monitor)
 
-        if monitor.trigger():
+        if monitor.run():
             self.message_user(request, "Monitor checked", level=messages.SUCCESS)
         else:
             self.message_user(request, "Monitor failed", level=messages.ERROR)

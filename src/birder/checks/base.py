@@ -84,20 +84,20 @@ class ConfigForm(forms.Form, metaclass=DefaultsMetaclass):
 
 
 class BaseCheck:
-    MODE_ACTIVE = 1
-    MODE_PASSIVE = 2
+    LOCAL_TRIGGER = 1
+    REMOTE_INVOCATION = 2
 
     icon: str
     pragma: list[str]
     config_class: type[ConfigForm]
-    mode = MODE_ACTIVE
+    mode = LOCAL_TRIGGER
     address_format: str = ""
     verbose_name = None
 
     def __init__(self, owner: "Monitor|None" = None, configuration: "Json | None" = None) -> None:
         if owner:
             self._configuration = SimpleLazyObject(lambda: owner.configuration)
-        elif configuration:
+        elif configuration is not None:
             self._configuration = configuration
         else:
             raise ValueError("Must specify a configuration")  # pragma: no cover
