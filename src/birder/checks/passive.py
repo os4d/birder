@@ -16,7 +16,7 @@ class HealthCheckConfig(ConfigForm):
 
 class HealthCheck(BaseCheck):
     icon = "socket.svg"
-    pragma = ["rabbitmq", "amqp", "rabbit"]
+    pragma = []
     config_class = HealthCheckConfig
     address_format = ""
     mode = BaseCheck.REMOTE_INVOCATION

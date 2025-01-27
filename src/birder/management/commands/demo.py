@@ -27,8 +27,8 @@ class Command(BaseCommand):
         Monitor.objects.get_or_create(
             project=demo,
             name="Remote",
+            environment=dev,
             defaults={"strategy": fqn(HealthCheck)},
-            verbosity=Monitor.Verbosity.NONE,
         )
         for url in [
             "https://google.com",
@@ -41,7 +41,7 @@ class Command(BaseCommand):
             "ssh://user:password@localhost:2222",
             "memcache://localhost:21121",
             "rabbitmq://localhost:25672",
-            "smtp://admin:password@localhost:2560",
+            "smtp://admin@example.com:password@localhost:2560",
             "celery://localhost:26379?broker=redis",
             "tcp://localhost:8000",
             "http+xml://google.com",
@@ -58,7 +58,6 @@ class Command(BaseCommand):
                     name=checker.pragma[0],
                     strategy=fqn(checker),
                     defaults={"strategy": fqn(checker), "configuration": config},
-                    verbosity=Monitor.Verbosity.NONE,
                     notes=f"""
 ## {checker.pragma[0]}
 
@@ -73,6 +72,8 @@ url: `{url}`
                     if frm.is_valid():
                         if not checker(configuration=config).check():
                             self.stdout.write(self.style.WARNING(f"{checker.__name__}: {frm.cleaned_data}"))
+                        else:
+                            self.stdout.write(self.style.SUCCESS(f"{checker.__name__}: {frm.errors}"))
                     else:
                         self.stdout.write(self.style.ERROR(f"{checker.__name__}: {frm.errors}"))
 

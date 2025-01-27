@@ -34,7 +34,7 @@ def test_cli_refresh(monitor: "Monitor"):
 
 def test_cli_trigger(monitor: "Monitor"):
     runner = CliRunner()
-    result = runner.invoke(cli, ["trigger", str(monitor.pk)])
+    result = runner.invoke(cli, ["check", str(monitor.pk)])
     assert result.exit_code == 0
 
 

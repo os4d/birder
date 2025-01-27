@@ -35,9 +35,10 @@
                         </div>
                         <img class="status status-{{ monitor.status }}" src="{% status monitor.status %}">
                     </div>
-                    <div class="counters">{{ monitor.get_current_errors }} / {{ monitor.warn_threshold }}
-                        / {{ monitor.err_threshold }}</div>
-                    <div class="last-check">{{ monitor.last_timestamp_check|default_if_none:"" }}</div>
+                    <div class="counters">
+                        {{ monitor.get_current_errors }} / {{ monitor.warn_threshold }} / {{ monitor.err_threshold }}
+                    </div>
+                    <div class="last-check"></div>
                 </div>
             </a>
         {% endfor %}

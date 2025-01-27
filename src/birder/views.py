@@ -36,7 +36,6 @@ class ProjectView(CommonContextMixin, TemplateView):
     template_name = "project.html"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        filters = {}
         project = Project.objects.get(pk=self.kwargs.get("project"))
         if selection := self.kwargs.get("env"):
             env = project.environments.get(name=selection)

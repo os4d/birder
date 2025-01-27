@@ -28,7 +28,9 @@ def queue_trigger(pk: str) -> None:
 def process() -> None:
     m: Monitor
     notify_ui("ping", timestamp=timezone.now().strftime(config.DATETIME_FORMAT))
-    for m in Monitor.objects.select_related("project", "environment").filter(active=True):
+    for m in (
+        Monitor.objects.select_related("project", "environment").filter(active=True).order_by("project", "environment")
+    ):
         queue_trigger.send(m.pk)
 
 

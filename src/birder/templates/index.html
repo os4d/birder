@@ -4,8 +4,22 @@
 {% endblock extrahead %}
 
 {% block content %}
+        <style>
+        .red{
+            fill: red
+        }
+        .green{
+            fill: green;
+        }
+        .orange{
+            fill: orange;
+        }
+        .unknown{
+            fill: grey;
+        }
+    </style>
     <div class="w-full xl:px-8 px-4">
-        <div class="float-right text-xs" id="lastUpdate">
+        <div class="float-right text-xs" id="lastUpdate">&nbsp;
             {{ birder.system.last_check|default_if_none:"" }}
         </div>
     </div>
@@ -16,10 +30,16 @@
                 <div class="monitor-panel grid grid-cols-1"
                      id="project-{{ project.pk }}">
                     <div class="flex h-5 ">
-{# <div class="flex-shrink"><img class="icon" src="{{ monitor.icon }}"></div> #}
                         <div class="flex-grow w-max-2/3 overflow-clip pl-3">{{ project.name|truncatechars:"20" }}
                         </div>
-{# <img class="status status-{{ monitor.status }}" src="{% status monitor.status %}"> #}
+                        <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
+                            <circle class="unknown" cx="5" cy="5" r="5"></circle>
+                        </svg>
+                    </div>
+                    <div class="counters flex">
+                        <div class="ok text-green-400">{{ project.success }}</div>
+                        <div class="warn text-orange-400 px-2">{{ project.warnings }}</div>
+                        <div class="ko text-red-700">{{ project.failures }}</div>
                     </div>
                 </div>
             </a>

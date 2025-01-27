@@ -1,8 +1,10 @@
 from datetime import datetime
+from enum import StrEnum
 from functools import cached_property
 from typing import Any
 
 from constance import config
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser, Group
 from django.core.cache import cache
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -13,6 +15,7 @@ from django.utils import timezone
 from django_stubs_ext.db.models import TypedModelMeta
 from strategy_field.fields import StrategyField
 from timezone_field import TimeZoneField
+from valkey import Valkey
 
 from birder.checks.base import BaseCheck
 from birder.checks.registry import registry
@@ -28,6 +31,10 @@ KEY_LAST_SUCCESS = "{0}:monitor:{1.pk}:last_success"
 KEY_LAST_FAILURE = "{0}:monitor:{1.pk}:last_failure"
 KEY_SYSTEM_CHECK = "{0}:system:last_check"
 KEY_PROGRAM_STATUS = "{0}:program:{1.pk}:program_status"
+
+KEY_PROGRAM_CHECKS = "{0}:program:{1.pk}:checks"
+
+valkey = Valkey.from_url(settings.DRAMATIQ_VALKEY_URL)
 
 
 def get_cache_key(pattern: str, *args: Any) -> str:
@@ -54,11 +61,33 @@ class Project(models.Model):
     def __str__(self) -> str:
         return self.name
 
-    def set_alarmed(self, alarmed: bool) -> None:
-        cache.set(get_cache_key(KEY_PROGRAM_STATUS, self), alarmed)
+    @cached_property
+    def data(self) -> dict:
+        v = valkey.hgetall(get_cache_key(KEY_PROGRAM_CHECKS, self))
+        return {k.decode("utf-8"): v.decode("utf-8") for k, v in v.items()}
 
-    def is_alarmed(self, alarmed: bool) -> bool:
-        return cache.get(get_cache_key(KEY_PROGRAM_STATUS, self))
+    @cached_property
+    def failures(self) -> int:
+        return len([k for (k, v) in self.data.items() if v == "ko"])
+
+    @cached_property
+    def warnings(self) -> int:
+        return len([k for (k, v) in self.data.items() if v == "warn"])
+
+    @cached_property
+    def success(self) -> int:
+        return len([k for (k, v) in self.data.items() if v == "ok"])
+
+    @property
+    def status(self) -> str:
+        values = self.data.values()
+        if Monitor.Status.FAIL in values:
+            return Monitor.Status.FAIL
+        if Monitor.Status.WARN in values:
+            return Monitor.Status.WARN
+        if Monitor.Status.SUCCESS in values:
+            return Monitor.Status.SUCCESS
+        return Monitor.Status.UNKNOWN
 
 
 class Environment(models.Model):
@@ -84,10 +113,11 @@ class UserRole(models.Model):
 
 
 class Monitor(models.Model):
-    SUCCESS = "ok"
-    WARN = "warn"
-    FAIL = "ko"
-    UNKNOWN = "question"
+    class Status(StrEnum):
+        SUCCESS = "ok"
+        WARN = "warn"
+        FAIL = "ko"
+        UNKNOWN = "question"
 
     strategy: "BaseCheck"
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -150,19 +180,17 @@ class Monitor(models.Model):
         ds = DataStore(self)
         ds.store_error(timestamp)
 
-    def get_current_errors(self) -> int:
-        return cache.get(get_cache_key(KEY_ERROR_COUNT, self)) or 0
-
     def reset_current_errors(self) -> int:
-        cache.set(get_cache_key(KEY_ERROR_COUNT, self), 0)
+        cache.set(get_cache_key(KEY_ERROR_COUNT, self), 0, timeout=86400)
         return 0
 
     def incr_current_errors(self) -> int:
         try:
-            cache.incr(get_cache_key(KEY_ERROR_COUNT, self), 1)
+            new_value = cache.incr(get_cache_key(KEY_ERROR_COUNT, self), 1)
         except ValueError:
-            cache.set(get_cache_key(KEY_ERROR_COUNT, self), 1)
-        return self.get_current_errors()
+            new_value = 1
+            cache.set(get_cache_key(KEY_ERROR_COUNT, self), new_value, timeout=86400)
+        return new_value
 
     def get(self) -> None:
         self.store_last_timestamp_success()
@@ -178,19 +206,24 @@ class Monitor(models.Model):
                 result = self.strategy.check(raise_error=True)
             except CheckError:
                 result = False
+
             if result:
                 self.reset_current_errors()
+                st = Monitor.Status.SUCCESS
             else:
                 self.store_error(timestamp)
                 self.store_last_timestamp_failure()
                 error_count = self.incr_current_errors()
                 if error_count >= self.err_threshold:
-                    st = Monitor.FAIL
+                    st = Monitor.Status.FAIL
                 elif error_count >= self.warn_threshold:
-                    st = Monitor.WARN
+                    st = Monitor.Status.WARN
                 else:
-                    st = Monitor.SUCCESS
-                cache.set(get_cache_key(KEY_STATUS, self), st, timeout=86400)
+                    st = Monitor.Status.SUCCESS
+            cache.set(get_cache_key(KEY_STATUS, self), st, timeout=86400)
+
+            key = get_cache_key(KEY_PROGRAM_CHECKS, self.project)
+            valkey.hset(key, str(self.pk), st)
         else:
             result = False
             if self.last_timestamp_success:
@@ -215,15 +248,15 @@ class Monitor(models.Model):
 
     @property
     def status(self) -> str:
-        error_count = self.get_current_errors()
+        error_count = self.failures
         if error_count >= self.err_threshold:
-            st = Monitor.FAIL
+            st = Monitor.Status.FAIL
         elif error_count >= self.warn_threshold:
-            st = Monitor.WARN
+            st = Monitor.Status.WARN
         elif not self.last_timestamp_check:
-            st = Monitor.UNKNOWN
+            st = Monitor.Status.UNKNOWN
         else:
-            st = Monitor.SUCCESS
+            st = Monitor.Status.SUCCESS
         return st
 
     @property

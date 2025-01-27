@@ -25,6 +25,10 @@ def pytest_configure(config):
     import django
 
     django.setup()
+
+
+@pytest.fixture
+def configure() -> None:
     from constance import config as constance_config
 
     constance_config.CACHE_PREFIX = "tests"

@@ -54,7 +54,11 @@ class JSONEncoder(JSONEncoder_):
         if isinstance(obj, Monitor):
             return {
                 "id": obj.id,
-                "project_id": obj.project_id,
+                "project": {
+                    "id": obj.project.id,
+                    "data": json.loads(json.dumps(obj.project.data, cls=JSONEncoder)),
+                    "status": json.loads(json.dumps(obj.project.status, cls=JSONEncoder)),
+                },
                 "url": reverse("monitor-detail", args=[obj.pk]),
                 "status": obj.status,
                 "active": obj.active,

@@ -21,6 +21,7 @@ def cli(ctx: Context, **kwargs: Any) -> None:
 @cli.command(name="list")
 @click.pass_context
 def list_(ctx: Context, **kwargs: Any) -> None:
+    """List all existing monitors."""
     from birder.models import Monitor
 
     data = Monitor.objects.values(
@@ -30,18 +31,20 @@ def list_(ctx: Context, **kwargs: Any) -> None:
         "strategy",
         "active",
     )
-    table = tabulate(data, [], tablefmt="grid")
+    table = tabulate(data, [], tablefmt="simple")
     click.echo(table)
 
 
-@cli.command()
+@cli.command(name="check")
 @click.argument("monitor_id", type=int)
 @click.pass_context
 def trigger(ctx: Context, monitor_id: int, **kwargs: Any) -> None:
-    from birder.models import Monitor
+    """Run selected check."""
+    from birder.models import BaseCheck, Monitor
 
     monitor = Monitor.objects.get(id=monitor_id)
-    monitor.run()
+    if monitor.strategy.mode == BaseCheck.LOCAL_TRIGGER:
+        monitor.run()
 
 
 @cli.command()
