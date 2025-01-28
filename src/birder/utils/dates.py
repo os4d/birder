@@ -6,16 +6,6 @@ MINUTES_PER_HOUR = 60
 MINUTES_PER_DAY = 24 * MINUTES_PER_HOUR
 
 
-def get_rounded_hour(dt: datetime) -> datetime:
-    if dt.minute >= MINUTES_30:
-        return dt.replace(second=0, microsecond=0, minute=0) + datetime.timedelta(hours=1)
-    return dt.replace(second=0, microsecond=0, minute=0)
-
-
-def get_truncated_hour(dt: datetime) -> datetime:
-    return dt.replace(second=0, microsecond=0, minute=0)
-
-
 def get_start_of_day(dt: datetime) -> datetime:
     return dt.replace(hour=0, minute=0, second=0, microsecond=0)
 

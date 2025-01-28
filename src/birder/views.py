@@ -80,7 +80,7 @@ class LoginView(CommonContextMixin, LoginView_):
 def trigger(request: HttpRequest, pk: str, token: str) -> HttpResponse:
     m: Monitor = get_object_or_404(Monitor, pk=pk)
     if m.token != token:
-        return HttpResponse("---", status=403)
+        return HttpResponse("Invalid Token", status=403)
     if m.strategy.mode != BaseCheck.REMOTE_INVOCATION:
         return HttpResponse("Check not enabled for remote call", status=400)
     m.get()
@@ -88,16 +88,16 @@ def trigger(request: HttpRequest, pk: str, token: str) -> HttpResponse:
 
 
 def error_400(request: HttpRequest, exception: Exception = None) -> HttpResponse:
-    return render(request, "errors/400.html", {"error_code": 400, "message": "Bad Request"})
+    return render(request, "errors/400.html", {"error_code": 400, "message": "Bad Request"}, status=400)
 
 
 def error_403(request: HttpRequest, exception: Exception = None) -> HttpResponse:
-    return render(request, "errors/403.html", {"error_code": 403, "message": "Forbidden"})
+    return render(request, "errors/403.html", {"error_code": 403, "message": "Forbidden"}, status=403)
 
 
 def error_404(request: HttpRequest, exception: Exception = None) -> HttpResponse:
-    return render(request, "errors/404.html", {"error_code": 404, "message": "Page not found"})
+    return render(request, "errors/404.html", {"error_code": 404, "message": "Page not found"}, status=404)
 
 
 def error_500(request: HttpRequest, exception: Exception = None) -> HttpResponse:
-    return render(request, "errors/500.html", {"error_code": 500, "message": "Server Error"})
+    return render(request, "errors/500.html", {"error_code": 500, "message": "Server Error"}, status=500)

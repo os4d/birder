@@ -307,7 +307,7 @@ class Monitor(models.Model):
 
 class DataHistory(models.Model):
     monitor = models.ForeignKey(Monitor, on_delete=models.CASCADE, related_name="datalog")
-    date = models.DateField(auto_now_add=True)
+    date = models.DateField(auto_now_add=False)
     data = models.BinaryField(default=None, null=True)
 
     class Meta:

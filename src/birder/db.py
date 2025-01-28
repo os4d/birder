@@ -13,8 +13,9 @@ def init_bitaarray(initial_value: int = 0) -> bitarray:
 
 
 class DataStore:
-    def __init__(self, monitor: Monitor) -> None:
+    def __init__(self, monitor: Monitor, prefix: str = "ds") -> None:
         self.monitor: Monitor = monitor
+        self.prefix: str = prefix
 
     def get_all_entries(self, timestamp: datetime) -> bitarray:
         return self._get_store_for_date(timestamp.strftime("%Y-%m-%d"))
@@ -28,7 +29,7 @@ class DataStore:
         return data[start_index:end_index]
 
     def _get_store_for_date(self, sig: str) -> bitarray:
-        stored = cache.get(f"monitor:{self.monitor.pk}:data:{sig}")
+        stored = cache.get(f"{self.prefix}:monitor:{self.monitor.pk}:data:{sig}")
         if stored:
             data = bitarray()
             data.frombytes(stored)
@@ -36,18 +37,19 @@ class DataStore:
             data = init_bitaarray(0)
         return data
 
-    def store_error(self, timestamp: datetime) -> None:
+    def store_error(self, timestamp: datetime) -> int:
         sig = timestamp.strftime("%Y-%m-%d")
         data = self._get_store_for_date(sig)
         absolute_minute = timestamp.hour * 60 + timestamp.minute
         data[absolute_minute] = 1
-        cache.set(f"monitor:{self.monitor.pk}:data:{sig}", data.tobytes(), timeout=86400)
+        cache.set(f"{self.prefix}:monitor:{self.monitor.pk}:data:{sig}", data.tobytes(), timeout=86400)
+        return absolute_minute
 
     def archive(self, timestamp: datetime) -> None:
         for i in range(1, 8):
-            giorno = timestamp - timedelta(days=i)
-            sig = giorno.strftime("%Y-%m-%d")
-            stored = cache.get(f"monitor:{self.monitor.pk}:data:{sig}")
+            day = timestamp - timedelta(days=i)
+            sig = day.strftime("%Y-%m-%d")
+            stored = self._get_store_for_date(sig)
             if stored:
-                DataHistory.objects.update_or_create(pk=sig, date=giorno, defaults={"data": stored})
-                cache.delete(f"monitor:{self.monitor.pk}:data:{sig}")
+                DataHistory.objects.update_or_create(monitor=self.monitor, date=day, defaults={"data": stored})
+                cache.delete(f"{self.prefix}:monitor:{self.monitor.pk}:data:{sig}")
