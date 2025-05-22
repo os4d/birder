@@ -14,6 +14,7 @@ from birder.config import settings
 from birder.forms import LoginForm
 from birder.models import Monitor, Project
 from birder.utils.dates import format_minutes_as_time, get_start_of_day
+from birder.ws.utils import notify_ui
 
 
 class CommonContextMixin:
@@ -45,8 +46,11 @@ class ProjectView(CommonContextMixin, TemplateView):
         kwargs["selected_env"] = env
         filters = {"environment": env}
         kwargs["project"] = project
-        kwargs["monitors"] = Monitor.objects.filter(**filters).order_by("position", "name")
+        monitors = Monitor.objects.filter(**filters).order_by("position", "name")
+        kwargs["monitors"] = monitors
         kwargs["environments"] = project.environments.order_by("name")
+        for monitor in monitors:
+            notify_ui("update", monitor=monitor)
         return super().get_context_data(**kwargs)
 
 

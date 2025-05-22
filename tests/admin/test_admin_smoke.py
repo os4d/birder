@@ -227,7 +227,7 @@ def test_admin_buttons(
         btn = button_handler.get_button({"original": record})
         button_handler.func(None, btn)
     else:
-        if len(button_handler.sig.parameters) == 2:
+        if len(button_handler.func_args) == 2:
             url = reverse(f"admin:{button_handler.url_name}")
         else:
             url = reverse(f"admin:{button_handler.url_name}", args=[record.pk])

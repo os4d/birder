@@ -11,6 +11,7 @@ from django.contrib.auth.admin import UserAdmin as _UserAdmin
 from django.db.models import Model, QuerySet
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 
 from .forms import MonitorForm
 from .models import Environment, LogCheck, Monitor, Project, User
@@ -24,7 +25,7 @@ class UserAdmin(_UserAdmin[User]):
 
 
 @admin.register(Project)
-class ProjectAdmin(admin.ModelAdmin[Project]):
+class ProjectAdmin(ExtraButtonsMixin, admin.ModelAdmin[Project]):
     search_fields = ("name",)
     list_display = (
         "name",
@@ -36,6 +37,11 @@ class ProjectAdmin(admin.ModelAdmin[Project]):
         initial = super().get_changeform_initial_data(request)
         initial.setdefault("environments", (Environment.objects.first()))
         return initial
+
+    @button()
+    def monitors(self, request: HttpRequest, pk: str) -> HttpResponseRedirect:
+        url = reverse("admin:birder_monitor_changelist")
+        return HttpResponseRedirect(f"{url}?project__exact={pk}")
 
 
 class ChangeIconForm(forms.Form):

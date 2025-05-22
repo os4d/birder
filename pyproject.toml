@@ -30,11 +30,11 @@ dependencies = [
     "django-redis>=5.4.0",
     "django-regex>=0.5.0",
     "django-strategy-field>=3.1.0",
-    "django-stubs-ext>=5.1.1",
+    "django-stubs>=5.2",
     "django-tailwind>=3.8.0",
     "django-timezone-field>=7.0",
     "django-valkey[libvalkey]>=0.1.8",
-    "django>=5.1.4",
+    "django>=5.2",
     "djangorestframework>=3.15.2",
     "dramatiq-crontab[sentry]>=1.0.8",
     "dramatiq>=1.17.1",
@@ -84,7 +84,8 @@ birder = "birder.cli:main"
 
 [tool.uv]
 package = true
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "django-webtest>=1.9.12",
     "factory-boy>=3.3.1",
     "ipdb>=0.13.13",
@@ -98,12 +99,13 @@ dev-dependencies = [
     "pytest-xdist>=3.6.1",
     "pytest>=8.3.4",
     "responses>=0.25.3",
-    "ruff>=0.9.0",
+    "ruff>=0.11.10",
     "watchdog[watchmedo]>=6.0.0",
     "pytest-asyncio>=0.25.2",
+    "tox>=4.26.0",
+    "seleniumbase>=4.38.2",
+    "pre-commit>=4.2.0",
 ]
-
-[dependency-groups]
 docs = [
     "mkdocs>=1.6.1",
     "mkdocs-awesome-pages-plugin>=2.10.1",
@@ -111,4 +113,10 @@ docs = [
     "mkdocs-material>=9.5.49",
     "mkdocstrings[python]>=0.27.0",
     "pymdown-extensions>=10.14",
+]
+
+mypy = [
+    "mypy",
+    "djangorestframework-stubs",
+
 ]

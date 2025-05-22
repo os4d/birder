@@ -1,4 +1,4 @@
-from ..settings import env  # type: ignore[attr-defined]
+from ..settings import env
 
 # Social Auth settings.
 SOCIAL_AUTH_SECRET = env.str("AZURE_CLIENT_SECRET")

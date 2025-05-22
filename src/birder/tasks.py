@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 @dramatiq.actor
-def queue_trigger(pk: str) -> None:
+def queue_trigger(pk: str | int) -> None:
     try:
         m = Monitor.objects.get(active=True, pk=pk)
         m.run()

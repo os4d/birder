@@ -1,4 +1,3 @@
-from typing import TYPE_CHECKING
+from __future__ import annotations
 
-if TYPE_CHECKING:
-    Json: type = dict[str, "Json"] | list["Json"] | str | int | float | bool | None
+Json = dict[str, "Json"] | list["Json"] | str | int | float | bool | None

@@ -49,4 +49,5 @@ CONSTANCE_CONFIG = {
     "CACHE_PREFIX": ("birder", "Cache global prefix", str),
     "DATETIME_FORMAT": ("%Y %b %d %H:%M", "Datetime format", str),
     "DATE_FORMAT": ("%Y %b %d", "Datetime format", str),
+    "TOKEN_LENGTH": (255, "Monitor token length", int),
 }

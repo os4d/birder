@@ -1,9 +1,15 @@
 .*
 ~*
-dist/*
+dist/
 docker/birder*
 node_modules/*
 pip-wheel-metadata
+coverage.xml
+junit.xml
+build
+
+
+!.git
 !.bumpversion.cfg
 !.coveragerc
 !.dockerignore

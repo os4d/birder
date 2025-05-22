@@ -46,6 +46,7 @@ class User(AbstractUser):
 
 
 class Project(models.Model):
+    environments: "models.ManyToManyField[Project, Environment]"
     name = models.CharField(max_length=255, unique=True)
     public = models.BooleanField(default=False)
     bitcaster_url = models.URLField(blank=True, help_text="The URL to the Bitcaster notification endpoint.")
@@ -64,7 +65,7 @@ class Project(models.Model):
     @cached_property
     def data(self) -> dict:
         v = valkey.hgetall(get_cache_key(KEY_PROGRAM_CHECKS, self))
-        return {k.decode("utf-8"): v.decode("utf-8") for k, v in v.items()}
+        return {k.decode("utf-8"): v.decode("utf-8") for k, v in v.items()}  # type: ignore[union-attr]
 
     @cached_property
     def failures(self) -> int:
