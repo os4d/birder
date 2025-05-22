@@ -11,7 +11,7 @@ import birder
 @click.group()
 @click.version_option(version=birder.VERSION)
 @click.pass_context
-def cli(ctx: Context, **kwargs: Any) -> None:
+def cli(**kwargs: Any) -> None:
     import django
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "birder.config.settings")

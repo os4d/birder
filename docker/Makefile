@@ -41,6 +41,7 @@ help:
 
 
 .build:
+	uv build
 	DOCKER_BUILDKIT=1 cd .. && docker build \
 			--build-arg VERSION=${VERSION} \
 			--build-arg RELEASE=${RELEASE} \

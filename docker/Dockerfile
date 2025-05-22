@@ -52,37 +52,6 @@ zlib1g-dev  \
 
 RUN pip install uv uwsgi
 
-# ------- tests -------
-FROM builder AS tests
-ARG BUILD_DATE
-ARG GIT_SHA
-
-LABEL distro="tests"
-LABEL org.opencontainers.image.created="$BUILD_DATE"
-LABEL org.opencontainers.image.version="$VERSION"
-
-ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin \
-    DJANGO_SETTINGS_MODULE=birder.config.settings \
-    PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    UV_PROJECT_ENVIRONMENT=/venv \
-    VIRTUAL_ENV=/venv \
-    UWSGI_PROCESSES=4
-
-WORKDIR /app
-ADD uv.lock README.md MANIFEST.in pyproject.toml /app/
-ADD src /app/src/
-
-RUN --mount=type=cache,target=/root/.uv-cache \
-    find ../src -name 'node_modules' -prune \
-        -o -name *.py -o -name *.html -o -name *.js -o -name *.css \
-        -type f \
-        -exec ls -l "{}" \;  | sha1sum | awk '{print $1}' > CODE_CHECKSUM \
-    && uv sync --cache-dir=/root/.uv-cache \
-        --python=/usr/local/bin/python \
-        --python-preference=system \
-        --frozen
-
 # ------- production only deps-------
 FROM builder AS production
 ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin \
@@ -102,7 +71,6 @@ RUN --mount=type=cache,target=/root/.uv-cache \
         --python=/usr/local/bin/python \
         --python-preference=system \
         --no-dev --frozen --extra distribution
-
 
 
 # ------- dist -------

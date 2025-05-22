@@ -10,7 +10,8 @@ if TYPE_CHECKING:
 
 def test_cli():
     runner = CliRunner()
-    result = runner.invoke(cli)
+    result = runner.invoke(cli, "--version")
+    assert result.stdout
     assert result.exit_code == 0
 
 
