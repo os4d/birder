@@ -8,6 +8,10 @@ coverage.xml
 junit.xml
 build
 
+*.egg-info
+*.sqlite3
+*.xfc
+src/birder/version.py
 
 !.git
 !.bumpversion.cfg
@@ -16,6 +20,3 @@ build
 !.github
 !.gitignore
 !.pre-commit-config.yaml
-*.egg-info
-*.sqlite3
-*.xfc

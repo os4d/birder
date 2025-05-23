@@ -1,122 +1,139 @@
+[build-system]
+build-backend = "hatchling.build"
+requires = [
+  "hatch-build-scripts",
+  "hatch-vcs>=0.4",
+  "hatchling>=1.25",
+]
+
 [project]
 name = "birder"
-dynamic = ["version"]
 description = "Birder Healthcheck monitoring"
-authors = [
-    {name = "sax", email = "s.apostolico@gmail.com"},
-]
-requires-python = "==3.12.*"
 readme = "README.md"
-license = {text = "MIT"}
-dependencies = [
-    "attrs>=24.3.0",
-    "beautifulsoup4>=4.12.3",
-    "bitarray>=3.0.0",
-    "boto3>=1.35.90",
-    "celery>=5.4.0",
-    "channels-redis>=4.2.1",
-    "channels>=4.2.0",
-    "circus>=0.18.0",
-    "click>=8.1.8",
-    "daphne>=4.1.2",
-    "django-admin-extra-buttons>=1.6.0",
-    "django-adminfilters>=2.5.2",
-    "django-constance>=4.1.3",
-    "django-csp>=3.8",
-    "django-dramatiq>=0.12.0",
-    "django-environ>=0.11.2",
-    "django-flags>=5.0.13",
-    "django-markdown-deux>=1.0.6",
-    "django-redis>=5.4.0",
-    "django-regex>=0.5.0",
-    "django-strategy-field>=3.1.0",
-    "django-stubs>=5.2",
-    "django-tailwind>=3.8.0",
-    "django-timezone-field>=7.0",
-    "django-valkey[libvalkey]>=0.1.8",
-    "django>=5.2",
-    "djangorestframework>=3.15.2",
-    "dramatiq-crontab[sentry]>=1.0.8",
-    "dramatiq>=1.17.1",
-    "durations-nlp>=1.0.1",
-    "jmespath>=1.0.1",
-    "kombu>=5.4.2",
-    "ldap3>=2.9.1",
-    "lxml>=5.3.0",
-    "minio>=7.2.13",
-    "pandas>=2.2.3",
-    "pexpect>=4.9.0",
-    "pip>=24.3.1",
-    "prometheus-client==0.20.0",
-    "psycopg2-binary>=2.9.10",
-    "pymemcache>=4.0.0",
-    "pymysql>=1.1.1",
-    "python-redis-lock[django]>=4.0.0",
-    "pytz>=2024.2",
-    "redis-timeseries>=0.1.9",
-    "redis>=5.2.1",
-    "requests>=2.32.3",
-    "sentry-sdk>=2.19.2",
-    "social-auth-app-django>=5.4.2",
-    "tabulate>=0.9.0",
-    "valkey[libvalkey]>=6.0.2",
+license = { text = "MIT" }
+authors = [
+  { name = "mark", email = "hanarero@gmail.com" },
+  { name = "sax", email = "s.apostolico@gmail.com" },
 ]
-[project.urls]
-repository = "https://github.com/os4d/birder"
 
-[tool.mypy]
-mypy_path = "$MYPY_CONFIG_FILE_DIR/stubs"
-plugins = ["mypy_django_plugin.main"]
+requires-python = "==3.12.*"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+]
+dynamic = [ "version" ]
+dependencies = [
+  "attrs>=24.3",
+  "beautifulsoup4>=4.12.3",
+  "bitarray>=3",
+  "boto3>=1.35.90",
+  "celery>=5.4",
+  "channels>=4.2",
+  "channels-redis>=4.2.1",
+  "circus>=0.18",
+  "click>=8.1.8",
+  "daphne>=4.1.2",
+  "django>=5.2",
+  "django-admin-extra-buttons>=1.6",
+  "django-adminfilters>=2.5.2",
+  "django-constance>=4.1.3",
+  "django-csp>=3.8",
+  "django-dramatiq>=0.12",
+  "django-environ>=0.11.2",
+  "django-flags>=5.0.13",
+  "django-markdown-deux>=1.0.6",
+  "django-redis>=5.4",
+  "django-regex>=0.5",
+  "django-strategy-field>=3.1",
+  "django-stubs>=5.2",
+  "django-tailwind>=3.8",
+  "django-timezone-field>=7",
+  "django-valkey[libvalkey]>=0.1.8",
+  "djangorestframework>=3.15.2",
+  "dramatiq>=1.17.1",
+  "dramatiq-crontab[sentry]>=1.0.8",
+  "durations-nlp>=1.0.1",
+  "jmespath>=1.0.1",
+  "kombu>=5.4.2",
+  "ldap3>=2.9.1",
+  "lxml>=5.3",
+  "minio>=7.2.13",
+  "pandas>=2.2.3",
+  "pexpect>=4.9",
+  "pip>=24.3.1",
+  "prometheus-client==0.20",
+  "psycopg2-binary>=2.9.10",
+  "pymemcache>=4",
+  "pymysql>=1.1.1",
+  "python-redis-lock[django]>=4",
+  "pytz>=2024.2",
+  "redis>=5.2.1",
+  "redis-timeseries>=0.1.9",
+  "requests>=2.32.3",
+  "sentry-sdk>=2.19.2",
+  "social-auth-app-django>=5.4.2",
+  "tabulate>=0.9",
+  "valkey[libvalkey]>=6.0.2",
+]
+urls.repository = "https://github.com/os4d/birder"
+scripts.birder = "birder.cli:main"
 
-[tool.django-stubs]
-django_version = "3.12"
-django_apps = ["birder"]
-django_settings_module = "birder.config.settings"
-ignore_missing_settings = true
-ignore_missing_model_attributes = true
+[dependency-groups]
+dev = [
+  "django-webtest>=1.9.12",
+  "factory-boy>=3.3.1",
+  "ipdb>=0.13.13",
+  "mypy>=1.14",
+  "pdbpp>=0.10.3",
+  "pre-commit>=4.2",
+  "pytest>=8.3.4",
+  "pytest-asyncio>=0.25.2",
+  "pytest-celery>=1.1.3",
+  "pytest-cov>=6",
+  "pytest-django>=4.9",
+  "pytest-docker>=3.1.1",
+  "pytest-docker-tools>=3.1.3",
+  "pytest-xdist>=3.6.1",
+  "responses>=0.25.3",
+  "ruff>=0.11.10",
+  "seleniumbase>=4.38.2",
+  "tox>=4.26",
+  "watchdog[watchmedo]>=6",
+]
+docs = [
+  "mkdocs>=1.6.1",
+  "mkdocs-awesome-pages-plugin>=2.10.1",
+  "mkdocs-gen-files>=0.5",
+  "mkdocs-material>=9.5.49",
+  "mkdocstrings[python]>=0.27",
+  "pymdown-extensions>=10.14",
+]
 
-[tool.setuptools.dynamic]
-version = {attr = "birder.__version__"}
+builder = [
+  "hatchling>=1.27",
+]
+mypy = [
+  "djangorestframework-stubs",
+  "mypy",
+]
 
-[project.scripts]
-birder = "birder.cli:main"
+[tool.hatch]
+build.hooks.vcs.version-file = "src/birder/version.py"
+version.source = "vcs"
+raw-options = { root = "../.." }
 
+[tool.hatch.version.raw-options]
+local_scheme = "no-local-version"
+
+[tool.hatch.build.targets.sdist]
+ignore-vcs = false
+include = [
+  "src/birder/**/*.*",
+]
+exclude = [
+  ".*",
+  "~*",
+]
 
 [tool.uv]
 package = true
-[dependency-groups]
-dev = [
-    "django-webtest>=1.9.12",
-    "factory-boy>=3.3.1",
-    "ipdb>=0.13.13",
-    "mypy>=1.14.0",
-    "pdbpp>=0.10.3",
-    "pytest-celery>=1.1.3",
-    "pytest-cov>=6.0.0",
-    "pytest-django>=4.9.0",
-    "pytest-docker-tools>=3.1.3",
-    "pytest-docker>=3.1.1",
-    "pytest-xdist>=3.6.1",
-    "pytest>=8.3.4",
-    "responses>=0.25.3",
-    "ruff>=0.11.10",
-    "watchdog[watchmedo]>=6.0.0",
-    "pytest-asyncio>=0.25.2",
-    "tox>=4.26.0",
-    "seleniumbase>=4.38.2",
-    "pre-commit>=4.2.0",
-]
-docs = [
-    "mkdocs>=1.6.1",
-    "mkdocs-awesome-pages-plugin>=2.10.1",
-    "mkdocs-gen-files>=0.5.0",
-    "mkdocs-material>=9.5.49",
-    "mkdocstrings[python]>=0.27.0",
-    "pymdown-extensions>=10.14",
-]
-
-mypy = [
-    "mypy",
-    "djangorestframework-stubs",
-
-]

@@ -8,6 +8,11 @@ body {
   @apply dark:bg-slate-800 dark:text-white;
 
 }
+
+svg.octicon-mark-github{
+  @apply dark:fill-white w-16;
+}
+
 select.program-selection{
   @apply p-1 text-sm w-64 m-1;
   @apply dark:bg-slate-800 dark:text-white rounded-sm;
