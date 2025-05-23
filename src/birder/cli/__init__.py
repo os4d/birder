@@ -10,7 +10,6 @@ import birder
 
 @click.group()
 @click.version_option(version=birder.VERSION)
-@click.pass_context
 def cli(**kwargs: Any) -> None:
     import django
 
@@ -36,21 +35,41 @@ def list_(ctx: Context, **kwargs: Any) -> None:
 
 
 @cli.command(name="check")
-@click.argument("monitor_id", type=int)
+@click.argument("monitor_id", type=int, required=False)
+@click.option("-a", "--all", "_all", type=int, is_flag=True)
 @click.pass_context
-def trigger(ctx: Context, monitor_id: int, **kwargs: Any) -> None:
+def trigger(ctx: Context, monitor_id: int, _all: bool = False, **kwargs: Any) -> None:
     """Run selected check."""
     from birder.models import BaseCheck, Monitor
 
-    monitor = Monitor.objects.get(id=monitor_id)
-    if monitor.strategy.mode == BaseCheck.LOCAL_TRIGGER:
-        monitor.run()
+    if _all and monitor_id:
+        raise click.UsageError("--")
+    ok = click.style("\u2714", fg="green")
+    ko = click.style("\u2716", fg="red")
+    if _all:
+        for monitor in Monitor.objects.select_related("project", "environment").order_by(
+            "project__name", "environment", "name"
+        ):
+            if monitor.strategy.mode == BaseCheck.LOCAL_TRIGGER:
+                res = monitor.run()
+                status = ok if res else ko
+                click.echo(
+                    f"{monitor.project.name[:20]:<22} | "
+                    f"{monitor.environment.name[:15]:<17} | "
+                    f"{monitor.name[:20]:<22} | "
+                    f"{status}"
+                )
+    else:
+        monitor = Monitor.objects.get(id=monitor_id)
+        if monitor.strategy.mode == BaseCheck.LOCAL_TRIGGER:
+            monitor.run()
 
 
 @cli.command()
 @click.argument("monitor_id", type=int)
 @click.pass_context
 def refresh(ctx: Context, monitor_id: int, **kwargs: Any) -> None:
+    """Force UI refresh."""
     from birder.models import Monitor
     from birder.ws.utils import notify_ui
 
@@ -61,6 +80,7 @@ def refresh(ctx: Context, monitor_id: int, **kwargs: Any) -> None:
 @cli.command()
 @click.pass_context
 def reset(ctx: Context, **kwargs: Any) -> None:
+    """Reset all checks."""
     from django.core.cache import cache
 
     cache.clear()
