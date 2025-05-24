@@ -11,7 +11,7 @@ CONFIG: dict[str, ConfigItem] = {
     "AZURE_CLIENT_KEY": (str, ""),
     "AZURE_CLIENT_SECRET": (str, ""),
     "AZURE_TENANT_ID": (str, ""),
-    "CACHE_URL": (str, "redis://localhost:6379/0"),
+    "CACHE_URL": (str, "redis://host:6379/0"),
     "CSRF_TRUSTED_ORIGINS": (list, []),
     "DATABASE_URL": (str, "sqlite:///birder.sqlite3"),
     "DEBUG": (bool, False),
@@ -27,6 +27,6 @@ CONFIG: dict[str, ConfigItem] = {
     "STATIC_ROOT": (str, "/app/static/"),
     "STATIC_URL": (str, "static/"),
     "SUPERUSERS": (list, []),
-    "VALKEY_URL": (str, "redis://localhost:6379/0"),
+    "VALKEY_URL": (str, "redis://host:6379/0"),
 }
 env = Env(**CONFIG)
