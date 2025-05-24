@@ -7,7 +7,7 @@ requires = [
 ]
 
 [project]
-name = "birder"
+name = "os4d-birder"
 description = "Birder Healthcheck monitoring"
 readme = "README.md"
 license = { text = "MIT" }
