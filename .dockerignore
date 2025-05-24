@@ -6,6 +6,7 @@
 !docker/conf
 !src/birder/**/*
 !tests/*
+!dist/*
 
 !pyproject.toml
 !uv.lock

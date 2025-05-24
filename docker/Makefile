@@ -1,26 +1,13 @@
-# envs to set before use this script
-.ONESHELL:
-
-#BASE?=$(shell echo "${VERSION}" | sed "s/\([0-9]*\)\.\([0-9]*\)\.\(.*\)/\1.\2/g" )
-#VERSION := $(shell grep '__version__' ../src/birder/__init__.py | cut -d'"' -f2)
-#RELEASE := $(shell grep '__version__' ../src/birder/__init__.py | cut -d'"' -f2)
-#LOCK_CHECKSUM?=$(shell sha1sum ../uv.lock | awk '{print $$1}')
-#LOCK_HASH?=$(shell echo ${LOCK_CHECKSUM} | cut -c 1-8)
-
 DOCKER_IMAGE?=os4d/birder
-#
-#CMD?=run
-#VERSION?=dev
-#STAGE?=dist
-#
-#RUN_OPTIONS?=
-#BUILD_OPTIONS?=
-#
-#BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
-#SOURCE_COMMIT=$(shell git rev-parse --short HEAD)
-#
-#.PHONY: help runlocal tests
-#.DEFAULT_GOAL := help
+VERSION:=$(shell cd .. && uvx --with hatch-vcs hatchling metadata version)
+CMD?=run
+RUN_OPTIONS?=
+BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
+SOURCE_COMMIT=$(shell git rev-parse --short HEAD)
+
+.ONESHELL:
+.DEFAULT_GOAL := help
+.PHONY: help run build shell
 
 
 define PRINT_HELP_PYSCRIPT
@@ -39,15 +26,46 @@ BROWSER := python -c "$$BROWSER_PYSCRIPT"
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-VERSION:=$(shell cd .. && uvx --with hatch-vcs hatchling metadata version)
-build:
 
-	@cd .. && uv build --sdist -o docker/~tmp/
-	ls -al ~tmp/b*
-	echo ${VERSION}
+build: ## build docker image
+	@cd .. && uv build --sdist
 	DOCKER_BUILDKIT=1 cd .. && docker build \
 			--build-arg VERSION=${VERSION} \
+			--build-arg DISTDIR=dist \
+			--platform=linux/amd64 \
 			-t ${DOCKER_IMAGE}:${VERSION} \
 			-f docker/Dockerfile .
-	#docker images | grep "${DOCKER_IMAGE_NAME}" | grep ${VERSION}-${STAGE}
-	#docker inspect ${DOCKER_IMAGE} | jq -r '.[0].Config.Labels'
+	docker images | grep "${DOCKER_IMAGE}" | grep ${VERSION}
+
+
+.run:
+	cd .. && docker run \
+		--rm \
+		--platform=linux/amd64 \
+		-p 8000:8000 \
+		-p 8888:8888 \
+		-e ALLOWED_HOSTS="*" \
+		-e DEBUG="0" \
+		-e CACHE_URL="${CACHE_URL}" \
+		-e VALKEY_URL="${VALKEY_URL}" \
+		-e LOGGING_LEVEL="DEBUG" \
+		-e SUPERUSERS=${SUPERUSERS} \
+		-e DATABASE_URL=${DATABASE_URL} \
+		-e STATIC_URL="static/" \
+		-v ${PWD}/bin/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh \
+		-v ${PWD}/conf:/conf \
+		-v dist:/dist \
+		${RUN_OPTIONS} \
+		-t ${DOCKER_IMAGE}:${VERSION} \
+		${CMD}
+
+
+run: ## run docker image
+	CMD='run' \
+	RUN_OPTIONS='' \
+	$(MAKE) .run
+
+shell: ## enter docker shell
+	CMD='/bin/bash' \
+	RUN_OPTIONS='-it' \
+	$(MAKE) .run
