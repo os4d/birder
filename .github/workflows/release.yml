@@ -46,3 +46,13 @@ jobs:
         uses: pypa/gh-action-pypi-publish@v1.12.4
         with:
           attestations: true
+  dockerize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger second workflow
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/dockerize.yml/dispatches \
+            -d "{\"ref\":\"refs/tags/${{ github.ref_name }}\", \"version\": \"${{ github.ref_name }}\"}"
