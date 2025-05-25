@@ -31,7 +31,6 @@ build: ## build docker image
 	@cd .. && uv build --sdist
 	DOCKER_BUILDKIT=1 cd .. && docker build \
 			--build-arg VERSION=${VERSION} \
-			--build-arg DISTDIR=dist \
 			--platform=linux/amd64 \
 			-t ${DOCKER_IMAGE}:${VERSION} \
 			-f docker/Dockerfile .
@@ -45,12 +44,15 @@ build: ## build docker image
 		-p 8000:8000 \
 		-p 8888:8888 \
 		-e ALLOWED_HOSTS="*" \
-		-e DEBUG="0" \
-		-e CACHE_URL="${CACHE_URL}" \
-		-e VALKEY_URL="${VALKEY_URL}" \
+		-e CSRF_TRUSTED_ORIGINS="http://localhost:8000" \
+		-e CSRF_TRUSTED_ORIGINS="http://localhost:8000" \
+		-e CSRF_TRUSTED_ORIGINS="http://localhost:8000" \
+		-e DEBUG="1" \
+		-e CACHE_URL="redis://host.docker.internal:6379" \
+		-e VALKEY_URL="redis://host.docker.internal:6379" \
+		-e DATABASE_URL=sqlite:///birder.sqlite \
 		-e LOGGING_LEVEL="DEBUG" \
 		-e SUPERUSERS=${SUPERUSERS} \
-		-e DATABASE_URL=${DATABASE_URL} \
 		-e STATIC_URL="static/" \
 		-v ${PWD}/bin/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh \
 		-v ${PWD}/conf:/conf \

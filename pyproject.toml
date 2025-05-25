@@ -133,18 +133,5 @@ only-include = [ "src/birder" ]
 ignore-vcs = true
 packages = [ "src/birder" ]
 
-#include = [
-#  "src/birder/**/*.*",
-#]
-#exclude = [
-#  ".*",
-#  "~*",
-#]
-#packages = ["src/birder"]
-
-#[tool.uv.build-backend]
-#module-name = "birder"
-#module-root = "src/birder"
-
 [tool.uv]
 package = true

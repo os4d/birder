@@ -44,10 +44,10 @@ zlib1g-dev  \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install uv uwsgi
+RUN pip install uwsgi
 
 FROM base_os AS dist
-COPY --from=builder /usr/local/bin/uwsgi /usr/local/bin/uv /usr/local/bin/
+COPY --from=builder /usr/local/bin/uwsgi /usr/local/bin/
 
 ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin \
     VERSION=$VERSION \
@@ -68,11 +68,10 @@ EOF
 WORKDIR /app
 ADD docker/conf /conf/
 ADD docker/bin/* /usr/local/bin/
+ADD dist/* /tmp
 
-RUN uv venv /venv \
-    && uv pip install os4d_birder==${VERSION}
-
-#USER brd
+RUN python3 -m venv /venv \
+    && /venv/bin/pip install --find-links=/tmp os4d_birder==${VERSION}
 
 EXPOSE 8000
 ENTRYPOINT ["docker-entrypoint.sh"]

@@ -8,6 +8,8 @@ from unittest import mock
 import pytest
 from django.core.management import call_command
 
+from birder.models import User
+
 if TYPE_CHECKING:
     from pytest_django.fixtures import SettingsWrapper
 
@@ -48,6 +50,14 @@ def test_upgrade_init(
     settings.STATIC_ROOT = str(static_root_path.absolute())
     with mock.patch.dict(os.environ, {**env}, clear=True):
         call_command("upgrade", stdout=out)
-        assert "error" not in str(out.getvalue())
+        output = str(out.getvalue())
+        assert "error" not in output
+        assert "Superuser created!" in output
         call_command("upgrade", stdout=out)
-        assert "error" not in str(out.getvalue())
+        output = str(out.getvalue())
+        assert "error" not in output
+        assert "Exiting superuser found." in output
+
+        assert (user := User.objects.get(email=os.environ["ADMIN_EMAIL"]))
+        assert user.is_active
+        assert user.is_superuser

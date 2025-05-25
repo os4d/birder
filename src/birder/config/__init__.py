@@ -7,6 +7,8 @@ from environ import Env
 ConfigItem = tuple[Any, str | list | bool]
 
 CONFIG: dict[str, ConfigItem] = {
+    "ADMIN_EMAIL": (str, ""),
+    "ADMIN_PASSWORD": (str, ""),
     "ALLOWED_HOSTS": (list, []),
     "AZURE_CLIENT_KEY": (str, ""),
     "AZURE_CLIENT_SECRET": (str, ""),

@@ -6,7 +6,6 @@ from typing import Any
 from constance import config
 from django.core.cache import cache
 from django.core.management import BaseCommand, call_command
-from django.db import IntegrityError
 
 logger = logging.getLogger(__name__)
 
@@ -46,14 +45,15 @@ class Command(BaseCommand):
                 g, is_new = Group.objects.get_or_create(name="Default")
                 if is_new:
                     config.NEW_USER_DEFAULT_GROUP = g.pk
-                if (admin_user := os.environ.get("ADMIN_USER")) and os.environ.get("ADMIN_PASSWORD"):
+                if (admin_user_email := os.environ.get("ADMIN_EMAIL")) and os.environ.get("ADMIN_PASSWORD"):
                     try:
+                        User.objects.get(email=admin_user_email)
+                        self.stdout.write(self.style.WARNING("Exiting superuser found."))
+                    except User.DoesNotExist:
                         User.objects.create_superuser(
-                            username=admin_user, email=admin_user, password=os.environ.get("ADMIN_PASSWORD")
+                            username=admin_user_email, email=admin_user_email, password=os.environ.get("ADMIN_PASSWORD")
                         )
                         self.stdout.write(self.style.SUCCESS("Superuser created!"))
-                    except IntegrityError:
-                        self.stdout.write(self.style.WARNING("Exiting superuser found."))
 
             finally:
                 redis_client.delete(KEY)
