@@ -29,12 +29,10 @@ class MonitorForm(forms.ModelForm):
             "custom_icon",
             "strategy",
             "configuration",
-            "data",
-            "data_file",
         )
 
 
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
-        fields = ("name", "description", "environments", "public", "bitcaster_url", "icon")
+        fields = ("name", "environments", "public", "bitcaster_url", "icon")
