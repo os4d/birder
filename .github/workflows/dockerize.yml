@@ -1,0 +1,44 @@
+---
+name: Build Docker
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'birder pypi version to install'
+        required: true
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  id-token: write
+  attestations: write
+
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.7
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64
+
+      - name: Build Docker
+        run: |
+            docker build \
+              --build-arg VERSION=${{ github.event.inputs.version }} \
+              --platform=linux/amd64 \
+              -t os4d/birder:${{ github.event.inputs.version }} \
+              -f docker/Dockerfile .

@@ -28,7 +28,7 @@ help:
 
 
 build: ## build docker image
-	@cd .. && uv build --sdist
+	@cd .. && uv build --wheel
 	DOCKER_BUILDKIT=1 cd .. && docker build \
 			--build-arg VERSION=${VERSION} \
 			--platform=linux/amd64 \
@@ -44,8 +44,8 @@ build: ## build docker image
 		-p 8000:8000 \
 		-p 8888:8888 \
 		-e ALLOWED_HOSTS="*" \
-		-e CSRF_TRUSTED_ORIGINS="http://localhost:8000" \
-		-e CSRF_TRUSTED_ORIGINS="http://localhost:8000" \
+		-e ADMIN_EMAIL="admin@os4d.org" \
+		-e ADMIN_PASSWORD="password" \
 		-e CSRF_TRUSTED_ORIGINS="http://localhost:8000" \
 		-e DEBUG="1" \
 		-e CACHE_URL="redis://host.docker.internal:6379" \
