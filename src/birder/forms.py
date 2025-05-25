@@ -19,10 +19,22 @@ class LoginForm(AuthenticationForm):
 class MonitorForm(forms.ModelForm):
     class Meta:
         model = Monitor
-        fields = "__all__"
+        fields = (
+            "project",
+            "environment",
+            "name",
+            "position",
+            "description",
+            "notes",
+            "custom_icon",
+            "strategy",
+            "configuration",
+            "data",
+            "data_file",
+        )
 
 
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
-        fields = "__all__"
+        fields = ("name", "description", "environments", "public", "bitcaster_url", "icon")

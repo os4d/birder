@@ -46,10 +46,10 @@ select = [
 ]
 extend-select = ["UP", "I"]
 ignore = [
-    "A005",  # Module `x` shadows a Python standard-library module
+#    "A005",  # Module `x` shadows a Python standard-library module
     "ANN401", # Dynamically typed expressions (typing.Any) are disallowed
 #    "B904",  # raise-without-from-inside-except: syntax not compatible with py2
-    "COM812",
+    "COM812", # Trailing comma missing
     "D100", # Missing docstring in public module
     "D101", # Missing docstring in public class
     "D102", #  Missing docstring in public method
@@ -61,7 +61,7 @@ ignore = [
     "D203", # one-blank-line-before-class
     "D212", # multi-line-summary-first-line
     "D213", # multi-line-summary-second-line
-    "DJ007", # Do not use `__all__` with `ModelForm`, use `fields` instead
+#    "DJ007", # Do not use `__all__` with `ModelForm`, use `fields` instead
     "ISC001",  # conflicts with ruff format command
 ]
 
@@ -73,4 +73,5 @@ line-ending = "auto"
 
 [lint.per-file-ignores]
 "src/**/migrations/**.py" = ["E501", ]
+"src/birder/version.py" = ["Q000", "I001", "UP"]
 "tests/**.py" = ["S101", "PLR2004", "S", "SIM117", "D", "UP", "PLR0913", "ANN", "N999"]

@@ -7,7 +7,7 @@ requires = [
 
 [project]
 name = "os4d-birder"
-description = "Birder Healthcheck monitoring"
+description = "Healthcheck and uptime system monitoring platform"
 readme = "README.md"
 license = { text = "MIT" }
 authors = [
@@ -127,17 +127,24 @@ local_scheme = "no-local-version"
 
 [tool.hatch.build.targets.sdist]
 ignore-vcs = true
-include = [
-  "src/birder/**/*.*",
-]
-exclude = [
-  ".*",
-  "~*",
-]
+only-include = [ "src/birder" ]
 
-[tool.uv.build-backend]
-module-name = "birder"
-module-root = "src/birder"
+[tool.hatch.build.targets.wheel]
+ignore-vcs = true
+packages = [ "src/birder" ]
+
+#include = [
+#  "src/birder/**/*.*",
+#]
+#exclude = [
+#  ".*",
+#  "~*",
+#]
+#packages = ["src/birder"]
+
+#[tool.uv.build-backend]
+#module-name = "birder"
+#module-root = "src/birder"
 
 [tool.uv]
 package = true
