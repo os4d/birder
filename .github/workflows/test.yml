@@ -87,10 +87,13 @@ jobs:
             **/pyproject.toml
             **/uv.lock
           python-version: 3.12
+
       - name: Install dependencies
         run: uv sync --cache-dir ./uv-cache --frozen
+
       - name: Run tests
         run: uv run tox -e tests
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         continue-on-error: true
@@ -101,3 +104,22 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: false
           name: codecov-${{env.GITHUB_REF_NAME}}
+
+  build_snapshot_artifact:
+    needs: [ test ]
+    runs-on: ubuntu-latest
+    steps:
+      - run: uv build --wheel
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: package
+          path: path/dist/*
+
+      - name: Trigger dockerize workflow
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/dockerize.yml/dispatches \
+            -d "{\"ref\":\"refs/tags/${{ github.ref_name }}\", \"inputs\": {\"version\": \"\", \"tag\": \"${{ github.ref_name }}\"}"

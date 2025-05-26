@@ -7,6 +7,9 @@ on:
       version:
         description: 'pypi version to install'
         required: true
+      tag:
+        description: 'Docker tag'
+        required: false
 
 
 concurrency:
@@ -27,8 +30,26 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Set target input
+        id: inputs
+        run: |
+          version="${{ github.event.inputs.version }}"
+          tag="${{ github.event.inputs.tag }}"
+          if [ -z "$tag" ]; then
+            tag="$version"
+          fi
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "tag=$tag" >> $GITHUB_OUTPUT
+
       - name: Checkout code
         uses: actions/checkout@v4.1.7
+
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: package
+          path: docker/conf
+          pattern: '*.whl'
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -44,11 +65,11 @@ jobs:
         with:
           platforms: linux/amd64
 
-      - name: Build and push version ${{ github.event.inputs.version }}
+      - name: Build and push tag ${{ steps.inputs.outputs.tag }} (v${{ steps.inputs.outputs.version }})
         uses: docker/build-push-action@v6
         with:
           context: .
           file: docker/Dockerfile
           push: true
-          tags: os4d/birder:${{ github.event.inputs.version }}
-          build-args: VERSION=${{ github.event.inputs.version }}
+          tags: os4d/birder:${{ steps.inputs.outputs.tag }}
+          build-args: VERSION=${{ steps.inputs.outputs.version }}
