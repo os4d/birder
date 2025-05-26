@@ -44,8 +44,6 @@ jobs:
         with:
           platforms: linux/amd64
 
-      - run: mkdir ./dist/
-
       - name: Build and push version ${{ github.event.inputs.version }}
         uses: docker/build-push-action@v6
         with:

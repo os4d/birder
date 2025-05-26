@@ -68,10 +68,9 @@ EOF
 WORKDIR /app
 ADD docker/conf /conf/
 ADD docker/bin/* /usr/local/bin/
-ADD dist/* /tmp
 
 RUN python3 -m venv /venv \
-    && /venv/bin/pip install --find-links=/tmp os4d_birder==${VERSION}
+    && /venv/bin/pip install --find-links=/conf/ os4d_birder==${VERSION}
 
 EXPOSE 8000
 ENTRYPOINT ["docker-entrypoint.sh"]

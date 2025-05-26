@@ -1,20 +1,21 @@
 .*
 ~*
 dist/
-docker/birder*
-node_modules/*
+node_modules/
 pip-wheel-metadata
 coverage.xml
 junit.xml
 build
 
+
+docker/*.tar.gz
+docker/*.whl
 *.egg-info
 *.sqlite3
 *.xfc
 src/birder/version.py
 
 !.git
-!.bumpversion.cfg
 !.coveragerc
 !.dockerignore
 !.github

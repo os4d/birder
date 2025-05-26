@@ -28,7 +28,7 @@ help:
 
 
 build: ## build docker image
-	@cd .. && uv build --wheel
+	@cd .. && uv build --wheel -o docker/conf
 	DOCKER_BUILDKIT=1 cd .. && docker build \
 			--build-arg VERSION=${VERSION} \
 			--platform=linux/amd64 \
