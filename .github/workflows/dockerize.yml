@@ -23,7 +23,6 @@ defaults:
 permissions:
   id-token: write
   attestations: write
-  actions: write
 
 jobs:
 
