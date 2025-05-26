@@ -74,8 +74,14 @@ dependencies = [
   "tabulate>=0.9",
   "valkey[libvalkey]>=6.0.2",
 ]
-urls.homepage = "https://github.com/os4d/birder"
-urls.repository = "https://github.com/os4d/birder"
+
+urls."Docker Image" = "https://hub.docker.com/repository/docker/os4d/birder/general"
+urls.Documentation = "https://os4d.github.io/birder/"
+urls.Homepage = "https://github.com/os4d/birder"
+urls.Issues = "https://github.com/ os4d/birder/issues"
+urls."Pypi Home" = "https://pypi.org/project/os4d-birder/"
+urls.Repository = "https://github.com/os4d/birder"
+
 scripts.birder = "birder.cli:main"
 
 [dependency-groups]

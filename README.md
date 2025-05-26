@@ -18,6 +18,8 @@ It is not intended to be a replacement of Nagios or other system administrator's
 it has been designed to be simple and easy do deploy on any environment,
 its audience is web site users to display SLA compliance and systems availability.
 
+It is provided both as [Pythin package](https://pypi.org/project/os4d-birder/) as well as [Docker Image](https://hub.docker.com/repository/docker/os4d/birder/general)
+
 ## Supported Checkers
 
  - http/https
