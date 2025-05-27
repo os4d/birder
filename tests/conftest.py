@@ -52,11 +52,11 @@ def mocked_responses():
 def environment(db):
     from testutils.factories import EnvironmentFactory
 
-    return EnvironmentFactory()
+    return EnvironmentFactory(name="development")
 
 
 @pytest.fixture
-def project(db):
+def project(environment):
     from testutils.factories import ProjectFactory
 
     return ProjectFactory()

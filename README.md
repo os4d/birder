@@ -45,6 +45,6 @@ It is provided both as [Python package](https://pypi.org/project/os4d-birder/) a
 Test locally:
 
     docker compose -f services-compose.yml down
-    ./mamage.py upgrade
-    ./mamage.py demo
-    ./mamage.py runserver
+    ./manage.py upgrade
+    ./manage.py demo
+    ./manage.py runserver

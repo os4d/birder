@@ -5,11 +5,12 @@ from birder.checks import HttpCheck
 from birder.models import Monitor
 
 from .base import AutoRegisterModelFactory
-from .project import ProjectFactory
+from .project import EnvironmentFactory, ProjectFactory
 
 
 class MonitorFactory(AutoRegisterModelFactory):
     project = factory.SubFactory(ProjectFactory)
+    environment = factory.SubFactory(EnvironmentFactory)
     strategy = fqn(HttpCheck)
     configuration = {"timeout": 10, "url": "https://example.com", "match": "", "status_success": [200]}
 

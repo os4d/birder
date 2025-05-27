@@ -2,6 +2,15 @@ import pytest
 from django.urls import reverse
 
 
+@pytest.fixture
+def project_with_default_env(environment):
+    from testutils.factories import EnvironmentFactory, ProjectFactory
+
+    env1 = EnvironmentFactory(name="development")
+    env2 = EnvironmentFactory(name="production")
+    return ProjectFactory(environments=[env1, env2])
+
+
 def test_index(django_app, monitor):
     assert django_app.get("/")
 
@@ -9,6 +18,11 @@ def test_index(django_app, monitor):
 def test_project(django_app, monitor):
     url = reverse("project-detail", args=[monitor.project.pk])
     assert django_app.get(url)
+
+
+def test_project_with_default_environment(django_app, project_with_default_env):
+    url = reverse("project-detail", args=[project_with_default_env.pk])
+    assert django_app.get(url).status_code == 200
 
 
 def test_monitor_detail(django_app, monitor):

@@ -7,11 +7,13 @@ from constance import config
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, Group
 from django.core.cache import cache
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models.functions.text import Lower
 from django.templatetags.static import static
 from django.utils import timezone
+from django.utils.translation import gettext as _
 from django_stubs_ext.db.models import TypedModelMeta
 from strategy_field.fields import StrategyField
 from timezone_field import TimeZoneField
@@ -52,6 +54,7 @@ class Project(models.Model):
     bitcaster_url = models.URLField(blank=True, help_text="The URL to the Bitcaster notification endpoint.")
     environments = models.ManyToManyField("Environment", related_name="projects", blank=False)
     icon = models.CharField(blank=True, default="", max_length=255)
+    default_environment = models.ForeignKey("Environment", null=True, on_delete=models.PROTECT)
 
     class Meta:
         ordering = ["name"]
@@ -61,6 +64,23 @@ class Project(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    def save(
+        self,
+        *,
+        force_insert: bool = False,
+        force_update: bool = False,
+        using: str | None = None,
+        update_fields: list[str] | None = None,
+    ) -> None:
+        if self.pk and not self.default_environment:
+            self.default_environment = self.environments.first()
+        super().save(force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
+
+    def clean(self) -> None:
+        if self.default_environment and not self.environments.filter(pk=self.default_environment.pk).exists():
+            raise ValidationError(_("Default environment mus be one of selected environment"))
+        super().clean()
 
     @cached_property
     def data(self) -> dict:

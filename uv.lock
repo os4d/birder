@@ -489,6 +489,12 @@ wheels = [
 ]
 
 [[package]]
+name = "csscompressor"
+version = "0.9.5"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f1/2a/8c3ac3d8bc94e6de8d7ae270bb5bc437b210bb9d6d9e46630c98f4abd20c/csscompressor-0.9.5.tar.gz", hash = "sha256:afa22badbcf3120a4f392e4d22f9fff485c044a1feda4a950ecc5eba9dd31a05", size = 237808, upload-time = "2017-11-26T21:13:08.238Z" }
+
+[[package]]
 name = "cssselect"
 version = "1.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -982,6 +988,23 @@ wheels = [
 ]
 
 [[package]]
+name = "hjson"
+version = "3.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/82/e5/0b56d723a76ca67abadbf7fb71609fb0ea7e6926e94fcca6c65a85b36a0e/hjson-3.1.0.tar.gz", hash = "sha256:55af475a27cf83a7969c808399d7bccdec8fb836a07ddbd574587593b9cdcf75", size = 40541, upload-time = "2022-08-13T02:53:01.919Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1f/7f/13cd798d180af4bf4c0ceddeefba2b864a63c71645abc0308b768d67bb81/hjson-3.1.0-py3-none-any.whl", hash = "sha256:65713cdcf13214fb554eb8b4ef803419733f4f5e551047c9b711098ab7186b89", size = 54018, upload-time = "2022-08-13T02:52:59.899Z" },
+]
+
+[[package]]
+name = "htmlmin2"
+version = "0.1.13"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/be/31/a76f4bfa885f93b8167cb4c85cf32b54d1f64384d0b897d45bc6d19b7b45/htmlmin2-0.1.13-py3-none-any.whl", hash = "sha256:75609f2a42e64f7ce57dbff28a39890363bde9e7e5885db633317efbdf8c79a2", size = 34486, upload-time = "2023-03-14T21:28:30.388Z" },
+]
+
+[[package]]
 name = "hyperlink"
 version = "21.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1021,6 +1044,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/27/87/156b374ff6578062965afe30cc57627d35234369b3336cf244b240c8d8e6/incremental-24.7.2.tar.gz", hash = "sha256:fb4f1d47ee60efe87d4f6f0ebb5f70b9760db2b2574c59c8e8912be4ebd464c9", size = 28157, upload-time = "2024-07-29T20:03:55.441Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/0d/38/221e5b2ae676a3938c2c1919131410c342b6efc2baffeda395dd66eeca8f/incremental-24.7.2-py3-none-any.whl", hash = "sha256:8cb2c3431530bec48ad70513931a760f446ad6c25e8333ca5d95e24b0ed7b8fe", size = 20516, upload-time = "2024-07-29T20:03:53.677Z" },
+]
+
+[[package]]
+name = "inflect"
+version = "7.5.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "more-itertools" },
+    { name = "typeguard" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/78/c6/943357d44a21fd995723d07ccaddd78023eace03c1846049a2645d4324a3/inflect-7.5.0.tar.gz", hash = "sha256:faf19801c3742ed5a05a8ce388e0d8fe1a07f8d095c82201eb904f5d27ad571f", size = 73751, upload-time = "2024-12-28T17:11:18.897Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8a/eb/427ed2b20a38a4ee29f24dbe4ae2dafab198674fe9a85e3d6adf9e5f5f41/inflect-7.5.0-py3-none-any.whl", hash = "sha256:2aea70e5e70c35d8350b8097396ec155ffd68def678c7ff97f51aa69c1d92344", size = 35197, upload-time = "2024-12-28T17:11:15.931Z" },
 ]
 
 [[package]]
@@ -1110,6 +1146,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/00/2a/e867e8531cf3e36b4
 wheels = [
     { url = "https://files.pythonhosted.org/packages/31/b4/b9b800c45527aadd64d5b442f9b932b00648617eb5d63d2c7a6587b7cafc/jmespath-1.0.1-py3-none-any.whl", hash = "sha256:02e2e4cc71b5bcab88332eebf907519190dd9e6e82107fa7f83b1003a6252980", size = 20256, upload-time = "2022-06-17T18:00:10.251Z" },
 ]
+
+[[package]]
+name = "jsmin"
+version = "3.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/5e/73/e01e4c5e11ad0494f4407a3f623ad4d87714909f50b17a06ed121034ff6e/jsmin-3.0.1.tar.gz", hash = "sha256:c0959a121ef94542e807a674142606f7e90214a2b3d1eb17300244bbb5cc2bfc", size = 13925, upload-time = "2022-01-16T20:35:59.13Z" }
 
 [[package]]
 name = "kombu"
@@ -1255,6 +1297,18 @@ wheels = [
 ]
 
 [[package]]
+name = "mdx-gh-links"
+version = "0.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "markdown" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/2f/ea/bf1f721a8dc0ff83b426480f040ac68dbe3d7898b096c1277a5a4e3da0ec/mdx_gh_links-0.4.tar.gz", hash = "sha256:41d5aac2ab201425aa0a19373c4095b79e5e015fdacfe83c398199fe55ca3686", size = 5783, upload-time = "2023-12-22T19:54:02.136Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c5/c7/ccfe05ade98ba7a63f05d1b05b7508d9af743cbd1f1681aa0c9900a8cd40/mdx_gh_links-0.4-py3-none-any.whl", hash = "sha256:9057bca1fa5280bf1fcbf354381e46c9261cc32c2d5c0407801f8a910be5f099", size = 7166, upload-time = "2023-12-22T19:54:00.384Z" },
+]
+
+[[package]]
 name = "mergedeep"
 version = "1.3.4"
 source = { registry = "https://pypi.org/simple" }
@@ -1304,6 +1358,18 @@ wheels = [
 ]
 
 [[package]]
+name = "mkdocs-autolinks-plugin"
+version = "0.7.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "mkdocs" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/63/b7/efc75b7870a4fecbc9a05ba94ce622462a40b5a13670d00036c5b47bf82f/mkdocs-autolinks-plugin-0.7.1.tar.gz", hash = "sha256:445ddb9b417b7795856c30801bb430773186c1daf210bdeecf8305f55a47d151", size = 4375, upload-time = "2023-08-04T14:42:25.67Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d4/9c/ee3d81a799b8b0b73a89625bcbf3c58cd369c8a26a1b415413edea9bf259/mkdocs_autolinks_plugin-0.7.1-py3-none-any.whl", hash = "sha256:5c6c17f6649b68e79a9ef0b2648d59f3072e18002b90ee1586a64c505f11ab12", size = 4235, upload-time = "2023-08-04T14:42:23.955Z" },
+]
+
+[[package]]
 name = "mkdocs-autorefs"
 version = "1.4.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1332,6 +1398,56 @@ wheels = [
 ]
 
 [[package]]
+name = "mkdocs-click"
+version = "0.9.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "click" },
+    { name = "markdown" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a1/c7/8c25f3a3b379def41e6d0bb5c4beeab7aa8a394b17e749f498504102cfa5/mkdocs_click-0.9.0.tar.gz", hash = "sha256:6050917628d4740517541422b607404d044117bc31b770c4f9e9e1939a50c908", size = 18720, upload-time = "2025-04-07T16:59:36.387Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e9/fc/9124ab36e2341e78d8d9c669511bd70f52ea0de8105760c31fabec1f9396/mkdocs_click-0.9.0-py3-none-any.whl", hash = "sha256:5208e828f4f68f63c847c1ef7be48edee9964090390afc8f5b3d4cbe5ea9bbed", size = 15104, upload-time = "2025-04-07T16:59:34.807Z" },
+]
+
+[[package]]
+name = "mkdocs-embed-external-markdown"
+version = "3.0.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "jinja2" },
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/41/0d/99c54195df8a06c751bbbaaf743be771aa538eee28f39f33fe397ceb602c/mkdocs-embed-external-markdown-3.0.2.tar.gz", hash = "sha256:9a3d14a9cc6efb4201175530f277e84da472a576772db264a3b19570cf266317", size = 7123, upload-time = "2024-02-26T12:18:15.705Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a2/19/c8e5b85ff0bc58862b32667a2a274afdf54610febbf93a7b91f070525275/mkdocs_embed_external_markdown-3.0.2-py3-none-any.whl", hash = "sha256:82088296cfd117b36ef45b58b4342005727a1f891f0c429c21756215e89099d2", size = 7787, upload-time = "2024-02-26T12:18:14.088Z" },
+]
+
+[[package]]
+name = "mkdocs-ezglossary-plugin"
+version = "2.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "inflect" },
+    { name = "jinja2" },
+    { name = "mkdocs" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/63/7b/07b2c6064afba20d1d3b4a84428c0de156c5f140d5454ea02324e046a2b4/mkdocs_ezglossary_plugin-2.0.0.tar.gz", hash = "sha256:bfd3f16ca5142436889d553bdd674201fc77aa4b94cba7819fb8f106720d9194", size = 17818, upload-time = "2025-02-10T20:58:08.71Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/49/07/69db1299e822eb8d564460be254593f293ed9e88f5977721eb3893170361/mkdocs_ezglossary_plugin-2.0.0-py2.py3-none-any.whl", hash = "sha256:9539b249f7ac7051525dab2d56ba27b3c2e776e7c6afba898b1eaed2eae9beb7", size = 14444, upload-time = "2025-02-10T20:58:06.488Z" },
+]
+
+[[package]]
+name = "mkdocs-ezlinks-plugin"
+version = "0.1.14"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "mkdocs" },
+    { name = "pygtrie" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/9a/3b/490d1b51fba7da69394e5a17f2c081eb65a10fb73565dc6793d53e4e4206/mkdocs-ezlinks-plugin-0.1.14.tar.gz", hash = "sha256:3e2085c16a850e022393e80194c17612e7b55de87fb45b3ffb618b5dfdb10811", size = 13366, upload-time = "2022-01-24T20:10:30.91Z" }
+
+[[package]]
 name = "mkdocs-gen-files"
 version = "0.5.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1355,6 +1471,52 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/98/f5/ed29cd50067784976f25ed0ed6fcd3c2ce9eb90650aa3b2796ddf7b6870b/mkdocs_get_deps-0.2.0.tar.gz", hash = "sha256:162b3d129c7fad9b19abfdcb9c1458a651628e4b1dea628ac68790fb3061c60c", size = 10239, upload-time = "2023-11-20T17:51:09.981Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/9f/d4/029f984e8d3f3b6b726bd33cafc473b75e9e44c0f7e80a5b29abc466bdea/mkdocs_get_deps-0.2.0-py3-none-any.whl", hash = "sha256:2bf11d0b133e77a0dd036abeeb06dec8775e46efa526dc70667d8863eefc6134", size = 9521, upload-time = "2023-11-20T17:51:08.587Z" },
+]
+
+[[package]]
+name = "mkdocs-include-markdown-plugin"
+version = "7.1.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "mkdocs" },
+    { name = "wcmatch" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/1d/34/ece85384e3ab29f05c2e12e50bde95449aa6dbb47b471923bba8fcf1596c/mkdocs_include_markdown_plugin-7.1.5.tar.gz", hash = "sha256:a986967594da6789226798e3c41c70bc17130fadb92b4313f42bd3defdac0adc", size = 23329, upload-time = "2025-03-07T23:29:00.051Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ea/eb/472c1bbe93f26fe97647af0b613e9710916a2cf555b64fc969b91e24cf2c/mkdocs_include_markdown_plugin-7.1.5-py3-none-any.whl", hash = "sha256:d0b96edee45e7fda5eb189e63331cfaf1bf1fbdbebbd08371f1daa77045d3ae9", size = 27114, upload-time = "2025-03-07T23:28:58.678Z" },
+]
+
+[[package]]
+name = "mkdocs-link-marker"
+version = "0.1.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "jinja2" },
+    { name = "mkdocs" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c3/a3/5422a7c2a50c23c9de14b2df780bf3345eef9a06cbb1e123367b7d66cfc4/mkdocs-link-marker-0.1.3.tar.gz", hash = "sha256:6d8760c819a376650675f02c7de82f5fbc0a992e7ed3239955cc01021a1af779", size = 2240, upload-time = "2024-02-25T21:24:16.777Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/16/df/e18f73f5be74ed5d4627d371a66c45d00be536923a591c6a0b5d29a06431/mkdocs_link_marker-0.1.3-py3-none-any.whl", hash = "sha256:798a6bfbb059ce49a81f724e84306bec8f1d5241aace89e54ae7d9088beeab5b", size = 2729, upload-time = "2024-02-25T21:24:15.13Z" },
+]
+
+[[package]]
+name = "mkdocs-macros-plugin"
+version = "1.3.7"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "hjson" },
+    { name = "jinja2" },
+    { name = "mkdocs" },
+    { name = "packaging" },
+    { name = "pathspec" },
+    { name = "python-dateutil" },
+    { name = "pyyaml" },
+    { name = "super-collections" },
+    { name = "termcolor" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/43/65/61a746c56788867221aebf07fe4b6b4c08ac99cf341fd51d728c89d1456e/mkdocs_macros_plugin-1.3.7.tar.gz", hash = "sha256:17c7fd1a49b94defcdb502fd453d17a1e730f8836523379d21292eb2be4cb523", size = 33466, upload-time = "2024-10-26T15:15:54.925Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/55/cf/f03331298ee50a4da6fb72ccec79078041158c1f8b5fc24835c1be42232e/mkdocs_macros_plugin-1.3.7-py3-none-any.whl", hash = "sha256:02432033a5b77fb247d6ec7924e72fc4ceec264165b1644ab8d0dc159c22ce59", size = 37799, upload-time = "2024-10-26T15:15:53.31Z" },
 ]
 
 [[package]]
@@ -1386,6 +1548,45 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/79/9b/9b4c96d6593b2a541e1cb8b34899a6d021d208bb357042823d4d2cabdbe7/mkdocs_material_extensions-1.3.1.tar.gz", hash = "sha256:10c9511cea88f568257f960358a467d12b970e1f7b2c0e5fb2bb48cab1928443", size = 11847, upload-time = "2023-11-22T19:09:45.208Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/5b/54/662a4743aa81d9582ee9339d4ffa3c8fd40a4965e033d77b9da9774d3960/mkdocs_material_extensions-1.3.1-py3-none-any.whl", hash = "sha256:adff8b62700b25cb77b53358dad940f3ef973dd6db797907c49e3c2ef3ab4e31", size = 8728, upload-time = "2023-11-22T19:09:43.465Z" },
+]
+
+[[package]]
+name = "mkdocs-minify-plugin"
+version = "0.8.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "csscompressor" },
+    { name = "htmlmin2" },
+    { name = "jsmin" },
+    { name = "mkdocs" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/52/67/fe4b77e7a8ae7628392e28b14122588beaf6078b53eb91c7ed000fd158ac/mkdocs-minify-plugin-0.8.0.tar.gz", hash = "sha256:bc11b78b8120d79e817308e2b11539d790d21445eb63df831e393f76e52e753d", size = 8366, upload-time = "2024-01-29T16:11:32.982Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1b/cd/2e8d0d92421916e2ea4ff97f10a544a9bd5588eb747556701c983581df13/mkdocs_minify_plugin-0.8.0-py3-none-any.whl", hash = "sha256:5fba1a3f7bd9a2142c9954a6559a57e946587b21f133165ece30ea145c66aee6", size = 6723, upload-time = "2024-01-29T16:11:31.851Z" },
+]
+
+[[package]]
+name = "mkdocs-redirects"
+version = "1.2.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "mkdocs" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f1/a8/6d44a6cf07e969c7420cb36ab287b0669da636a2044de38a7d2208d5a758/mkdocs_redirects-1.2.2.tar.gz", hash = "sha256:3094981b42ffab29313c2c1b8ac3969861109f58b2dd58c45fc81cd44bfa0095", size = 7162, upload-time = "2024-11-07T14:57:21.109Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c4/ec/38443b1f2a3821bbcb24e46cd8ba979154417794d54baf949fefde1c2146/mkdocs_redirects-1.2.2-py3-none-any.whl", hash = "sha256:7dbfa5647b79a3589da4401403d69494bd1f4ad03b9c15136720367e1f340ed5", size = 6142, upload-time = "2024-11-07T14:57:19.143Z" },
+]
+
+[[package]]
+name = "mkdocs-simple-hooks"
+version = "0.1.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "mkdocs" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f1/93/565f98d6810e3b493e61160aea1cceb8653331576e7fa7f048ac7e7cdf62/mkdocs-simple-hooks-0.1.5.tar.gz", hash = "sha256:dddbdf151a18723c9302a133e5cf79538be8eb9d274e8e07d2ac3ac34890837c", size = 4037, upload-time = "2022-01-07T09:11:18.345Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7a/e9/7bf0f928f5b6cdd602d4a01d52e5fc1eba8d3ba6d97619a88fc271a625f8/mkdocs_simple_hooks-0.1.5-py3-none-any.whl", hash = "sha256:efeabdbb98b0850a909adee285f3404535117159d5cb3a34f541d6eaa644d50a", size = 4596, upload-time = "2022-01-07T09:11:17.022Z" },
 ]
 
 [[package]]
@@ -1422,6 +1623,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/44/c8/600c4201b6b9e72bab16802316d0c90ce04089f8e6bb5e064cd2a5abba7e/mkdocstrings_python-1.16.10.tar.gz", hash = "sha256:f9eedfd98effb612ab4d0ed6dd2b73aff6eba5215e0a65cea6d877717f75502e", size = 205771, upload-time = "2025-04-03T14:24:48.12Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/53/37/19549c5e0179785308cc988a68e16aa7550e4e270ec8a9878334e86070c6/mkdocstrings_python-1.16.10-py3-none-any.whl", hash = "sha256:63bb9f01f8848a644bdb6289e86dc38ceddeaa63ecc2e291e3b2ca52702a6643", size = 124112, upload-time = "2025-04-03T14:24:46.561Z" },
+]
+
+[[package]]
+name = "more-itertools"
+version = "10.7.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ce/a0/834b0cebabbfc7e311f30b46c8188790a37f89fc8d756660346fe5abfd09/more_itertools-10.7.0.tar.gz", hash = "sha256:9fddd5403be01a94b204faadcff459ec3568cf110265d3c54323e1e866ad29d3", size = 127671, upload-time = "2025-04-22T14:17:41.838Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2b/9f/7ba6f94fc1e9ac3d2b853fdff3035fb2fa5afbed898c4a72b8a020610594/more_itertools-10.7.0-py3-none-any.whl", hash = "sha256:d43980384673cb07d2f7d2d918c616b30c659c089ee23953f601d6609c67510e", size = 65278, upload-time = "2025-04-22T14:17:40.49Z" },
 ]
 
 [[package]]
@@ -1608,10 +1818,24 @@ dev = [
     { name = "watchdog", extra = ["watchmedo"] },
 ]
 docs = [
+    { name = "markupsafe" },
+    { name = "mdx-gh-links" },
     { name = "mkdocs" },
+    { name = "mkdocs-autolinks-plugin" },
     { name = "mkdocs-awesome-pages-plugin" },
+    { name = "mkdocs-click" },
+    { name = "mkdocs-embed-external-markdown" },
+    { name = "mkdocs-ezglossary-plugin" },
+    { name = "mkdocs-ezlinks-plugin" },
     { name = "mkdocs-gen-files" },
+    { name = "mkdocs-get-deps" },
+    { name = "mkdocs-include-markdown-plugin" },
+    { name = "mkdocs-link-marker" },
+    { name = "mkdocs-macros-plugin" },
     { name = "mkdocs-material" },
+    { name = "mkdocs-minify-plugin" },
+    { name = "mkdocs-redirects" },
+    { name = "mkdocs-simple-hooks" },
     { name = "mkdocstrings", extra = ["python"] },
     { name = "pymdown-extensions" },
 ]
@@ -1699,11 +1923,30 @@ dev = [
     { name = "watchdog", extras = ["watchmedo"], specifier = ">=6" },
 ]
 docs = [
+    { name = "markupsafe", specifier = ">=2.1.5" },
+    { name = "mdx-gh-links", specifier = ">=0.4" },
+    { name = "mkdocs", specifier = ">=1.5.3" },
     { name = "mkdocs", specifier = ">=1.6.1" },
+    { name = "mkdocs-autolinks-plugin", specifier = ">=0.7.1" },
+    { name = "mkdocs-awesome-pages-plugin", specifier = ">=2.9.3" },
     { name = "mkdocs-awesome-pages-plugin", specifier = ">=2.10.1" },
+    { name = "mkdocs-click", specifier = ">=0.8.1" },
+    { name = "mkdocs-embed-external-markdown", specifier = ">=3.0.2" },
+    { name = "mkdocs-ezglossary-plugin", specifier = ">=1.6.10" },
+    { name = "mkdocs-ezlinks-plugin", specifier = ">=0.1.14" },
     { name = "mkdocs-gen-files", specifier = ">=0.5" },
+    { name = "mkdocs-get-deps", specifier = ">=0.2" },
+    { name = "mkdocs-include-markdown-plugin", specifier = ">=6.2.2" },
+    { name = "mkdocs-link-marker", specifier = ">=0.1.3" },
+    { name = "mkdocs-macros-plugin", specifier = ">=1.0.5" },
+    { name = "mkdocs-material", specifier = ">=9.5.15" },
     { name = "mkdocs-material", specifier = ">=9.5.49" },
+    { name = "mkdocs-minify-plugin", specifier = ">=0.8" },
+    { name = "mkdocs-redirects", specifier = ">=1.2.1" },
+    { name = "mkdocs-simple-hooks", specifier = ">=0.1.5" },
+    { name = "mkdocstrings", extras = ["python"], specifier = ">=0.24.1" },
     { name = "mkdocstrings", extras = ["python"], specifier = ">=0.27" },
+    { name = "pymdown-extensions", specifier = ">=10.7.1" },
     { name = "pymdown-extensions", specifier = ">=10.14" },
 ]
 mypy = [
@@ -2023,6 +2266,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/7c/2d/c3338d48ea6cc0feb8446d8e6937e1408088a72a39937982cc6111d17f84/pygments-2.19.1.tar.gz", hash = "sha256:61c16d2a8576dc0649d9f39e089b5f02bcd27fba10d8fb4dcc28173f7a45151f", size = 4968581, upload-time = "2025-01-06T17:26:30.443Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/8a/0b/9fcc47d19c48b59121088dd6da2488a49d5f72dacf8262e2790a1d2c7d15/pygments-2.19.1-py3-none-any.whl", hash = "sha256:9ea1544ad55cecf4b8242fab6dd35a93bbce657034b0611ee383099054ab6d8c", size = 1225293, upload-time = "2025-01-06T17:26:25.553Z" },
+]
+
+[[package]]
+name = "pygtrie"
+version = "2.5.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b9/13/55deec25bf09383216fa7f1dfcdbfca40a04aa00b6d15a5cbf25af8fce5f/pygtrie-2.5.0.tar.gz", hash = "sha256:203514ad826eb403dab1d2e2ddd034e0d1534bbe4dbe0213bb0593f66beba4e2", size = 39266, upload-time = "2022-07-16T14:29:47.459Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ec/cd/bd196b2cf014afb1009de8b0f05ecd54011d881944e62763f3c1b1e8ef37/pygtrie-2.5.0-py3-none-any.whl", hash = "sha256:8795cda8105493d5ae159a5bef313ff13156c5d4d72feddefacaad59f8c8ce16", size = 25099, upload-time = "2022-09-23T20:30:05.12Z" },
 ]
 
 [[package]]
@@ -2756,6 +3008,18 @@ wheels = [
 ]
 
 [[package]]
+name = "super-collections"
+version = "0.5.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "hjson" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b8/05/d1b50919a0d206d77255217d96dea9ab34bd1eb965a21559380c48f9517e/super_collections-0.5.3.tar.gz", hash = "sha256:94c1ec96c0a0d5e8e7d389ed8cde6882ac246940507c5e6b86e91945c2968d46", size = 10178, upload-time = "2024-10-12T05:11:19.888Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/07/6d/58de58c521e7fb79bceb4da90d55250070bb4adfa3c870b82519a561c79d/super_collections-0.5.3-py3-none-any.whl", hash = "sha256:907d35b25dc4070910e8254bf2f5c928348af1cf8a1f1e8259e06c666e902cff", size = 8436, upload-time = "2024-10-12T05:11:18.626Z" },
+]
+
+[[package]]
 name = "tabcompleter"
 version = "1.4.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2783,6 +3047,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/0a/d4/2b0cd0fe285e14b36db076e78c93766ff1d529d70408bd1d2a5a84f1d929/tenacity-9.1.2.tar.gz", hash = "sha256:1169d376c297e7de388d18b4481760d478b0e99a777cad3a9c86e556f4b697cb", size = 48036, upload-time = "2025-04-02T08:25:09.966Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e5/30/643397144bfbfec6f6ef821f36f33e57d35946c44a2352d3c9f0ae847619/tenacity-9.1.2-py3-none-any.whl", hash = "sha256:f77bf36710d8b73a50b2dd155c97b870017ad21afe6ab300326b0371b3b05138", size = 28248, upload-time = "2025-04-02T08:25:07.678Z" },
+]
+
+[[package]]
+name = "termcolor"
+version = "3.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ca/6c/3d75c196ac07ac8749600b60b03f4f6094d54e132c4d94ebac6ee0e0add0/termcolor-3.1.0.tar.gz", hash = "sha256:6a6dd7fbee581909eeec6a756cff1d7f7c376063b14e4a298dc4980309e55970", size = 14324, upload-time = "2025-04-30T11:37:53.791Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4f/bd/de8d508070629b6d84a30d01d57e4a65c69aa7f5abe7560b8fad3b50ea59/termcolor-3.1.0-py3-none-any.whl", hash = "sha256:591dd26b5c2ce03b9e43f391264626557873ce1d379019786f99b0c2bee140aa", size = 7684, upload-time = "2025-04-30T11:37:52.382Z" },
 ]
 
 [[package]]
@@ -2905,6 +3178,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/51/91/bc9fd5aa84703f874dea27313b11fde505d343f3ef3ad702bddbe20bfd6e/txaio-23.1.1.tar.gz", hash = "sha256:f9a9216e976e5e3246dfd112ad7ad55ca915606b60b84a757ac769bd404ff704", size = 53704, upload-time = "2023-01-15T14:11:27.475Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7d/6c/a53cc9a97c2da76d9cd83c03f377468599a28f2d4ad9fc71c3b99640e71e/txaio-23.1.1-py2.py3-none-any.whl", hash = "sha256:aaea42f8aad50e0ecfb976130ada140797e9dcb85fad2cf72b0f37f8cefcb490", size = 30512, upload-time = "2023-01-15T14:11:24.999Z" },
+]
+
+[[package]]
+name = "typeguard"
+version = "4.4.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/70/60/8cd6a3d78d00ceeb2193c02b7ed08f063d5341ccdfb24df88e61f383048e/typeguard-4.4.2.tar.gz", hash = "sha256:a6f1065813e32ef365bc3b3f503af8a96f9dd4e0033a02c28c4a4983de8c6c49", size = 75746, upload-time = "2025-02-16T16:28:26.205Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cf/4b/9a77dc721aa0b7f74440a42e4ef6f9a4fae7324e17f64f88b96f4c25cc05/typeguard-4.4.2-py3-none-any.whl", hash = "sha256:77a78f11f09777aeae7fa08585f33b5f4ef0e7335af40005b0c422ed398ff48c", size = 35801, upload-time = "2025-02-16T16:28:24.793Z" },
 ]
 
 [[package]]

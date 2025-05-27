@@ -13,7 +13,7 @@ x-env: &env
     - POSTGRES_DB=birder
     - DATABASE_URL=postgres://db:password@db:5432/birder
     - ADMIN_USER=admin@example.com
-    - ADMIN_PASSWORD=123
+    - ADMIN_PASSWORD=password
     - GOOGLE_CLIENT_ID=
     - GOOGLE_CLIENT_SECRET=
 

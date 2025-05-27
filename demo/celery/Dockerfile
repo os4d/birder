@@ -1,13 +1,9 @@
-FROM python:3.12-alpine
+FROM python:3-alpine
 ENV BROKER_URL=""
 
-RUN pip install celery redis \
-    && mkdir app
-
-WORKDIR app
-COPY *.py /app
-COPY run.sh /app
-
+RUN pip install celery
+COPY *.py .
+COPY run.sh .
 RUN ls -al
 
-CMD ["sh", "run.sh"]
+CMD ["/bin/bash", "run.sh"]
