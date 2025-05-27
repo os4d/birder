@@ -102,6 +102,7 @@ class BaseCheck:
         else:
             raise ValueError("Must specify a configuration")  # pragma: no cover
         self.monitor: Monitor = owner
+        self.status = {}
 
     @classmethod
     def clean_config(cls, cfg: dict[str, Any]) -> dict[str, Any]:

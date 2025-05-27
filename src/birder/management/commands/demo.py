@@ -42,7 +42,7 @@ class Command(BaseCommand):
             "memcache://localhost:21121",
             "rabbitmq://localhost:25672",
             "smtp://admin@example.com:password@localhost:2560",
-            "celery://localhost:26379?broker=redis",
+            "celery://localhost:36379?broker=redis",
             "tcp://localhost:8000",
             "http+xml://google.com",
         ]:

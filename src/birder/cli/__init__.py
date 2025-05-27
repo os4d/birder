@@ -37,8 +37,9 @@ def list_(ctx: Context, **kwargs: Any) -> None:
 @cli.command(name="check")
 @click.argument("monitor_id", type=int, required=False)
 @click.option("-a", "--all", "_all", type=int, is_flag=True)
+@click.option("-d", "--debug", "debug", is_flag=True)
 @click.pass_context
-def check_(ctx: Context, monitor_id: int, _all: bool = False, **kwargs: Any) -> None:
+def check_(ctx: Context, monitor_id: int, _all: bool = False, debug: bool = True, **kwargs: Any) -> None:
     """Run selected check."""
     from birder.models import BaseCheck, Monitor
 
@@ -46,30 +47,30 @@ def check_(ctx: Context, monitor_id: int, _all: bool = False, **kwargs: Any) -> 
         raise click.UsageError("--")
     ok = click.style("\u2714", fg="green")
     ko = click.style("\u2716", fg="red")
+
+    def c(m: Monitor) -> None:
+        res = m.run()
+        status = ok if res else ko
+        info = "" if not debug else f" | {m.configuration}"
+        click.echo(
+            f"{m.project.name[:20]:<22} | "
+            f"{m.environment.name[:15]:<17} | "
+            f"{m.name[:20]:<22} | "
+            f"{status} | "
+            f"{m.strategy.status}"
+            f"{info}"
+        )
+
     if _all:
-        for monitor in Monitor.objects.select_related("project", "environment").order_by(
+        monitors = Monitor.objects.select_related("project", "environment").order_by(
             "project__name", "environment", "name"
-        ):
-            if monitor.strategy.mode == BaseCheck.LOCAL_TRIGGER:
-                res = monitor.run()
-                status = ok if res else ko
-                click.echo(
-                    f"{monitor.project.name[:20]:<22} | "
-                    f"{monitor.environment.name[:15]:<17} | "
-                    f"{monitor.name[:20]:<22} | "
-                    f"{status}"
-                )
+        )
     else:
-        monitor = Monitor.objects.get(id=monitor_id)
+        monitors = [Monitor.objects.get(id=monitor_id)]
+
+    for monitor in monitors:
         if monitor.strategy.mode == BaseCheck.LOCAL_TRIGGER:
-            res = monitor.run()
-            status = ok if res else ko
-            click.echo(
-                f"{monitor.project.name[:20]:<22} | "
-                f"{monitor.environment.name[:15]:<17} | "
-                f"{monitor.name[:20]:<22} | "
-                f"{status}"
-            )
+            c(monitor)
 
 
 @cli.command()

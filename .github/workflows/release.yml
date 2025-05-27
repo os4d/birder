@@ -48,6 +48,8 @@ jobs:
           attestations: true
   dockerize:
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
     steps:
       - name: Trigger dockerize workflow
         run: |
