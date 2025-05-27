@@ -33,7 +33,7 @@ def test_cli_refresh(monitor: "Monitor"):
     assert result.exit_code == 0
 
 
-def test_cli_trigger(monitor: "Monitor"):
+def test_cli_check(monitor: "Monitor"):
     runner = CliRunner()
     result = runner.invoke(cli, ["check", str(monitor.pk)])
     assert result.exit_code == 0

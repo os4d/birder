@@ -38,7 +38,7 @@ def list_(ctx: Context, **kwargs: Any) -> None:
 @click.argument("monitor_id", type=int, required=False)
 @click.option("-a", "--all", "_all", type=int, is_flag=True)
 @click.pass_context
-def trigger(ctx: Context, monitor_id: int, _all: bool = False, **kwargs: Any) -> None:
+def check_(ctx: Context, monitor_id: int, _all: bool = False, **kwargs: Any) -> None:
     """Run selected check."""
     from birder.models import BaseCheck, Monitor
 
@@ -62,7 +62,14 @@ def trigger(ctx: Context, monitor_id: int, _all: bool = False, **kwargs: Any) ->
     else:
         monitor = Monitor.objects.get(id=monitor_id)
         if monitor.strategy.mode == BaseCheck.LOCAL_TRIGGER:
-            monitor.run()
+            res = monitor.run()
+            status = ok if res else ko
+            click.echo(
+                f"{monitor.project.name[:20]:<22} | "
+                f"{monitor.environment.name[:15]:<17} | "
+                f"{monitor.name[:20]:<22} | "
+                f"{status}"
+            )
 
 
 @cli.command()
