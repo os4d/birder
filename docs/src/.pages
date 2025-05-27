@@ -1,4 +1,6 @@
 nav:
-  - Birder: index.md
+  - About: index.md
+  - docker.md
   - checks.md
   - contributing.md
+  - license.md
