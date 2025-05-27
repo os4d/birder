@@ -24,6 +24,9 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.snippets:
+      base_path: '.'
+      check_paths: true
 
 theme:
   name: "material"
@@ -52,14 +55,38 @@ theme:
       provider: mike
       alias: true
 
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      primary: light blue
+      media: "(prefers-color-scheme: light)"
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: light blue
+      media: "(prefers-color-scheme: dark)"
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+
 plugins:
   - mkdocstrings:
       default_handler: python
   - awesome-pages
   - search
-#  - gen-files:
-#      scripts:
-#        - docs/_scripts/get_settings.py
+  - include-markdown:
+      encoding: ascii
+      preserve_includer_indent: false
+      dedent: false
+      trailing_newlines: true
+      comments: false
+      rewrite_relative_urls: true
+      heading_offset: 0
+      recursive: true
+
 watch:
   - src/
 
