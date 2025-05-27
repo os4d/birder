@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from datetime import datetime
 from enum import StrEnum
 from functools import cached_property
@@ -10,6 +11,7 @@ from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models.base import ModelBase
 from django.db.models.functions.text import Lower
 from django.templatetags.static import static
 from django.utils import timezone
@@ -48,7 +50,7 @@ class User(AbstractUser):
 
 
 class Project(models.Model):
-    environments: "models.ManyToManyField[Project, Environment]"
+    environments: "models.ManyToManyField[Environment, Environment]"
     name = models.CharField(max_length=255, unique=True)
     public = models.BooleanField(default=False)
     bitcaster_url = models.URLField(blank=True, help_text="The URL to the Bitcaster notification endpoint.")
@@ -68,10 +70,10 @@ class Project(models.Model):
     def save(
         self,
         *,
-        force_insert: bool = False,
+        force_insert: bool | tuple[ModelBase, ...] = False,
         force_update: bool = False,
         using: str | None = None,
-        update_fields: list[str] | None = None,
+        update_fields: Iterable[str] | None = None,
     ) -> None:
         if self.pk and not self.default_environment:
             self.default_environment = self.environments.first()

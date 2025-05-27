@@ -27,4 +27,5 @@ from birder.checks import parser
 )
 def test_parser(url):
     checker, config = parser(url)
-    assert checker.config_class(config).is_valid()
+    cfg = checker.config_class(config)
+    assert cfg.is_valid(), cfg.errors

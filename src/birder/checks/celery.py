@@ -32,16 +32,18 @@ class CeleryCheck(BaseCheck):
 
     @classmethod
     def clean_config(cls, cfg: dict[str, Any]) -> dict[str, Any]:
-        if not cfg.get("hostname", ""):
+        if not cfg.get("hostname"):
             cfg["hostname"] = cfg.get("host", "")
+        if not cfg.get("min_workers"):
+            cfg["min_workers"] = 1
         return cfg
 
     def check(self, raise_error: bool = False) -> bool:
         try:
             broker = "{broker}://{hostname}:{port}/{extra}".format(**self.config)
             app = CeleryApp("birder", loglevel="info", broker=broker)
-            c = Control(app)
-            workers = len(c.ping())
+            ctrl = Control(app)
+            workers = len(ctrl.ping())
             self.status = {"workers": workers}
             return workers > self.config["min_workers"]
         except (
