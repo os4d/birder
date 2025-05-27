@@ -40,6 +40,8 @@ class ProjectView(CommonContextMixin, TemplateView):
         project = Project.objects.get(pk=self.kwargs.get("project"))
         if selection := self.kwargs.get("env"):
             env = project.environments.get(name=selection)
+        elif project.default_environment:
+            env = project.default_environment
         else:
             env = project.environments.first()
 

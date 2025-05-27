@@ -1,4 +1,14 @@
 services:
+  celery:
+    build:
+      context: demo/celery
+    environment:
+      BROKER_URL: redis://redis:6379/0
+    stdin_open: true
+    tty: true
+    depends_on:
+      - redis
+
   redis:
     image: "redis:alpine"
     ports:
