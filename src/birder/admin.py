@@ -61,7 +61,7 @@ class ChangeIconForm(forms.Form):
         return media
 
 
-def assert_object_or_404(obj: Model) -> None:
+def assert_object_or_404(obj: Model | None) -> None:
     if not obj:
         raise Http404
 
