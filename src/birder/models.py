@@ -73,7 +73,7 @@ class Project(models.Model):
         using: str | None = None,
         update_fields: list[str] | None = None,
     ) -> None:
-        if not self.default_environment:
+        if self.pk and not self.default_environment:
             self.default_environment = self.environments.first()
         super().save(force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
 
