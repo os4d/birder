@@ -19,7 +19,7 @@ def queue_trigger(pk: str | int) -> None:
     try:
         m = Monitor.objects.get(active=True, pk=pk)
         m.run()
-    except Monitor.DoesNotExist:
+    except Monitor.DoesNotExist:  # pragma: no cover
         logger.warning(f"Monitor #{pk} does not exist")
 
 

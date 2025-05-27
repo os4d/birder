@@ -1,9 +1,12 @@
+from contextlib import nullcontext as does_not_raise
 from typing import TYPE_CHECKING
 
 import pytest
+from django.http import Http404
 from django.urls import reverse
 from pytest_django.fixtures import SettingsWrapper
 
+from birder.admin import assert_object_or_404
 from birder.models import Monitor
 
 if TYPE_CHECKING:
@@ -28,6 +31,18 @@ def app(
     django_app.set_user(admin_user)
     django_app._user = admin_user
     return django_app
+
+
+@pytest.mark.parametrize(
+    ("obj", "expectation"),
+    [
+        (object(), does_not_raise()),
+        (None, pytest.raises(Http404)),
+    ],
+)
+def test_assert_object_or_404(obj, expectation):
+    with expectation:
+        assert_object_or_404(obj)
 
 
 def test_monitor_check(app: "DjangoTestApp", mocked_responses, monitor: Monitor) -> None:
