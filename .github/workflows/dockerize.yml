@@ -10,6 +10,9 @@ on:
       tag:
         description: 'Docker tag'
         required: false
+      latest:
+        description: 'Is this the latest docker image'
+        type: boolean
 
 
 concurrency:
@@ -63,12 +66,14 @@ jobs:
         uses: docker/setup-buildx-action@v3
         with:
           platforms: linux/amd64
-
+      - name:
       - name: Build and push tag ${{ steps.inputs.outputs.tag }} (v${{ steps.inputs.outputs.version }})
         uses: docker/build-push-action@v6
         with:
           context: .
           file: docker/Dockerfile
           push: true
-          tags: os4d/birder:${{ steps.inputs.outputs.tag }}
+          tags: |
+            os4d/birder:${{ steps.inputs.outputs.tag }}
+            ${{ github.event.inputs.latest && "os4d/birder:latest" || null}}
           build-args: VERSION=${{ steps.inputs.outputs.version }}
