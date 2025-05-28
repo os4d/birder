@@ -33,13 +33,21 @@ run_tests:
 migrations:
   - added|modified: 'src/**/migrations/*'
 
+code_settings: &code_settings
+  - '.pre-commit-config.yaml'
+  - 'pytest.ini'
+  - 'tox.ini'
+  - 'pyproject.toml'
+  - 'ruff.toml'
+  - 'mypy.toml'
+
 lint:
   - *python
-  - '.flake8'
-  - 'pyproject.toml'
+  - *code_settings
 
 docs:
   - added|modified: './docs/**/*'
+  - modified: '.mkdocs.yml'
   - modified: './src/birder/config/__init__.py'
   - modified: './github/workflows/docs.yml'
   - modified: './github/file-filters.yml'
