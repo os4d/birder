@@ -5,38 +5,36 @@ x-env: &env
     - CSRF_COOKIE_SECURE=False
     - CSRF_TRUSTED_ORIGINS=http://localhost:8000
     - SECRET_KEY=sensitive-secret-key
-    - CACHE_URL=redis://valkey/1
-    - VALKEY_URL=redis://valkey/2
-    - POSTGRES_USER=db
+    - CACHE_URL=redis://redis/1
+    - CRYPT_SALT_KEYS=123
+    - CRYPT_KEYS=123
+    - VALKEY_URL=redis://redis/2
     - POSTGRES_PASSWORD=password
     - POSTGRES_DB=birder
-    - DATABASE_URL=postgres://db:password@db:5432/birder
-    - ADMIN_USER=admin@example.com
+    - POSTGRES_USER=postgres
+    - POSTGRES_HOST_AUTH_METHOD=trust
+    - DATABASE_URL=postgres://postgres:password@db:5432/birder
+    - ADMIN_EMAIL=admin@example.com
     - ADMIN_PASSWORD=password
     - GOOGLE_CLIENT_ID=
     - GOOGLE_CLIENT_SECRET=
 
-x-common: &common
-  build:
-    context: .
-    dockerfile: docker/Dockerfile
-    target: dist
-  restart: always
-  depends_on:
-    db:
-      condition: service_healthy
-
 services:
   birder:
-    <<:  [*common, *env]
+    image: os4d/birder:2.0rc2.dev2
+    <<: [*env]
     ports:
       - 8000:8000
-    command: run
+    platform: linux/amd64
+    command: "run"
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/healthcheck" ]
       interval: 10s
       timeout: 5s
       retries: 5
+    depends_on:
+      - db
+      - redis
 
   db:
     image: postgres:15
@@ -50,7 +48,7 @@ services:
       timeout: 4s
       retries: 5
 
-  valkey:
-    image: valkey/valkey:alpine3.21
+  redis:
+    image: redis
     <<:  [*env]
     restart: always

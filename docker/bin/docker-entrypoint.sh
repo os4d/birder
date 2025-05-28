@@ -13,6 +13,8 @@ export START_CRON="${START_CRON:-True}"
 mkdir -p $MEDIA_ROOT $STATIC_ROOT /var/lib/nginx
 chown -R brd:os4d /app /var/lib/nginx
 
+echo "Command line is: '$1'"
+
 case "$1" in
     run)
        django-admin upgrade

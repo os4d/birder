@@ -45,6 +45,7 @@ class Command(BaseCommand):
                 g, is_new = Group.objects.get_or_create(name="Default")
                 if is_new:
                     config.NEW_USER_DEFAULT_GROUP = g.pk
+
                 if (admin_user_email := os.environ.get("ADMIN_EMAIL")) and os.environ.get("ADMIN_PASSWORD"):
                     try:
                         User.objects.get(email=admin_user_email)
@@ -54,7 +55,8 @@ class Command(BaseCommand):
                             username=admin_user_email, email=admin_user_email, password=os.environ.get("ADMIN_PASSWORD")
                         )
                         self.stdout.write(self.style.SUCCESS("Superuser created!"))
-
+                else:
+                    self.stdout.write(self.style.WARNING("no ADMIN_EMAIL/ADMIN_PASSWORD env vars found"))
             finally:
                 redis_client.delete(KEY)
         else:

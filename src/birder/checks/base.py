@@ -98,7 +98,7 @@ class BaseCheck:
         if owner:
             self._configuration = SimpleLazyObject(lambda: owner.configuration)
         elif configuration is not None:
-            self._configuration = configuration
+            self._configuration = SimpleLazyObject(lambda: configuration)
         else:
             raise ValueError("Must specify a configuration")  # pragma: no cover
         self.monitor: Monitor = owner
@@ -110,7 +110,7 @@ class BaseCheck:
 
     @cached_property
     def config(self) -> dict[str, Any]:
-        cfg = {**self.config_class.DEFAULTS, **self._configuration}
+        cfg = {**self.config_class.DEFAULTS, **dict(self._configuration)}
         frm = self.config_class(cfg)
         if frm.is_valid():
             return frm.cleaned_data
