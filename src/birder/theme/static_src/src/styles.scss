@@ -4,10 +4,18 @@
 
 
 body {
-  @apply bg-white text-gray-600 leading-normal text-base tracking-normal;
+  @apply bg-gray-100 text-gray-600 leading-normal text-base tracking-normal;
   @apply dark:bg-slate-800 dark:text-white;
 
 }
+
+footer {
+  .item:not(:last-child):after {
+      content: " - ";
+      margin-left: 5px;
+    }
+  }
+
 
 svg.octicon-mark-github {
   @apply dark:fill-white w-16;
@@ -55,7 +63,7 @@ select.program-selection {
 
 #login-form {
   ul.errorlist {
-      @apply bg-red-400 text-white rounded px-2;
+    @apply bg-red-400 text-white rounded px-2;
     &.nonfield {
       @apply p-4;
     }

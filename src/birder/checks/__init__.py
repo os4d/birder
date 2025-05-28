@@ -3,7 +3,7 @@ from urllib.parse import parse_qsl, urlparse
 
 from .amqp import AmqpCheck
 from .base import BaseCheck
-from .celery import CeleryCheck
+from .celery import CeleryCheck, CeleryQueueCheck
 from .ftp import FtpCheck
 from .http import HttpCheck
 from .json import JsonCheck
@@ -22,6 +22,7 @@ from .xml import XMLCheck
 
 registry.register(AmqpCheck)
 registry.register(CeleryCheck)
+registry.register(CeleryQueueCheck)
 registry.register(FtpCheck)
 registry.register(HealthCheck)
 registry.register(HttpCheck)

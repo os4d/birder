@@ -56,3 +56,37 @@ class CeleryCheck(BaseCheck):
             if raise_error:
                 raise CheckError("Celery check failed") from e
         return False
+
+
+class CeleryQueueCheck(BaseCheck):
+    icon = "celery.svg"
+    pragma = ["celery"]
+    config_class = CeleryConfig
+    address_format = "{broker}://{hostname}:{port}/{extra}"
+
+    @classmethod
+    def clean_config(cls, cfg: dict[str, Any]) -> dict[str, Any]:
+        if not cfg.get("hostname"):
+            cfg["hostname"] = cfg.get("host", "")
+        if not cfg.get("min_workers"):
+            cfg["min_workers"] = 1
+        return cfg
+
+    def check(self, raise_error: bool = False) -> bool:
+        try:
+            broker = "{broker}://{hostname}:{port}/{extra}".format(**self.config)
+            app = CeleryApp("birder", loglevel="info", broker=broker)
+            ctrl = Control(app)
+            workers = len(ctrl.ping())
+            self.status = {"workers": workers}
+            return workers > self.config["min_workers"]
+        except (
+            CeleryError,
+            KeyError,
+            redis.exceptions.RedisError,
+            kombu.exceptions.KombuError,
+            amqp.exceptions.AMQPError,
+        ) as e:
+            if raise_error:
+                raise CheckError("Celery check failed") from e
+        return False
