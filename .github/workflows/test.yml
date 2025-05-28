@@ -90,17 +90,23 @@ jobs:
       - name: Install dependencies
         run: uv sync --cache-dir ./uv-cache --frozen
 
-#      - name: Run tests
-#        run: uv run tox -e tests
-
-      - uses: nick-fields/retry@v3
-        id: retry
+      - name: Run Test suite
         continue-on-error: true
+        run: |
+          uv run tox -e d52
+
+      - name: Archive selenium results
+        uses: actions/upload-artifact@v4
+        if: always()
         with:
-          timeout_seconds: 15
-          max_attempts: 2
-          retry_on: error
-          command: uv run tox -e tests
+          name: selenium-log-report
+          path: latest_logs
+          retention-days: 5
+
+      - name: Upload test results to Codecov
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -114,20 +120,34 @@ jobs:
           name: codecov-${{env.GITHUB_REF_NAME}}
 
       - name: build
+        id: build
         run: |
-            uv build --wheel
+            git fetch --tags origin
             version=$( uvx --with hatch-vcs hatchling metadata version )
-            echo "name=$version" >> $GITHUB_OUTPUT
+
+            uv build --wheel
+
+            echo "version=$version" >> $GITHUB_OUTPUT
+            echo "::notice title=VERSION::$version"
 
       - uses: actions/upload-artifact@v4
         with:
           name: package
           path: dist/*
 
-      - name: Trigger dockerize workflow
-        run: |
-          curl -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/repos/${{ github.repository }}/actions/workflows/dockerize.yml/dispatches \
-            -d "{\"ref\":\"${{ github.ref_name }}\", \"inputs\": {\"version\": \"${{ steps.build.outputs.version }}\", \"tag\": \"${{ github.ref_name }}\"}"
+  dockerize:
+    needs: [changes, test]
+    if: needs.changes.outputs.dockerize == 'true'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Trigger dockerize workflow
+      run: |
+        echo "::notice title=Ref::${{github.ref}}"
+        echo "::notice title=Tag::${{ github.ref_name }}"
+        echo "::notice title=Ver::${{needs.test.outputs.version}}"
+
+        curl -X POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          https://api.github.com/repos/${{ github.repository }}/actions/workflows/dockerize.yml/dispatches \
+          -d "{\"ref\":\"${{ github.ref }}\", \"inputs\": {\"version\": \"${{ needs.test.outputs.version }}\", \"tag\": \"${{ github.ref_name }}\"}"

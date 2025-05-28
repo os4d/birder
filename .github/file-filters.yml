@@ -31,6 +31,16 @@ run_tests:
   - 'pytest.ini'
   - 'tox.ini'
 
+package: &package
+  - *python
+  - *dependencies
+
+dockerize:
+  - *package
+  - *docker
+  - '.github/workflows/test.yml'
+  - '.github/workflows/dockerize.yml'
+
 migrations:
   - added|modified: 'src/**/migrations/*'
 
@@ -41,6 +51,7 @@ code_settings: &code_settings
   - 'pyproject.toml'
   - 'ruff.toml'
   - 'mypy.toml'
+
 
 lint:
   - *python
