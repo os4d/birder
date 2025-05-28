@@ -1,5 +1,17 @@
 # Security
 
+!!! warning
+
+    In any healthcheck system - especially one that interacts with protected resources such as databases or APIs —
+    it’s a best practice to use a dedicated service account with minimal, read-only privileges.
+
+    This approach limits potential damage in the event of a security breach, ensures auditability of healthcheck access patterns,
+    and avoids accidental interference with critical application data.
+    By granting only the necessary permissions required to perform system checks (such as checking database connectivity or
+    querying a lightweight status endpoint), you reduce the attack surface and align with the principle of least privilege,
+    which is fundamental to maintaining secure and maintainable infrastructure.
+
+
 ## Overview
 All the configurations are stored crypted in the database and password cannot be read once saved.
 
