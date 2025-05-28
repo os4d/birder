@@ -953,6 +953,22 @@ wheels = [
 ]
 
 [[package]]
+name = "flower"
+version = "2.0.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "celery" },
+    { name = "humanize" },
+    { name = "prometheus-client" },
+    { name = "pytz" },
+    { name = "tornado" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/09/a1/357f1b5d8946deafdcfdd604f51baae9de10aafa2908d0b7322597155f92/flower-2.0.1.tar.gz", hash = "sha256:5ab717b979530770c16afb48b50d2a98d23c3e9fe39851dcf6bc4d01845a02a0", size = 3220408, upload-time = "2023-08-13T14:37:46.073Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a6/ff/ee2f67c0ff146ec98b5df1df637b2bc2d17beeb05df9f427a67bd7a7d79c/flower-2.0.1-py2.py3-none-any.whl", hash = "sha256:9db2c621eeefbc844c8dd88be64aef61e84e2deb29b271e02ab2b5b9f01068e2", size = 383553, upload-time = "2023-08-13T14:37:41.552Z" },
+]
+
+[[package]]
 name = "ghp-import"
 version = "2.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1015,6 +1031,15 @@ version = "0.1.13"
 source = { registry = "https://pypi.org/simple" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/be/31/a76f4bfa885f93b8167cb4c85cf32b54d1f64384d0b897d45bc6d19b7b45/htmlmin2-0.1.13-py3-none-any.whl", hash = "sha256:75609f2a42e64f7ce57dbff28a39890363bde9e7e5885db633317efbdf8c79a2", size = 34486, upload-time = "2023-03-14T21:28:30.388Z" },
+]
+
+[[package]]
+name = "humanize"
+version = "4.12.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/22/d1/bbc4d251187a43f69844f7fd8941426549bbe4723e8ff0a7441796b0789f/humanize-4.12.3.tar.gz", hash = "sha256:8430be3a615106fdfceb0b2c1b41c4c98c6b0fc5cc59663a5539b111dd325fb0", size = 80514, upload-time = "2025-04-30T11:51:07.98Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a0/1e/62a2ec3104394a2975a2629eec89276ede9dbe717092f6966fcf963e1bf0/humanize-4.12.3-py3-none-any.whl", hash = "sha256:2cbf6370af06568fa6d2da77c86edb7886f3160ecd19ee1ffef07979efc597f6", size = 128487, upload-time = "2025-04-30T11:51:06.468Z" },
 ]
 
 [[package]]
@@ -1783,6 +1808,7 @@ dependencies = [
     { name = "dramatiq" },
     { name = "dramatiq-crontab", extra = ["sentry"] },
     { name = "durations-nlp" },
+    { name = "flower" },
     { name = "jmespath" },
     { name = "kombu" },
     { name = "ldap3" },
@@ -1877,7 +1903,7 @@ requires-dist = [
     { name = "django-csp", specifier = ">=3.8" },
     { name = "django-dramatiq", specifier = ">=0.12" },
     { name = "django-environ", specifier = ">=0.11.2" },
-    { name = "django-fernet-encrypted-fields", specifier = ">=0.3.0" },
+    { name = "django-fernet-encrypted-fields", specifier = ">=0.3" },
     { name = "django-flags", specifier = ">=5.0.13" },
     { name = "django-markdown-deux", specifier = ">=1.0.6" },
     { name = "django-redis", specifier = ">=5.4" },
@@ -1891,6 +1917,7 @@ requires-dist = [
     { name = "dramatiq", specifier = ">=1.17.1" },
     { name = "dramatiq-crontab", extras = ["sentry"], specifier = ">=1.0.8" },
     { name = "durations-nlp", specifier = ">=1.0.1" },
+    { name = "flower", specifier = ">=2.0.1" },
     { name = "jmespath", specifier = ">=1.0.1" },
     { name = "kombu", specifier = ">=5.4.2" },
     { name = "ldap3", specifier = ">=2.9.1" },

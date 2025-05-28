@@ -8,6 +8,7 @@ from birder.checks import parser
     [
         "amqp://localhost:21121",
         "celery://user:password@localhost:2221?broker=redis",
+        "celery+queue://user:password@localhost:2221?broker=redis",
         "ftp://user:password@localhost:2221",
         "http+xml://google.com",
         "https+json://dummyjson.com/c/3029-d29f-4014-9fb4",

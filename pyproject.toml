@@ -53,6 +53,7 @@ dependencies = [
   "dramatiq>=1.17.1",
   "dramatiq-crontab[sentry]>=1.0.8",
   "durations-nlp>=1.0.1",
+  "flower>=2.0.1",
   "jmespath>=1.0.1",
   "kombu>=5.4.2",
   "ldap3>=2.9.1",

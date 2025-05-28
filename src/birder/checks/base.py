@@ -18,6 +18,7 @@ class DefaultsMetaclass(DeclarativeFieldsMetaclass):
     def __new__(cls, name: str, bases: tuple[type, ...], attrs: Any) -> type:
         new_class = super().__new__(cls, name, bases, attrs)
         initial_values = {}
+        # if not hasattr(new_class, "DEFAULTS"):
         for field_name, field in new_class.declared_fields.items():
             initial_values[field_name] = field.initial
         new_class.DEFAULTS = initial_values

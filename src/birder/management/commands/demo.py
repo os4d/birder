@@ -43,12 +43,14 @@ class Command(BaseCommand):
             "rabbitmq://localhost:25672",
             "smtp://admin@example.com:password@localhost:2560",
             "celery://localhost:36379?broker=redis",
+            "celery+queue://localhost:36379?broker=redis",
             "tcp://localhost:8000",
             "http+xml://google.com",
         ]:
             try:
                 checker, config = parser(url)
                 frm = checker.config_class(config)
+                frm.is_valid()
             except ValidationError as e:
                 self.stdout.write(self.style.ERROR(f"{url}: {e}"))
             else:
@@ -57,7 +59,7 @@ class Command(BaseCommand):
                     environment=dev,
                     name=checker.pragma[0],
                     strategy=fqn(checker),
-                    defaults={"strategy": fqn(checker), "configuration": config},
+                    defaults={"strategy": fqn(checker), "configuration": frm.cleaned_data},
                     notes=f"""
 ## {checker.pragma[0]}
 
