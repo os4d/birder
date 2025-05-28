@@ -109,6 +109,7 @@ jobs:
             uv build --wheel
             version=$( uvx --with hatch-vcs hatchling metadata version )
             echo "name=$version" >> $GITHUB_OUTPUT
+
       - uses: actions/upload-artifact@v4
         with:
           name: package
@@ -120,4 +121,4 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/actions/workflows/dockerize.yml/dispatches \
-            -d "{\"ref\":\"refs/tags/${{ github.ref_name }}\", \"inputs\": {\"version\": \"${{ steps.build.outputs.version }}\", \"tag\": \"${{ github.ref_name }}\"}"
+            -d "{\"ref\":\"refs/${{ github.ref_name }}\", \"inputs\": {\"version\": \"${{ steps.build.outputs.version }}\", \"tag\": \"${{ github.ref_name }}\"}"
