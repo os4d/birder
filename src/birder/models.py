@@ -17,6 +17,7 @@ from django.templatetags.static import static
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from django_stubs_ext.db.models import TypedModelMeta
+from encrypted_fields import EncryptedJSONField
 from strategy_field.fields import StrategyField
 from timezone_field import TimeZoneField
 from valkey import Valkey
@@ -152,7 +153,7 @@ class Monitor(models.Model):
     custom_icon = models.CharField(blank=True, default="", max_length=255)
 
     strategy = StrategyField(registry=registry)
-    configuration = models.JSONField(default=dict, help_text="Checker configuration")
+    configuration = EncryptedJSONField(default=dict, help_text="Checker configuration")
 
     data = models.BinaryField(blank=True, null=True, default=None)
     data_file = models.FileField(blank=True, null=True, default=None)

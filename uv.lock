@@ -641,6 +641,19 @@ wheels = [
 ]
 
 [[package]]
+name = "django-fernet-encrypted-fields"
+version = "0.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "cryptography" },
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/70/b8/b6725f1207693ba9e76223abf87eb9e8de5114cccad8ddd1bce29a195273/django-fernet-encrypted-fields-0.3.0.tar.gz", hash = "sha256:38031bdaf1724a6e885ee137cc66a2bd7dc3726c438e189ea7e44799ec0ba9b3", size = 4021, upload-time = "2025-02-21T02:58:42.049Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/75/8a/2c5d88cd540d83ceaa1cb3191ed35dfed0caacc6fe2ff5fe74c9ecc7776f/django_fernet_encrypted_fields-0.3.0-py3-none-any.whl", hash = "sha256:a17cca5bf3638ee44674e64f30792d5960b1d4d4b291ec478c27515fc4860612", size = 5400, upload-time = "2025-02-21T02:58:40.832Z" },
+]
+
+[[package]]
 name = "django-flags"
 version = "5.0.14"
 source = { registry = "https://pypi.org/simple" }
@@ -1756,6 +1769,7 @@ dependencies = [
     { name = "django-csp" },
     { name = "django-dramatiq" },
     { name = "django-environ" },
+    { name = "django-fernet-encrypted-fields" },
     { name = "django-flags" },
     { name = "django-markdown-deux" },
     { name = "django-redis" },
@@ -1863,6 +1877,7 @@ requires-dist = [
     { name = "django-csp", specifier = ">=3.8" },
     { name = "django-dramatiq", specifier = ">=0.12" },
     { name = "django-environ", specifier = ">=0.11.2" },
+    { name = "django-fernet-encrypted-fields", specifier = ">=0.3.0" },
     { name = "django-flags", specifier = ">=5.0.13" },
     { name = "django-markdown-deux", specifier = ">=1.0.6" },
     { name = "django-redis", specifier = ">=5.4" },

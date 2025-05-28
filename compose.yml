@@ -4,7 +4,6 @@ x-env: &env
     - ALLOWED_HOSTS=*
     - CSRF_COOKIE_SECURE=False
     - CSRF_TRUSTED_ORIGINS=http://localhost:8000
-    - AUTHENTICATION_BACKENDS=country_workspace.security.backends.AnyUserAuthBackend
     - SECRET_KEY=sensitive-secret-key
     - CACHE_URL=redis://valkey/1
     - VALKEY_URL=redis://valkey/2

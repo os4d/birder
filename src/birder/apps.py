@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from django.core import checks
 
 
 class Config(AppConfig):
@@ -8,3 +9,6 @@ class Config(AppConfig):
     def ready(self) -> None:
         from . import handlers  # noqa
         from . import tasks  # noqa
+        from .check import check_crypt
+
+        checks.register(check_crypt, "birder")
