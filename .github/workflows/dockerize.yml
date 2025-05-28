@@ -75,5 +75,5 @@ jobs:
           push: true
           tags: |
             os4d/birder:${{ steps.inputs.outputs.tag }}
-            ${{ github.event.inputs.latest && "os4d/birder:latest" || null}}
+            ${{ github.event.inputs.latest && 'os4d/birder:latest' || null}}
           build-args: VERSION=${{ steps.inputs.outputs.version }}
