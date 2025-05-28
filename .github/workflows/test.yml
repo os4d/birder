@@ -91,9 +91,8 @@ jobs:
         run: uv sync --cache-dir ./uv-cache --frozen
 
       - name: Run Test suite
-        continue-on-error: true
         run: |
-          uv run tox -e d52
+          uv run tox -e tests
 
       - name: Archive selenium results
         uses: actions/upload-artifact@v4
