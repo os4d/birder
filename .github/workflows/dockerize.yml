@@ -67,6 +67,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
         with:
           platforms: linux/amd64
+
       - name: Build and push tag ${{ steps.inputs.outputs.tag }} (v${{ steps.inputs.outputs.version }})
         uses: docker/build-push-action@v6
         with:
