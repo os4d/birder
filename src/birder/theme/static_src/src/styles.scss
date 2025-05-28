@@ -54,10 +54,14 @@ select.program-selection {
 }
 
 #login-form {
-  ul.errorlist.nonfield {
-    @apply bg-red-400 text-white p-4 rounded;
+  ul.errorlist {
+      @apply bg-red-400 text-white rounded px-2;
+    &.nonfield {
+      @apply p-4;
+    }
   }
 }
+
 
 .offline {
   -webkit-filter: blur(4px);

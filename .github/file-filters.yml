@@ -29,6 +29,7 @@ run_tests:
   - *docker
   - *dependencies
   - 'pytest.ini'
+  - 'tox.ini'
 
 migrations:
   - added|modified: 'src/**/migrations/*'

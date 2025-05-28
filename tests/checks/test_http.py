@@ -65,3 +65,48 @@ def test_http_config_error():
     c: HttpConfig = HttpCheck.config_class({"url": "http://www.google.com", "timeout": 10, "status_success": "200,abc"})
     assert not c.is_valid()
     assert c.errors == {"status_success": ["Enter a whole number."]}
+
+
+def test_http_basic_auth(mocked_responses):
+    mocked_responses.add("GET", "http://www.google.com/", body="test", status=200)
+    c = HttpCheck(
+        Mock(
+            configuration={
+                "url": "http://www.google.com/?a=1",
+                "timeout": 10,
+                "status_success": "200",
+                "auth_type": "basic",
+            },
+        )
+    )
+    assert c.check()
+
+
+def test_http_digest(mocked_responses):
+    mocked_responses.add("GET", "http://www.google.com/", body="test", status=200)
+    c = HttpCheck(
+        Mock(
+            configuration={
+                "url": "http://www.google.com/?a=1",
+                "timeout": 10,
+                "status_success": "200",
+                "auth_type": "digest",
+            },
+        )
+    )
+    assert c.check()
+
+
+def test_http_token(mocked_responses):
+    mocked_responses.add("GET", "http://www.google.com/", body="test", status=200)
+    c = HttpCheck(
+        Mock(
+            configuration={
+                "url": "http://www.google.com/?a=1",
+                "timeout": 10,
+                "status_success": "200",
+                "auth_type": "token",
+            },
+        )
+    )
+    assert c.check()

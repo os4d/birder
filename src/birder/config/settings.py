@@ -185,6 +185,7 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 from .fragments.app import *  # noqa
 from .fragments.constance import *  # noqa
+from .fragments.crypt import *  # noqa
 
 from .fragments.dramatiq import *  # noqa
 from .fragments.social_auth import *  # noqa

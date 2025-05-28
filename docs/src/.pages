@@ -2,5 +2,6 @@ nav:
   - About: index.md
   - docker.md
   - checks.md
+  - security.md
   - contributing.md
   - license.md

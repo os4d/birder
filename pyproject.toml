@@ -39,6 +39,7 @@ dependencies = [
   "django-csp>=3.8",
   "django-dramatiq>=0.12",
   "django-environ>=0.11.2",
+  "django-fernet-encrypted-fields>=0.3",
   "django-flags>=5.0.13",
   "django-markdown-deux>=1.0.6",
   "django-redis>=5.4",
