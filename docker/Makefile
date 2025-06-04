@@ -1,11 +1,12 @@
-DOCKER_IMAGE?=os4d/birder
+.ONESHELL:
+
+DOCKER_IMAGE_NAME?=os4d/birder
 VERSION:=$(shell cd .. && uvx --with hatch-vcs hatchling metadata version)
-CMD?=run
-RUN_OPTIONS?=
 BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
 SOURCE_COMMIT=$(shell git rev-parse --short HEAD)
+CMD?=""
+RUN_OPTIONS?=
 
-.ONESHELL:
 .DEFAULT_GOAL := help
 .PHONY: help run build shell
 
@@ -28,13 +29,19 @@ help:
 
 
 build: ## build docker image
-	@cd .. && uv build --wheel -o docker/conf
+	@cd .. && uv build
 	DOCKER_BUILDKIT=1 cd .. && docker build \
-			--build-arg VERSION=${VERSION} \
+			--progress=plain \
 			--platform=linux/amd64 \
-			-t ${DOCKER_IMAGE}:${VERSION} \
+			--build-arg VERSION=${VERSION} \
+			--build-arg GIT_SHA=${SOURCE_COMMIT} \
+			--build-arg BUILD_DATE=${BUILD_DATE} \
+			--cache-from ${DOCKER_IMAGE_NAME}:local \
+			--cache-from ${DOCKER_IMAGE_NAME}:latest \
+			-t ${DOCKER_IMAGE_NAME}:${VERSION} \
+			-t ${DOCKER_IMAGE_NAME}:local \
 			-f docker/Dockerfile .
-	docker images | grep "${DOCKER_IMAGE}" | grep ${VERSION}
+	docker images | grep "${DOCKER_IMAGE_NAME}" | grep ${VERSION}
 
 
 .run:
@@ -42,7 +49,6 @@ build: ## build docker image
 		--rm \
 		--platform=linux/amd64 \
 		-p 8000:8000 \
-		-p 8888:8888 \
 		-e ALLOWED_HOSTS="*" \
 		-e ADMIN_EMAIL="admin@os4d.org" \
 		-e ADMIN_PASSWORD="password" \
@@ -54,20 +60,24 @@ build: ## build docker image
 		-e LOGGING_LEVEL="DEBUG" \
 		-e SUPERUSERS=${SUPERUSERS} \
 		-e STATIC_URL="static/" \
-		-v ${PWD}/bin/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh \
-		-v ${PWD}/conf:/conf \
-		-v dist:/dist \
 		${RUN_OPTIONS} \
-		-t ${DOCKER_IMAGE}:${VERSION} \
+		-t ${DOCKER_IMAGE_NAME}:local \
 		${CMD}
 
 
-run: ## run docker image
-	CMD='run' \
-	RUN_OPTIONS='' \
+run: ## Run docker build
+	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:${VERSION} \
 	$(MAKE) .run
 
-shell: ## enter docker shell
-	CMD='/bin/bash' \
-	RUN_OPTIONS='-it' \
+
+check: ## Check docker build
+	CMD='sh /usr/local/bin/check.sh' \
+	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:${VERSION} \
+	$(MAKE) .run
+
+
+shell:  ## Run shell into docker
+	DOCKER_IMAGE=${DOCKER_IMAGE_NAME}:${VERSION} \
+	RUN_OPTIONS="-it" \
+ 	CMD='/bin/bash' \
 	$(MAKE) .run

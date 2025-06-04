@@ -15,31 +15,31 @@ def test_cli():
     assert result.exit_code == 0
 
 
-def test_cli_list(db):
+def test_cli_monitor_list(db):
     runner = CliRunner()
-    result = runner.invoke(cli, "list")
+    result = runner.invoke(cli, ["monitor", "list"])
     assert result.exit_code == 0
 
 
-def test_cli_reset(db):
+def test_cli_monitor_reset(db):
     runner = CliRunner()
-    result = runner.invoke(cli, "reset")
+    result = runner.invoke(cli, ["monitor", "reset"])
     assert result.exit_code == 0
 
 
-def test_cli_refresh(monitor: "Monitor"):
+def test_cli_monitor_refresh(monitor: "Monitor"):
     runner = CliRunner()
-    result = runner.invoke(cli, ["refresh", str(monitor.pk)])
+    result = runner.invoke(cli, ["monitor", "refresh", str(monitor.pk)])
     assert result.exit_code == 0
 
 
-def test_cli_check(monitor: "Monitor"):
+def test_cli_monitor_check(monitor: "Monitor"):
     runner = CliRunner()
-    result = runner.invoke(cli, ["check", str(monitor.pk)])
+    result = runner.invoke(cli, ["monitor", "check", str(monitor.pk)])
     assert result.exit_code == 0
 
 
-def test_cli_main(monitor: "Monitor"):
+def test_cli_monitor_main(monitor: "Monitor"):
     try:
         main()
     except SystemExit:

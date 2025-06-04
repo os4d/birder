@@ -1,0 +1,102 @@
+# ref: https://docs.github.com/en/actions/creating-actions/creating-a-docker-container-action
+name: 'Docker build'
+description: 'Calculate deps and os hash'
+inputs:
+  git_reference:
+    description: 'Branch, Tag, or Commit SHA to deploy (e.g., main, develop, v1.0.0, a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0)'
+    required: true
+    default: 'develop'
+  tag:
+    description: 'Docker tag'
+    required: false
+  latest:
+    description: 'Is this the latest docker image'
+    required: false
+
+defaults:
+  run:
+    shell: bash
+
+
+outputs:
+  image:
+    description: 'Built image name'
+    value: ${{ steps.image_name.outputs.name }}
+  version:
+    description: 'Built image version'
+    value: ${{ steps.meta.outputs.version }}
+  created:
+    description: 'True if new image has been created'
+    value: ${{ steps.status.outputs.created }}
+  digest:
+    description: 'Built image digest'
+    value: ${{ steps.build_push.outputs.digest }}
+  imageId:
+    description: 'Built image ID'
+    value: ${{ steps.build_push.outputs.imageId }}
+
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4.1.7
+      with:
+        ref: ${{ github.event.inputs.version }}
+        fetch-depth: 0
+
+    - name: Install the latest version of uv
+      uses: astral-sh/setup-uv@v6
+
+    - name: Set target input
+      shell: bash
+      run: |
+        version=$(uvx --with hatch-vcs hatchling metadata version)
+        git_reference="${{ github.event.inputs.git_reference }}"
+        tag="${{ github.event.inputs.tag }}"
+        if [ -z "$tag" ]; then
+          tag="$git_reference"
+        fi
+        BUILD_DATE=$(date +"%Y-%m-%d %H:%M")
+
+        echo "git_reference=$git_reference" >> $GITHUB_OUTPUT
+        echo "version=$version" >> $GITHUB_OUTPUT
+        echo "tag=$tag" >> $GITHUB_OUTPUT
+        echo "build_date=$BUILD_DATE" >> $GITHUB_OUTPUT
+        echo "commmit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      with:
+        platforms: linux/amd64
+
+    - name: Build and push tag ${{ steps.config.outputs.tag }} (v${{ steps.config.outputs.git_reference }})
+      uses: docker/build-push-action@v6
+      id: build
+      with:
+        context: .
+        file: docker/Dockerfile2
+        push: true
+        tags: |
+          os4d/birder:${{ steps.config.outputs.tag }}
+          ${{ github.event.inputs.latest == 'true' && 'os4d/birder:latest' || null}}
+        build-args: |
+          VERSION=${{ steps.config.outputs.git_reference }}
+          BUILD_DATE=${{ steps.config.outputs.build_date }}
+          GIT_SHA=${{ steps.config.outputs.commmit_sha }}
+
+    - name: Info
+      shell: bash
+      run: |
+        echo "::notice title=Tag:: Successfully built os4d/birder:${{ steps.config.outputs.tag }}"
+        echo "::notice title=ImageId:: ${{ steps.build.outputs.imageid }}"
+        echo "::notice title=Version :: ${{ steps.config.outputs.version }}"
