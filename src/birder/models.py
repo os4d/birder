@@ -58,7 +58,7 @@ class Project(models.Model):
     bitcaster_url = models.URLField(blank=True, help_text="The URL to the Bitcaster notification endpoint.")
     environments = models.ManyToManyField("Environment", related_name="projects", blank=False)
     icon = models.CharField(blank=True, default="", max_length=255)
-    default_environment = models.ForeignKey("Environment", null=True, on_delete=models.PROTECT)
+    default_environment = models.ForeignKey("Environment", null=True, on_delete=models.PROTECT)  # type: ignore[misc]
 
     class Meta:
         ordering = ["name"]
@@ -150,17 +150,15 @@ class Monitor(models.Model):
 
     strategy: "BaseCheck"
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    environment = models.ForeignKey(Environment, on_delete=models.SET_NULL, null=True, blank=False)
+    environment = models.ForeignKey(Environment, on_delete=models.SET_NULL, null=True, blank=False)  # type: ignore[misc]
     name = models.CharField(max_length=255, unique=True)
     position = models.PositiveIntegerField(default=0)
     description = models.TextField(blank=True, help_text="short description  to display in the monitor detail page")
     notes = models.TextField(blank=True, help_text="Notes about the monitor. Only visible to Staff")
     custom_icon = models.CharField(blank=True, default="", max_length=255)
-
     strategy = StrategyField(registry=registry)
     configuration = EncryptedJSONField(default=dict, help_text="Checker configuration")
-
-    data = models.BinaryField(blank=True, null=True, default=None)
+    data = models.BinaryField(blank=True, null=True, default=None)  # type: ignore[misc]
     data_file = models.FileField(blank=True, null=True, default=None)
 
     token = models.CharField(
@@ -342,7 +340,7 @@ class Monitor(models.Model):
 class DataHistory(models.Model):
     monitor = models.ForeignKey(Monitor, on_delete=models.CASCADE, related_name="datalog")
     date = models.DateField(auto_now_add=False)
-    data = models.BinaryField(default=None, null=True)
+    data = models.BinaryField(default=None, null=True)  # type: ignore[misc]
 
     class Meta:
         ordering = ["-date"]

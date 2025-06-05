@@ -12,6 +12,7 @@ jobs:
   label-pullrequest:
     permissions:
       contents: read
+      issues: write
       pull-requests: write
     name: labels pull requests
     runs-on: ubuntu-latest
