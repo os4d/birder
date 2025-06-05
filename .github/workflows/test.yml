@@ -116,7 +116,7 @@ jobs:
 
     - name: Run Test suite
       run: |
-        uv run tox -e d52
+        uv run tox -e tests
 
     - name: Archive selenium results
       uses: actions/upload-artifact@v4
