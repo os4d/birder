@@ -39,6 +39,12 @@ def test_cli_monitor_check(monitor: "Monitor"):
     assert result.exit_code == 0
 
 
+def test_cli_check(monitor: "Monitor"):
+    runner = CliRunner()
+    result = runner.invoke(cli, ["check"])
+    assert result.exit_code == 0
+
+
 def test_cli_monitor_main(monitor: "Monitor"):
     try:
         main()
