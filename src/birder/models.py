@@ -14,6 +14,7 @@ from django.db import models
 from django.db.models.base import ModelBase
 from django.db.models.functions.text import Lower
 from django.templatetags.static import static
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from django_stubs_ext.db.models import TypedModelMeta
@@ -79,6 +80,10 @@ class Project(models.Model):
         if self.pk and not self.default_environment:
             self.default_environment = self.environments.first()
         super().save(force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
+
+    def get_absolute_url(self) -> str:
+        env = self.default_environment if self.default_environment else self.environments.first()
+        return reverse("project-env", kwargs={"project_id": self.pk, "env": env.name})
 
     def clean(self) -> None:
         if self.default_environment and not self.environments.filter(pk=self.default_environment.pk).exists():
@@ -188,6 +193,11 @@ class Monitor(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    def get_absolute_url(self) -> str:
+        return reverse(
+            "monitor-detail", kwargs={"project_id": self.project.pk, "env": self.environment.name, "pk": self.pk}
+        )
 
     @cached_property
     def icon(self) -> str:

@@ -3,11 +3,15 @@ from datetime import datetime, timedelta
 from typing import Any
 
 from django.contrib.auth.views import LoginView as LoginView_
+from django.db.models import QuerySet
+from django.forms import Media
 from django.http.request import HttpRequest
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.views.generic import DetailView, TemplateView
+from django.views.generic.base import ContextMixin, View
 
 from birder.checks import BaseCheck
 from birder.config import settings
@@ -17,33 +21,58 @@ from birder.utils.dates import format_minutes_as_time, get_start_of_day
 from birder.ws.utils import notify_ui
 
 
-class CommonContextMixin:
+class CommonContextMixin(ContextMixin, View):
+    js_files = []
+
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         kwargs["active_view"] = self.__class__.__name__
         kwargs["sso_enabled"] = bool(settings.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY)
-
+        kwargs["media"] = self.media
         return super().get_context_data(**kwargs)
+
+    @property
+    def media(self) -> Media:
+        extra = "" if settings.DEBUG else ".min"
+
+        js_files = [
+            f"admin/js/vendor/jquery/jquery{extra}.js",
+            "admin/js/jquery.init.js",
+            f"birder{extra}.js",
+            *[f % extra for f in self.js_files],
+        ]
+        return Media(js=js_files)
 
 
 class IndexView(CommonContextMixin, TemplateView):
     template_name = "index.html"
+    js_files = ["index%s.js"]
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         kwargs["projects"] = Project.objects.filter(public=True)
         return super().get_context_data(**kwargs)
 
 
-class ProjectView(CommonContextMixin, TemplateView):
+class ProjectRouterView(CommonContextMixin, DetailView):
+    model = Project
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        return HttpResponseRedirect(self.get_object().get_absolute_url())
+
+
+class ProjectView(CommonContextMixin, DetailView):
     template_name = "project.html"
+    model = Project
+    js_files = ["project%s.js"]
+
+    def get_queryset(self) -> QuerySet[Project]:
+        return super().get_queryset().select_related("default_environment")
+
+    def get_object(self, queryset: QuerySet[Project] = None) -> Project:
+        return Project.objects.get(pk=self.kwargs.get("project_id"))
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        project = Project.objects.get(pk=self.kwargs.get("project"))
-        if selection := self.kwargs.get("env"):
-            env = project.environments.get(name=selection)
-        elif project.default_environment:
-            env = project.default_environment
-        else:
-            env = project.environments.first()
+        project = self.get_object()
+        env = project.environments.get(name=self.kwargs.get("env"))
 
         kwargs["selected_env"] = env
         filters = {"environment": env}
@@ -59,6 +88,16 @@ class ProjectView(CommonContextMixin, TemplateView):
 class MonitorDetail(CommonContextMixin, DetailView):
     template_name = "monitor.html"
     queryset = Monitor.objects.all()
+    js_files = ["https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart%s.js", "monitor%s.js"]
+
+    def get_queryset(self) -> QuerySet[Monitor]:
+        return super().get_queryset().select_related("environment", "project")
+
+    def get_absolute_url(self) -> str:
+        return reverse(
+            "monitor-detail",
+            kwargs={"pk": self.object.pk, "env": self.object.environment.name, "project_id": self.object.project.pk},
+        )
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         from birder.db import DataStore

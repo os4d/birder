@@ -1,16 +1,8 @@
 {% extends "layout.html" %}{% load birder i18n markdown_deux_tags static %}
-{% block extrahead %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"
-            integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="{% static "chart.js" %}"></script>
-
-{% endblock extrahead %}
-
 {% block content %}
     <div class="flex">
-        <div class="m-auto text-2xl">
-            <a href="{% url "project-detail" monitor.project.pk %}">{{ monitor.project.name }}</a>
+        <div class="m-auto text-2xl" id="project-title">
+            <a href="{% url "project-env" monitor.project.pk monitor.environment %}">{{ monitor.project.name }}</a>
         </div>
     </div>
     <div class="px-2 sm:px-10 md:px-32 xl:px-80">

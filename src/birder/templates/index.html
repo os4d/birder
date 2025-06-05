@@ -1,8 +1,4 @@
 {% extends "layout.html" %}{% load birder i18n static %}
-{% block extrahead %}
-    <script src="{% static "index.js" %}"></script>
-{% endblock extrahead %}
-
 {% block content %}
         <style>
         .red{
@@ -25,8 +21,7 @@
     </div>
     <div class="" id="project-grid">
         {% for project in projects %}
-            <a class="cursor-pointer h-full"
-               href="{% url "project-env" project.pk project.default_environment.name %}">
+            <a class="cursor-pointer h-full" href="{{ project.get_absolute_url }}">
                 <div class="monitor-panel grid grid-cols-1"
                      id="project-{{ project.pk }}">
                     <div class="flex h-5 ">

@@ -65,6 +65,9 @@ def upgrade(ctx: Context, force: bool, verbosity: int, check: bool, clear: bool,
                     click.secho("Superuser created!", fg="green")
             elif verbosity >= 1:
                 click.secho("no ADMIN_EMAIL/ADMIN_PASSWORD env vars found", fg="yellow")
+        except Exception as e:  # noqa: BLE001
+            click.secho(f"{e}", fg="red", err=True)
+            raise click.Abort(2) from None
         finally:
             redis_client.delete(KEY)
     else:

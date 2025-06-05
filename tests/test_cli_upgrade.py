@@ -49,17 +49,8 @@ def lock_upgrade() -> Generator[str, None, None]:
     redis_client.delete(mocked_key)
 
 
-def test_cli_upgrade():
-    runner = CliRunner()
-    result = runner.invoke(cli, "upgrade", "--force")
-    assert result.exit_code == 0
-
-
 def test_upgrade_init(
-    monkeypatch: pytest.MonkeyPatch,
-    env: dict[str, str],
-    tmp_path: Path,
-    settings: "SettingsWrapper",
+    monkeypatch: pytest.MonkeyPatch, env: dict[str, str], tmp_path: Path, settings: "SettingsWrapper"
 ) -> None:
     static_root_path = tmp_path / str(random.randint(1, 10000))
     assert not Path(static_root_path).exists()
@@ -87,25 +78,32 @@ def test_upgrade_init(
 def test_upgrade_args(
     monkeypatch: pytest.MonkeyPatch,
     env: dict[str, str],
+    settings: "SettingsWrapper",
     tmp_path: Path,
     verbosity: int,
     force: str,
     check: str,
     clear: str,
 ) -> None:
-    runner = CliRunner()
-    result = runner.invoke(cli, ["upgrade", "--verbosity", verbosity, force, clear, check])
-    assert result.exit_code == 0
+    static_root_path = tmp_path / str(random.randint(1, 10000))
+    settings.STATIC_ROOT = str(static_root_path.absolute())
+    with mock.patch.dict(os.environ, {**env}, clear=True):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["upgrade", "--verbosity", verbosity, force, clear, check])
+        assert result.stderr == ""
+        assert result.exit_code == 0
 
 
 def test_upgrade_lock(monkeypatch: pytest.MonkeyPatch, env: dict[str, str], lock_upgrade) -> None:
     runner = CliRunner()
     result = runner.invoke(cli, ["upgrade"])
     assert "Concurrent process detected." in result.stderr
+    assert result.stderr
     assert result.exit_code == 2
 
 
 def test_upgrade_check(monkeypatch: pytest.MonkeyPatch, env: dict[str, str], lock_upgrade) -> None:
     runner = CliRunner()
     result = runner.invoke(cli, ["upgrade", "--check"])
+    assert result.stderr == ""
     assert result.exit_code == 0

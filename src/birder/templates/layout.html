@@ -1,28 +1,17 @@
-{% load i18n static tailwind_tags %}
-<!DOCTYPE html>
-<html lang="en" class="dark">
-
+{% load i18n static tailwind_tags %}<!DOCTYPE html><html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Birder</title>
-    <meta name="description" content="">
-    <meta name="keywords" content="">
-    <script src="/static/admin/js/vendor/jquery/jquery.js"></script>
-    <script src="/static/admin/js/jquery.init.js"></script>
-    <script src="{% static "birder.js" %}"></script>
-
-    {% tailwind_css %}
-    {% block extrahead %}{% endblock %}
+    <meta name="description" content="{{ project }} {{ selected_env }}">
+    <meta name="keywords" content="">{% tailwind_css %}
+{{ media }}{% block extrahead %}{% endblock %}
 </head>
-
 <body>
-
 <!--Nav-->
 <nav id="header" class="w-full z-30 top-0 py-1">
     <div class="w-full container mx-auto flex flex-wrap items-center justify-between mt-0 px-6 py-3">
-
         <label for="menu-toggle" class="cursor-pointer md:hidden block">
             <svg class="fill-current " xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                  viewBox="0 0 20 20">

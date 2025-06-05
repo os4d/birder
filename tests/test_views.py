@@ -16,17 +16,17 @@ def test_index(django_app, monitor):
 
 
 def test_project(django_app, monitor):
-    url = reverse("project-detail", args=[monitor.project.pk])
+    url = monitor.project.get_absolute_url()
     assert django_app.get(url)
 
 
 def test_project_with_default_environment(django_app, project_with_default_env):
     url = reverse("project-detail", args=[project_with_default_env.pk])
-    assert django_app.get(url).status_code == 200
+    assert django_app.get(url).status_code == 302
 
 
 def test_monitor_detail(django_app, monitor):
-    assert django_app.get(reverse("monitor-detail", kwargs={"pk": monitor.pk}))
+    assert django_app.get(monitor.get_absolute_url()).status_code == 200
 
 
 def test_monitor_api(django_app, passive_monitor):
