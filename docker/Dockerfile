@@ -1,4 +1,4 @@
-FROM python:3.12-slim-bookworm AS base_os
+FROM python:3.13-slim-bookworm AS base_os
 ARG VERSION
 ARG GIT_SHA
 ARG BUILD_DATE
@@ -61,8 +61,8 @@ EOF
 WORKDIR /code
 COPY . /code
 
+USER birder
 RUN ls -al /code/src/
-
 RUN uv venv $VIRTUAL_ENV \
     && uv sync --no-dev --frozen --no-editable
 
