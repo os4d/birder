@@ -53,7 +53,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13.1'
+          python-version: '3.12.1'
       - run: pip install tox
       - name: Static Code checks
         run: tox -e lint
@@ -66,7 +66,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13.1'
+          python-version: '3.12.1'
       - run: pip install tox==4.26.0
       - name: Check Python Package structure
         run: |
@@ -80,7 +80,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13.1'
+          python-version: '3.12.1'
       - run: pip install tox
       - name: Check Python Package structure
         run: tox -e pkg_meta

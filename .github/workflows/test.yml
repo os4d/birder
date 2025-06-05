@@ -72,7 +72,7 @@ jobs:
       DOCKER_DEFAULT_PLATFORM: linux/amd64
       DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
       DATABASE_URL: postgres://postgres:postgres@localhost:15432/birder
-      CACHE_DEFAULT: redis://localhost:16379/0
+      CACHE_URL: redis://localhost:16379/0
       DOCKER_BUILDKIT: 1
       RUNNER_TOOL_CACHE: /tmp/
     steps:
@@ -91,7 +91,7 @@ jobs:
         cache-dependency-glob: |
           **/pyproject.toml
           **/uv.lock
-        python-version: 3.13.1
+        python-version: 3.12.1
 
     - name: Restore cached vEnv
       id: cache-venv-restore
@@ -100,7 +100,7 @@ jobs:
         path: |
           ./uv-cache
           ./tox
-        key: ${{ runner.os }}-venv-3.13
+        key: ${{ runner.os }}-venv-3.12
 
     - name: Install dependencies
       run: uv sync --cache-dir ./uv-cache --frozen
@@ -142,10 +142,6 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
         verbose: false
         name: codecov-${{env.GITHUB_REF_NAME}}
-
-    - name: Stop further steps
-      if: failure()
-      run: exit 1
 
     - name: build
       id: build

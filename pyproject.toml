@@ -15,10 +15,10 @@ authors = [
   { name = "sax", email = "s.apostolico@gmail.com" },
 ]
 
-requires-python = "==3.13.*"
+requires-python = "==3.12.*"
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.12",
 ]
 dynamic = [ "version" ]
 dependencies = [
@@ -59,6 +59,7 @@ dependencies = [
   "ldap3>=2.9.1",
   "lxml>=5.3",
   "minio>=7.2.13",
+  "pandas<2.3",
   "pexpect>=4.9",
   "pip>=24.3.1",
   "prometheus-client==0.20",
