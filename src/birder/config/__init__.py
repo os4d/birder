@@ -22,7 +22,7 @@ CONFIG: dict[str, ConfigItem] = {
     "GOOGLE_CLIENT_SECRET": (str, ""),
     "LOG_LEVEL": (str, "ERROR"),
     "SECRET_KEY": (str, "super-secret-key"),
-    "CRYPT_SALT_KEY": (list, []),
+    "CRYPT_SALT_KEYS": (list, []),
     "CRYPT_KEYS": (list, []),
     "SOCIAL_AUTH_LOGIN_URL": (str, "/login/"),
     "SOCIAL_AUTH_RAISE_EXCEPTIONS": (bool, False),

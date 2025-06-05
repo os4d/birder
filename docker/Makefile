@@ -53,6 +53,8 @@ build: ## build docker image
 		-e ADMIN_EMAIL="admin@os4d.org" \
 		-e ADMIN_PASSWORD="password" \
 		-e CSRF_TRUSTED_ORIGINS="http://localhost:8000" \
+		-e CRYPT_SALT_KEYS="123" \
+		-e CRYPT_KEYS="123" \
 		-e DEBUG="1" \
 		-e CACHE_URL="redis://host.docker.internal:6379" \
 		-e VALKEY_URL="redis://host.docker.internal:6379" \

@@ -58,13 +58,14 @@ RUN <<EOF cat> /RELEASE
   "date": "$BUILD_DATE"
 }
 EOF
+RUN mkdir /code /venv
+
 WORKDIR /code
 COPY . /code
 
-USER birder
 RUN ls -al /code/src/
-RUN uv venv $VIRTUAL_ENV \
-    && uv sync --no-dev --frozen --no-editable
+RUN uv venv --no-cache $VIRTUAL_ENV \
+    && uv sync --no-dev --frozen --no-editable --no-cache
 
 FROM base_os AS dist
 ADD docker/conf /conf/
@@ -87,7 +88,6 @@ ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin:/usr/sbin \
 EXPOSE 8000
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["run"]
-
 
 LABEL maintainer="brd@os4d.org"
 LABEL org.opencontainers.image.authors="brd@os4d.org"

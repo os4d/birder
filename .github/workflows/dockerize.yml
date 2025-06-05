@@ -36,6 +36,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Info
+        run: |
+            echo "::notice title=Ref:: ${{ github.event.inputs.git_reference }}"
+            echo "::notice title=Tag:: ${{ github.event.inputs.tag }}"
+            echo "::notice title=latest :: ${{ github.event.inputs.latest }}"
 
       - name: Checkout code
         uses: actions/checkout@v4.1.7
