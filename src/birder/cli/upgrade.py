@@ -41,9 +41,8 @@ def upgrade(ctx: Context, force: bool, verbosity: int, check: bool, clear: bool,
                 click.secho("Run database migrations")
             call_command("migrate", interactive=False, verbosity=verbosity - 1)
             if verbosity >= 1:
-                click.secho("Run database migrations")
+                click.secho("Collect static assets")
             call_command("collectstatic", interactive=False, verbosity=-1)
-
             if verbosity >= 1:
                 click.secho("Create standard environments")
             Environment.objects.get_or_create(name="development")
@@ -53,7 +52,6 @@ def upgrade(ctx: Context, force: bool, verbosity: int, check: bool, clear: bool,
             g, is_new = Group.objects.get_or_create(name="Default")
             if is_new:
                 config.NEW_USER_DEFAULT_GROUP = g.pk
-
             if (admin_user_email := os.environ.get("ADMIN_EMAIL")) and os.environ.get("ADMIN_PASSWORD"):
                 try:
                     User.objects.get(email=admin_user_email)

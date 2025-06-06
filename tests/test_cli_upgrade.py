@@ -110,16 +110,26 @@ def test_upgrade_check(monkeypatch: pytest.MonkeyPatch, env: dict[str, str], loc
     assert result.exit_code == 0
 
 
-def test_upgrade_no_admin(monkeypatch: pytest.MonkeyPatch, env: dict[str, str], lock_upgrade) -> None:
+def test_upgrade_no_admin(
+    monkeypatch: pytest.MonkeyPatch,
+    env: dict[str, str],
+    lock_upgrade,
+    tmp_path: Path,
+    settings: "SettingsWrapper",
+) -> None:
     import birder.cli.upgrade
 
+    static_root_path = tmp_path / str(random.randint(1, 10000))
+    settings.STATIC_ROOT = str(static_root_path.absolute())
+
     birder.cli.upgrade.KEY = str(time.time())
-    runner = CliRunner()
-    result = runner.invoke(cli, ["upgrade", "--verbosity", "2"])
-    assert "no ADMIN_EMAIL/ADMIN_PASSWORD env vars found" in result.stdout
-    assert result.exit_code == 0
-    result = runner.invoke(cli, ["upgrade", "--verbosity", "0"])
-    assert result.exit_code == 0
+    with mock.patch.dict(os.environ, {"ADMIN_EMAIL": ""}, clear=True):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["upgrade", "--verbosity", "2"])
+        assert "no ADMIN_EMAIL/ADMIN_PASSWORD env vars found" in result.stdout, result.stdout
+        assert result.exit_code == 0
+        result = runner.invoke(cli, ["upgrade", "--verbosity", "0"])
+        assert result.exit_code == 0
 
 
 def test_upgrade_error(monkeypatch: pytest.MonkeyPatch, env: dict[str, str], lock_upgrade) -> None:
