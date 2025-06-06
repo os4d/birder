@@ -68,7 +68,7 @@ class ProjectView(CommonContextMixin, DetailView):
         return super().get_queryset().select_related("default_environment")
 
     def get_object(self, queryset: QuerySet[Project] = None) -> Project:
-        return Project.objects.get(pk=self.kwargs.get("project_id"))
+        return self.get_queryset().get(pk=self.kwargs.get("project_id"))
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         project = self.get_object()

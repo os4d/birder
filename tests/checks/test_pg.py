@@ -31,3 +31,16 @@ def test_check_fail(monkeypatch):
     assert not c.check()
     with pytest.raises(CheckError):
         assert c.check(True)
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        {"database": "db", "user": "username", "password": "password"},
+        {"database": "", "user": "", "password": "password"},
+        {"database": "", "user": "username", "password": ""},
+        {"database": "", "user": "", "password": ""},
+    ],
+)
+def test_check_config(config):
+    assert PostgresCheck.clean_config(config)

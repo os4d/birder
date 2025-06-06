@@ -39,7 +39,7 @@ def check_(ctx: Context, monitor_id: int, _all: bool = False, debug: bool = True
     from birder.models import BaseCheck, Monitor
 
     if _all and monitor_id:
-        raise click.UsageError("--")
+        raise click.UsageError("Do not use --all and id")
     ok = click.style("\u2714", fg="green")
     ko = click.style("\u2716", fg="red")
 

@@ -5,7 +5,7 @@ import celery.exceptions
 import pytest
 
 from birder.checks import parser
-from birder.checks.celery import CeleryCheck, CeleryConfig, CeleryQueueCheck
+from birder.checks.celery import CeleryCheck, CeleryConfig
 from birder.exceptions import CheckError
 
 
@@ -121,22 +121,15 @@ def test_celery_queue_parser():
     }
 
 
-def test_celery_queue_check_success(monkeypatch):
-    monkeypatch.setattr("birder.checks.celery.Broker", Mock())
-    with mock.patch("birder.checks.celery.Broker") as mocked_check:
-        with mock.patch("birder.checks.celery.asyncio.run") as mocked_run:
-            mocked_run.return_value = [{"messages": 20}]
-            mocked_check.return_value.queues.return_value = [{"worker1": {"ok": True}}, {"worker2": {"ok": False}}]
-            c = CeleryQueueCheck(
-                Mock(
-                    configuration={
-                        "hostname": "localhost",
-                        "timeout": 5,
-                        "broker": "redis",
-                        "port": 5672,
-                        "queue_name": "celery",
-                        "max_queued": 10,
-                    }
-                )
-            )
-            assert c.check(True)
+@pytest.mark.parametrize(
+    "config",
+    [
+        {"hostname": "hostname", "min_workers": "2"},
+        {"hostname": "", "min_workers": ""},
+        {"hostname": "hostname", "min_workers": ""},
+        {"hostname": "hostname", "min_workers": "0"},
+        {"hostname": "", "min_workers": "1"},
+    ],
+)
+def test_celery_queue_config(config):
+    assert CeleryCheck.clean_config(config)

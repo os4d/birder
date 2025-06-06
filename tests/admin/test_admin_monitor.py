@@ -69,10 +69,38 @@ def test_monitor_configure(app: "DjangoTestApp", mocked_responses, monitor: Moni
     assert res.status_code == 302
 
 
+def test_monitor_configure_check(app: "DjangoTestApp", mocked_responses, monitor: Monitor) -> None:
+    mocked_responses.add("GET", "https://google.com/", status=400)
+
+    url = reverse("admin:birder_monitor_change", args=[monitor.pk])
+    res = app.get(url)
+    res = res.click("Configure")
+    res.forms["config_form"]["url"] = "https://google.com"
+    res = res.forms["config_form"].submit("check")
+    assert res.status_code == 200
+
+    mocked_responses.add("GET", "https://google.com/", status=200)
+    res.forms["config_form"]["url"] = "https://google.com/"
+    res = res.forms["config_form"].submit("check")
+    assert res.status_code == 302
+
+
 def test_actions(app: "DjangoTestApp", mocked_responses, monitor: Monitor) -> None:
     url = reverse("admin:birder_monitor_changelist")
     res = app.get(url)
     res.forms["changelist-form"]["action"] = "check_selected"
     res.forms["changelist-form"]["_selected_action"] = True
     res = res.forms["changelist-form"].submit()
+    assert res.status_code == 302
+
+
+def test_change_icon(app: "DjangoTestApp", mocked_responses, monitor: Monitor) -> None:
+    url = reverse("admin:birder_monitor_change", args=[monitor.pk])
+    res = app.get(url)
+    res = res.click("Change Icon")
+    res.forms["config_form"]["icon"] = "=="
+    res = res.forms["config_form"].submit()
+    assert res.status_code == 200
+    res.forms["config_form"]["icon"] = "http://example.com"
+    res = res.forms["config_form"].submit()
     assert res.status_code == 302

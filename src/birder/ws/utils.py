@@ -1,6 +1,6 @@
 import json
 import logging
-from datetime import date, datetime
+from datetime import date, datetime, time
 from json import JSONEncoder as JSONEncoder_
 from typing import TYPE_CHECKING, Any
 
@@ -46,6 +46,14 @@ def _ping(timestamp: str) -> None:
     )
 
 
+def _update(monitor: "Monitor") -> None:
+    channel_layer = channels.layers.get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        GROUP,
+        {"type": "send.json", "reason": "status", "monitor": json.loads(json.dumps(monitor, cls=JSONEncoder))},
+    )
+
+
 class JSONEncoder(JSONEncoder_):
     def default(self, obj: Any) -> Any:
         from birder.models import Monitor
@@ -74,12 +82,6 @@ class JSONEncoder(JSONEncoder_):
             return obj.strftime(config.DATETIME_FORMAT)
         if isinstance(obj, date):
             return obj.strftime(config.DATE_FORMAT)
+        if isinstance(obj, time):
+            return obj.strftime(config.TIME_FORMAT)
         return json.JSONEncoder.default(self, obj)
-
-
-def _update(monitor: "Monitor") -> None:
-    channel_layer = channels.layers.get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        GROUP,
-        {"type": "send.json", "reason": "status", "monitor": json.loads(json.dumps(monitor, cls=JSONEncoder))},
-    )
