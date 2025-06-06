@@ -1,13 +1,14 @@
-*
-.venv
-.act
+.*
+~*
+**/~*
 
 !docker/bin
 !docker/conf
 !src/birder/**/*
 !tests/*
-!dist
+!.git
 
+!src/birder/version.py
 !pyproject.toml
 !uv.lock
 !pytest.ini
@@ -17,8 +18,3 @@
 !AUTHORS
 !CHANGES.md
 !MANIFEST.in
-
-*.egg-info
-.*
-~*
-**/~*

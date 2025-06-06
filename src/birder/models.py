@@ -14,6 +14,7 @@ from django.db import models
 from django.db.models.base import ModelBase
 from django.db.models.functions.text import Lower
 from django.templatetags.static import static
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from django_stubs_ext.db.models import TypedModelMeta
@@ -57,7 +58,7 @@ class Project(models.Model):
     bitcaster_url = models.URLField(blank=True, help_text="The URL to the Bitcaster notification endpoint.")
     environments = models.ManyToManyField("Environment", related_name="projects", blank=False)
     icon = models.CharField(blank=True, default="", max_length=255)
-    default_environment = models.ForeignKey("Environment", null=True, on_delete=models.PROTECT)
+    default_environment = models.ForeignKey("Environment", null=True, on_delete=models.PROTECT)  # type: ignore[misc]
 
     class Meta:
         ordering = ["name"]
@@ -79,6 +80,10 @@ class Project(models.Model):
         if self.pk and not self.default_environment:
             self.default_environment = self.environments.first()
         super().save(force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
+
+    def get_absolute_url(self) -> str:
+        env = self.default_environment if self.default_environment else self.environments.first()
+        return reverse("project-env", kwargs={"project_id": self.pk, "env": env.name})
 
     def clean(self) -> None:
         if self.default_environment and not self.environments.filter(pk=self.default_environment.pk).exists():
@@ -145,17 +150,15 @@ class Monitor(models.Model):
 
     strategy: "BaseCheck"
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    environment = models.ForeignKey(Environment, on_delete=models.SET_NULL, null=True, blank=False)
+    environment = models.ForeignKey(Environment, on_delete=models.SET_NULL, null=True, blank=False)  # type: ignore[misc]
     name = models.CharField(max_length=255, unique=True)
     position = models.PositiveIntegerField(default=0)
     description = models.TextField(blank=True, help_text="short description  to display in the monitor detail page")
     notes = models.TextField(blank=True, help_text="Notes about the monitor. Only visible to Staff")
     custom_icon = models.CharField(blank=True, default="", max_length=255)
-
     strategy = StrategyField(registry=registry)
     configuration = EncryptedJSONField(default=dict, help_text="Checker configuration")
-
-    data = models.BinaryField(blank=True, null=True, default=None)
+    data = models.BinaryField(blank=True, null=True, default=None)  # type: ignore[misc]
     data_file = models.FileField(blank=True, null=True, default=None)
 
     token = models.CharField(
@@ -188,6 +191,11 @@ class Monitor(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    def get_absolute_url(self) -> str:
+        return reverse(
+            "monitor-detail", kwargs={"project_id": self.project.pk, "env": self.environment.name, "pk": self.pk}
+        )
 
     @cached_property
     def icon(self) -> str:
@@ -332,7 +340,7 @@ class Monitor(models.Model):
 class DataHistory(models.Model):
     monitor = models.ForeignKey(Monitor, on_delete=models.CASCADE, related_name="datalog")
     date = models.DateField(auto_now_add=False)
-    data = models.BinaryField(default=None, null=True)
+    data = models.BinaryField(default=None, null=True)  # type: ignore[misc]
 
     class Meta:
         ordering = ["-date"]

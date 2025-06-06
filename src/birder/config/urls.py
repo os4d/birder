@@ -19,11 +19,11 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("login/", views.LoginView.as_view(), name="login"),
     path("logout/", LogoutView.as_view(), name="logout"),
-    path("<int:pk>", views.MonitorDetail.as_view(), name="monitor-detail"),
     path("trigger/<int:pk>/<str:token>/", views.trigger, name="trigger"),
+    path("<int:project_id>/<str:env>/<int:pk>", views.MonitorDetail.as_view(), name="monitor-detail"),
+    path("<int:project_id>/<str:env>/", views.ProjectView.as_view(), name="project-env"),
+    path("<int:pk>/", views.ProjectRouterView.as_view(), name="project-detail"),
     path("", views.IndexView.as_view(), name="index"),
-    path("<int:project>/", views.ProjectView.as_view(), name="project-detail"),
-    path("<int:project>/<str:env>/", views.ProjectView.as_view(), name="project-env"),
 ]
 if "django_browser_reload" in settings.INSTALLED_APPS:  # pragma: no cover
     urlpatterns += [path(r"__reload__/", include("django_browser_reload.urls"))]

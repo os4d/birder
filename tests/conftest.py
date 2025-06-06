@@ -57,16 +57,18 @@ def environment(db):
 
 @pytest.fixture
 def project(environment):
-    from testutils.factories import ProjectFactory
+    from testutils.factories import EnvironmentFactory, ProjectFactory
 
-    return ProjectFactory()
+    env1 = EnvironmentFactory(name="development")
+    env2 = EnvironmentFactory(name="production")
+    return ProjectFactory(environments=[env1, env2])
 
 
 @pytest.fixture
 def monitor(project) -> "Monitor":
     from testutils.factories import MonitorFactory
 
-    return MonitorFactory(project=project)
+    return MonitorFactory(project=project, environment=project.default_environment)
 
 
 @pytest.fixture

@@ -13,7 +13,7 @@ CONFIG: dict[str, ConfigItem] = {
     "AZURE_CLIENT_KEY": (str, ""),
     "AZURE_CLIENT_SECRET": (str, ""),
     "AZURE_TENANT_ID": (str, ""),
-    "CACHE_URL": (str, "redis://host:6379/0"),
+    "CACHE_URL": (str, "redis://cache-url:6379/0"),
     "CSRF_TRUSTED_ORIGINS": (list, []),
     "DATABASE_URL": (str, "sqlite:///birder.sqlite3"),
     "DEBUG": (bool, False),
@@ -22,7 +22,7 @@ CONFIG: dict[str, ConfigItem] = {
     "GOOGLE_CLIENT_SECRET": (str, ""),
     "LOG_LEVEL": (str, "ERROR"),
     "SECRET_KEY": (str, "super-secret-key"),
-    "CRYPT_SALT_KEY": (list, []),
+    "CRYPT_SALT_KEYS": (list, []),
     "CRYPT_KEYS": (list, []),
     "SOCIAL_AUTH_LOGIN_URL": (str, "/login/"),
     "SOCIAL_AUTH_RAISE_EXCEPTIONS": (bool, False),
@@ -31,6 +31,6 @@ CONFIG: dict[str, ConfigItem] = {
     "STATIC_ROOT": (str, "/app/static/"),
     "STATIC_URL": (str, "static/"),
     "SUPERUSERS": (list, []),
-    "VALKEY_URL": (str, "redis://host:6379/0"),
+    "VALKEY_URL": (str, "redis://valkey-url:6379/0"),
 }
 env = Env(**CONFIG)

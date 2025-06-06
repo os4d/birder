@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, Any
 import channels.layers
 from asgiref.sync import async_to_sync
 from constance import config
-from django.urls.base import reverse
 from strategy_field.utils import fqn
 
 from .consumers import GROUP
@@ -59,7 +58,7 @@ class JSONEncoder(JSONEncoder_):
                     "data": json.loads(json.dumps(obj.project.data, cls=JSONEncoder)),
                     "status": json.loads(json.dumps(obj.project.status, cls=JSONEncoder)),
                 },
-                "url": reverse("monitor-detail", args=[obj.pk]),
+                "url": obj.get_absolute_url(),
                 "status": obj.status,
                 "active": obj.active,
                 "name": obj.name,

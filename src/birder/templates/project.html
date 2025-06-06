@@ -1,8 +1,4 @@
 {% extends "layout.html" %}{% load birder i18n static %}
-{% block extrahead %}
-    <script src="{% static "project.js" %}"></script>
-{% endblock extrahead %}
-
 {% block content %}
     <div class="flex">
         <div class="m-auto text-2xl">
@@ -26,7 +22,7 @@
     <div class="" id="monitor-grid">
         {% for monitor in monitors %}
             <a class="cursor-pointer h-full"
-               href="{% if monitor.active %}{% url "monitor-detail" monitor.pk %}{% else %}#{% endif %}">
+               href="{% if monitor.active %}{{ monitor.get_absolute_url }}{% else %}#{% endif %}">
                 <div class="monitor-panel grid grid-cols-1 {% if not monitor.active %}offline{% endif %}"
                      id="monitor-{{ monitor.pk }}">
                     <div class="flex h-5 ">
