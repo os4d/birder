@@ -37,8 +37,8 @@ def test_xml_match(mocked_responses, xpath, result):
 @pytest.mark.parametrize(
     "config",
     [
-        {"url": "http://www.google.com", "timeout": "10", "status_success": "200,300"},
-        {"url": "http://www.google.com", "timeout": 10, "status_success": [200, 300]},
+        {"url": "http://www.google.com", "timeout": "10", "status_success": "200,300", "xpath": "//html"},
+        {"url": "http://www.google.com", "timeout": 10, "status_success": [200, 300], "xpath": "//html"},
     ],
 )
 def test_xml_config(config):
@@ -49,7 +49,30 @@ def test_xml_config(config):
     assert str(c)
 
 
+@pytest.mark.parametrize(
+    "config",
+    [
+        {"xpath": "\\"},
+        {"xpath": "-"},
+    ],
+)
+def test_xml_config_invalid(config):
+    c: XMLConfig = XMLCheck.config_class(config)
+    assert not c.is_valid()
+
+
 def test_xml_config_error():
     c: XMLConfig = XMLCheck.config_class({"url": "http://www.google.com", "timeout": 10, "status_success": "200,abc"})
     assert not c.is_valid()
     assert c.errors == {"status_success": ["Enter a whole number."]}
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        {"url": "http://www.google.com", "timeout": 10, "status_success": "200,abc"},
+        {"url": "", "timeout": 10, "status_success": "200,abc", "address": "http://www.google.com"},
+    ],
+)
+def test_xml_clean_config(config):
+    assert XMLCheck.clean_config(config)

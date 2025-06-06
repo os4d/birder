@@ -8,7 +8,6 @@ from django.forms import Media
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.views.generic import DetailView, TemplateView
 from django.views.generic.base import ContextMixin, View
@@ -68,7 +67,7 @@ class ProjectView(CommonContextMixin, DetailView):
         return super().get_queryset().select_related("default_environment")
 
     def get_object(self, queryset: QuerySet[Project] = None) -> Project:
-        return Project.objects.get(pk=self.kwargs.get("project_id"))
+        return self.get_queryset().get(pk=self.kwargs.get("project_id"))
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         project = self.get_object()
@@ -92,12 +91,6 @@ class MonitorDetail(CommonContextMixin, DetailView):
 
     def get_queryset(self) -> QuerySet[Monitor]:
         return super().get_queryset().select_related("environment", "project")
-
-    def get_absolute_url(self) -> str:
-        return reverse(
-            "monitor-detail",
-            kwargs={"pk": self.object.pk, "env": self.object.environment.name, "project_id": self.object.project.pk},
-        )
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         from birder.db import DataStore

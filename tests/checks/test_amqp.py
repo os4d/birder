@@ -42,3 +42,14 @@ def test_amqp_config_error():
     c: AmqpConfig = AmqpCheck.config_class({"hostname": "localhost", "port": 5672, "connect_timeout": "--"})
     assert not c.is_valid()
     assert c.errors == {"connect_timeout": ["Enter a whole number."]}
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        {"hostname": "localhost", "port": 5672, "connect_timeout": 5},
+        {"hostname": "", "port": 5672, "connect_timeout": 5},
+    ],
+)
+def test_celery_queue_config(config):
+    assert AmqpCheck.clean_config(config)

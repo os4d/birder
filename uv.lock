@@ -970,6 +970,18 @@ wheels = [
 ]
 
 [[package]]
+name = "freezegun"
+version = "1.5.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "python-dateutil" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c7/75/0455fa5029507a2150da59db4f165fbc458ff8bb1c4f4d7e8037a14ad421/freezegun-1.5.2.tar.gz", hash = "sha256:a54ae1d2f9c02dbf42e02c18a3ab95ab4295818b549a34dac55592d72a905181", size = 34855, upload-time = "2025-05-24T12:38:47.051Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b5/b2/68d4c9b6431121b6b6aa5e04a153cac41dcacc79600ed6e2e7c3382156f5/freezegun-1.5.2-py3-none-any.whl", hash = "sha256:5aaf3ba229cda57afab5bd311f0108d86b6fb119ae89d2cd9c43ec8c1733c85b", size = 18715, upload-time = "2025-05-24T12:38:45.274Z" },
+]
+
+[[package]]
 name = "ghp-import"
 version = "2.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1842,10 +1854,12 @@ builder = [
 dev = [
     { name = "django-webtest" },
     { name = "factory-boy" },
+    { name = "freezegun" },
     { name = "ipdb" },
     { name = "mypy" },
     { name = "pdbpp" },
     { name = "pre-commit" },
+    { name = "pyquery" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "pytest-celery" },
@@ -1926,7 +1940,7 @@ requires-dist = [
     { name = "ldap3", specifier = ">=2.9.1" },
     { name = "lxml", specifier = ">=5.3" },
     { name = "minio", specifier = ">=7.2.13" },
-    { name = "pandas", specifier = "<2.3.0" },
+    { name = "pandas", specifier = "<2.3" },
     { name = "pexpect", specifier = ">=4.9" },
     { name = "pip", specifier = ">=24.3.1" },
     { name = "prometheus-client", specifier = "==0.20" },
@@ -1949,10 +1963,12 @@ builder = [{ name = "hatchling", specifier = ">=1.27" }]
 dev = [
     { name = "django-webtest", specifier = ">=1.9.12" },
     { name = "factory-boy", specifier = ">=3.3.1" },
+    { name = "freezegun", specifier = ">=1.5.2" },
     { name = "ipdb", specifier = ">=0.13.13" },
     { name = "mypy", specifier = ">=1.14" },
     { name = "pdbpp", specifier = ">=0.10.3" },
     { name = "pre-commit", specifier = ">=4.2" },
+    { name = "pyquery", specifier = ">=2.0.1" },
     { name = "pytest", specifier = ">=8.3.4" },
     { name = "pytest-asyncio", specifier = ">=0.25.2" },
     { name = "pytest-celery", specifier = ">=1.1.3" },
@@ -2398,6 +2414,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/19/fd/437901c891f58a7b9096511750247535e891d2d5a5a6eefbc9386a2b41d5/pyproject_api-1.9.1.tar.gz", hash = "sha256:43c9918f49daab37e302038fc1aed54a8c7a91a9fa935d00b9a485f37e0f5335", size = 22710, upload-time = "2025-05-12T14:41:58.025Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ef/e6/c293c06695d4a3ab0260ef124a74ebadba5f4c511ce3a4259e976902c00b/pyproject_api-1.9.1-py3-none-any.whl", hash = "sha256:7d6238d92f8962773dd75b5f0c4a6a27cce092a14b623b811dba656f3b628948", size = 13158, upload-time = "2025-05-12T14:41:56.217Z" },
+]
+
+[[package]]
+name = "pyquery"
+version = "2.0.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "cssselect" },
+    { name = "lxml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ae/48/79e774ea00b671d08867f06d9258203be81834236c150ac00e942d8fc4db/pyquery-2.0.1.tar.gz", hash = "sha256:0194bb2706b12d037db12c51928fe9ebb36b72d9e719565daba5a6c595322faf", size = 44999, upload-time = "2024-08-30T08:12:24.289Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/76/f5/5067b48012967ea166b9bd0a015b69e0560e4c6e7c06f28d9bab8f9dd10b/pyquery-2.0.1-py3-none-any.whl", hash = "sha256:aedfa0bd0eb9afc94b3ddbec8f375a6362b32bc9662f46e3e0d866483f4771b0", size = 22573, upload-time = "2024-08-30T08:12:22.586Z" },
 ]
 
 [[package]]

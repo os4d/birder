@@ -45,7 +45,7 @@ class ProjectAdmin(ExtraButtonsMixin, admin.ModelAdmin[Project]):
 
 
 class ChangeIconForm(forms.Form):
-    icon = forms.CharField(required=False)
+    icon = forms.URLField(required=False)
 
     @property
     def media(self) -> forms.Media:

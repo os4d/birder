@@ -13,5 +13,5 @@ def test_clean_log(db):
     clean_log()
 
 
-def test_store_history(db):
+def test_store_history(monitor):
     store_history()

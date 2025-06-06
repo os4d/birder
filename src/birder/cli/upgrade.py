@@ -66,6 +66,7 @@ def upgrade(ctx: Context, force: bool, verbosity: int, check: bool, clear: bool,
             elif verbosity >= 1:
                 click.secho("no ADMIN_EMAIL/ADMIN_PASSWORD env vars found", fg="yellow")
         except Exception as e:  # noqa: BLE001
+            redis_client.delete(KEY)
             click.secho(f"{e}", fg="red", err=True)
             raise click.Abort(2) from None
         finally:

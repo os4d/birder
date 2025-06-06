@@ -47,3 +47,16 @@ def test_ftp_config_error():
     c: FtpConfig = FtpCheck.config_class({"host": "", "timeout": 2, "port": 21})
     assert not c.is_valid()
     assert c.errors == {"host": ["This field is required."]}
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        {"host": "www.google.com", "timeout": "2", "port": 21},
+        {"host": "www.google.com", "timeout": "2", "port": 21, "user": "user", "passwd": "<PASSWORD>"},
+        {"host": "www.google.com", "timeout": "2", "port": 21, "user": "", "passwd": "<PASSWORD>"},
+        {"host": "www.google.com", "timeout": "2", "port": 21, "user": "", "passwd": ""},
+    ],
+)
+def test_http_clean_config(config):
+    assert FtpCheck.clean_config(config)

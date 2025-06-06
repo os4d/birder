@@ -38,11 +38,21 @@ def test_cli_monitor_check(monitor: "Monitor"):
     result = runner.invoke(cli, ["monitor", "check", str(monitor.pk)])
     assert result.exit_code == 0
 
+    result = runner.invoke(cli, ["monitor", "check", "--all"])
+    assert result.exit_code == 0
+
 
 def test_cli_check(monitor: "Monitor"):
     runner = CliRunner()
     result = runner.invoke(cli, ["check"])
     assert result.exit_code == 0
+
+
+def test_cli_monitor_arg_conflict(monitor: "Monitor"):
+    runner = CliRunner()
+    result = runner.invoke(cli, ["monitor", "check", str(monitor.pk), "--all"])
+    assert "Error: Do not use --all and id" in result.stderr
+    assert result.exit_code == 2
 
 
 def test_cli_monitor_main(monitor: "Monitor"):

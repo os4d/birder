@@ -53,3 +53,14 @@ def test_json_config_error():
     c: JsonConfig = JsonCheck.config_class({"url": "http://www.google.com", "timeout": 10, "status_success": "200,abc"})
     assert not c.is_valid()
     assert c.errors == {"status_success": ["Enter a whole number."]}
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        {"url": "http://www.google.com", "timeout": 10, "status_success": "200,abc"},
+        {"url": "", "timeout": 10, "status_success": "200,abc", "address": "http://www.google.com"},
+    ],
+)
+def test_json_clean_config(config):
+    assert JsonCheck.clean_config(config)

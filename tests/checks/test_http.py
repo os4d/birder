@@ -110,3 +110,14 @@ def test_http_token(mocked_responses):
         )
     )
     assert c.check()
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        {"url": "http://www.google.com", "timeout": 10, "status_success": "200,abc"},
+        {"url": "", "timeout": 10, "status_success": "200,abc", "address": "http://www.google.com"},
+    ],
+)
+def test_http_clean_config(config):
+    assert HttpCheck.clean_config(config)
