@@ -140,3 +140,29 @@ def test_celery_queue_check_success(monkeypatch):
                 )
             )
             assert c.check(True)
+
+
+def test_celery_queue_check_fail(
+    monkeypatch,
+):
+    monkeypatch.setattr("birder.checks.celery.Broker", Mock())
+    with mock.patch("birder.checks.celery.Broker") as mocked_check:
+        mocked_check.return_value.queues.side_effect = KeyError
+        c = CeleryQueueCheck(Mock(configuration={"hostname": "hostname", "min_workers": "2"}))
+        with pytest.raises(CheckError):
+            assert c.check(raise_error=True)
+        assert not c.check(raise_error=False)
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        {"hostname": "hostname", "min_workers": "2"},
+        {"hostname": "", "min_workers": ""},
+        {"hostname": "hostname", "min_workers": ""},
+        {"hostname": "hostname", "min_workers": "0"},
+        {"hostname": "", "min_workers": "1"},
+    ],
+)
+def test_celery_queue_config(config):
+    assert CeleryQueueCheck.clean_config(config)

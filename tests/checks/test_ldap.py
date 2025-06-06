@@ -31,3 +31,15 @@ def test_check_fail(monkeypatch):
     assert not c.check()
     with pytest.raises(CheckError):
         assert c.check(True)
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        {"host": "", "port": "2", "version": 2, "user": "username", "password": "password"},
+        {"host": "", "port": "2", "version": 2, "user": "username", "password": ""},
+        {"host": "", "port": "2", "version": 2, "user": "username", "": "password"},
+    ],
+)
+def test_check_config(config):
+    assert LDAPCheck.clean_config(config)
