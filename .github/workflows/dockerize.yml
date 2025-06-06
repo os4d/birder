@@ -89,7 +89,7 @@ jobs:
         id: build
         with:
           context: .
-          file: docker/Dockerfile2
+          file: docker/Dockerfile
           push: true
           tags: |
             os4d/birder:${{ steps.config.outputs.tag }}
