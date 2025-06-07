@@ -96,6 +96,7 @@ class CeleryQueueCheck(BaseCheck):
         except (
             CeleryError,
             KeyError,
+            NotImplementedError,
             redis.exceptions.RedisError,
             kombu.exceptions.KombuError,
             amqp.exceptions.AMQPError,

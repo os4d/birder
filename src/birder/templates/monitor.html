@@ -8,8 +8,8 @@
     <div class="px-2 sm:px-10 md:px-32 xl:px-80">
         <div id="monitor-{{ monitor.pk }}" class="monitor-detail">
             <div class="flex items-start mb-4">
-                <div class="flex-shrink "><img class="icon" src="{{ monitor.icon }}"></div>
-                <div class="flex-grow w-max-2/3 text-5xl overflow-clip pl-3">{{ monitor.name|truncatechars:"20" }}</div>
+                    <div class="flex-shrink "><img class="icon" src="{{ monitor.icon }}"></div>
+                <div class="flex-grow w-max-2/3 text-4xl overflow-clip pl-3">{{ monitor.name|truncatechars:"20" }}</div>
                 <div class="flex-shrink text-center text-sm">
                     <img class="w-12 align-top status status-{{ monitor.status }}" src="{% status monitor.status %}">
                     <img class="w-4 align-top counter" src="{% number monitor.failures %}">
@@ -26,17 +26,17 @@
             <div class="my-2 flex text-xs">
                 <img class="w-4 mr-5" src="{% static 'images/clock.svg' %}">
                 <div class="w-32">Last check:</div>
-                <div class="ml-2 last-check">{{ monitor.last_timestamp_check|default_if_none:"-" }}</div>
+                <div class="ml-2 last-check">{{ monitor.last_timestamp_check|format_date }}</div>
             </div>
             <div class="my-2 flex text-xs">
                 <img class="w-4 mr-5" src="{% static 'images/ok.svg' %}">
                 <div class="w-32">Last success:</div>
-                <div class="ml-2 last-check">{{ monitor.last_timestamp_success|default_if_none:"-" }}</div>
+                <div class="ml-2 last-success">{{ monitor.last_timestamp_success|format_date }}</div>
             </div>
             <div class="my-2 flex text-xs">
                 <img class="w-4 mr-5" src="{% static 'images/ko.svg' %}">
                 <div class="w-32">Last failure:</div>
-                <div class="ml-2 last-check">{{ monitor.last_timestamp_failure|default_if_none:"-" }}</div>
+                <div class="ml-2 last-failure">{{ monitor.last_timestamp_failure|format_date }}</div>
             </div>
 
 

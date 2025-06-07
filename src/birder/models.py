@@ -241,6 +241,7 @@ class Monitor(models.Model):
 
             if result:
                 self.reset_current_errors()
+                self.store_last_timestamp_success()
                 st = Monitor.Status.SUCCESS
             else:
                 self.store_error(timestamp)

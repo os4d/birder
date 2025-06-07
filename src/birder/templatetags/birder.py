@@ -1,5 +1,7 @@
+from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
+from constance import config
 from django import template
 from django.template import Context
 from django.templatetags.static import static
@@ -38,3 +40,10 @@ def absolute_url(context: Context, *args: Any, **kwargs: Any) -> str:
     name = args[0]
     args = args[1:]
     return request.build_absolute_uri(reverse(name, args=args, kwargs=kwargs))
+
+
+@register.filter()
+def format_date(dt: datetime | None) -> str:
+    if dt:
+        return dt.strftime(config.DATETIME_FORMAT)
+    return "-"

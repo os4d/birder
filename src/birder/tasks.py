@@ -1,8 +1,10 @@
 import logging
+import sys
 from datetime import datetime, timedelta
 
 import dramatiq
 from constance import config
+from django.core.management.color import make_style
 from django.utils import timezone
 from dramatiq_crontab import cron
 from durations_nlp import Duration
@@ -13,17 +15,21 @@ from birder.ws.utils import notify_ui
 
 logger = logging.getLogger(__name__)
 
+style = make_style()
+
 
 @dramatiq.actor
 def queue_trigger(pk: str | int) -> None:
     try:
         m = Monitor.objects.get(active=True, pk=pk)
+        sys.stdout.write(style.SUCCESS(f"Run Monitor {m}\n"))
+        logger.info(f"Monitor #{pk} triggered")
         m.run()
     except Monitor.DoesNotExist:  # pragma: no cover
         logger.warning(f"Monitor #{pk} does not exist")
 
 
-@cron("*/1 * * * *")  # every 5 minutes
+@cron("*/1 * * * *")  # every 1 minute
 @dramatiq.actor
 def process() -> None:
     m: Monitor
