@@ -11,10 +11,10 @@ body {
 
 footer {
   .item:not(:last-child):after {
-      content: " - ";
-      margin-left: 5px;
-    }
+    content: " - ";
+    margin-left: 5px;
   }
+}
 
 
 svg.octicon-mark-github {
@@ -123,4 +123,11 @@ select.program-selection {
 
     @apply pt-0;
   }
+}
+
+.dot {
+  //height: 25px;
+  //width: 25px;
+  border-radius: 50%;
+  display: inline-block;
 }

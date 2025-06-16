@@ -14,7 +14,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from .forms import MonitorForm
-from .models import Environment, LogCheck, Monitor, Project, User
+from .models import Deadline, Environment, LogCheck, Monitor, Project, User
 from .tasks import queue_trigger
 from .ws.utils import notify_ui
 
@@ -182,3 +182,11 @@ class LogCheckAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[LogCh
 class EnvironmentAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[LogCheck]):
     list_display = ("name",)
     search_fields = ("name",)
+
+
+@admin.register(Deadline)
+class DeadlineAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[LogCheck]):
+    autocomplete_fields = ("monitor",)
+
+    list_display = ("monitor", "start", "end", "recurrences")
+    search_fields = ("monitor__name",)

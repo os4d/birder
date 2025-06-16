@@ -22,7 +22,6 @@ ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 
 INSTALLED_APPS = [
     "daphne",
-    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -34,12 +33,14 @@ INSTALLED_APPS = [
     "dramatiq_crontab",
     "adminfilters",
     "constance",
+    "recurrence",
     "flags",
     "social_django",
     "tailwind",
     "birder",
     "birder.theme",
     "birder.ws",
+    "django.contrib.admin",
     *env("EXTRA_APPS"),
 ]
 
