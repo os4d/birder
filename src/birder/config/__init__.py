@@ -4,7 +4,7 @@ from typing import Any
 
 from environ import Env
 
-ConfigItem = tuple[Any, str | list | bool]
+ConfigItem = tuple[Any, str | list | bool | int | float | bool]
 
 CONFIG: dict[str, ConfigItem] = {
     "ADMIN_EMAIL": (str, ""),
