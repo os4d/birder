@@ -4,19 +4,25 @@ from admin_extra_buttons.decorators import button
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
 from adminfilters.mixin import AdminFiltersMixin
-from django import forms
 from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin as _UserAdmin
 from django.db.models import Model, QuerySet
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from django.templatetags.static import static
 from django.urls import reverse
+from flags.models import FlagState
+from unfold.admin import ModelAdmin as UnfoldModelAdmin
 
-from .forms import MonitorForm
+from .forms import ChangeIconForm, FlagStateForm, MonitorForm
 from .models import Environment, LogCheck, Monitor, Project, User
 from .tasks import queue_trigger
 from .ws.utils import notify_ui
+
+
+class BirderAdminMixin(ExtraButtonsMixin, AdminFiltersMixin, UnfoldModelAdmin):
+    pass
 
 
 @admin.register(User)
@@ -25,7 +31,7 @@ class UserAdmin(_UserAdmin[User]):
 
 
 @admin.register(Project)
-class ProjectAdmin(ExtraButtonsMixin, admin.ModelAdmin[Project]):
+class ProjectAdmin(BirderAdminMixin, admin.ModelAdmin[Project]):
     search_fields = ("name",)
     list_display = (
         "name",
@@ -44,30 +50,13 @@ class ProjectAdmin(ExtraButtonsMixin, admin.ModelAdmin[Project]):
         return HttpResponseRedirect(f"{url}?project__exact={pk}")
 
 
-class ChangeIconForm(forms.Form):
-    icon = forms.URLField(required=False)
-
-    @property
-    def media(self) -> forms.Media:
-        media = super().media
-        media += forms.Media(
-            js=[
-                "admin/js/vendor/jquery/jquery.js",
-                "admin/js/jquery.init.js",
-                "change-icon.js",
-            ],
-            css={"screen": ["birder-admin.css"]},
-        )
-        return media
-
-
 def assert_object_or_404(obj: Model | None) -> None:
     if not obj:
         raise Http404
 
 
 @admin.register(Monitor)
-class MonitorAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[Monitor]):
+class MonitorAdmin(BirderAdminMixin, admin.ModelAdmin[Monitor]):
     search_fields = ("name",)
     list_display = ("name", "project", "environment", "counters", "checker", "active")
     list_filter = (
@@ -79,6 +68,7 @@ class MonitorAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[Monito
     actions = ["check_selected"]
     autocomplete_fields = ("environment", "project")
     form = MonitorForm
+    change_form_template = None
 
     @admin.display(ordering="strategy")
     def checker(self, obj: Monitor) -> bool:
@@ -101,7 +91,6 @@ class MonitorAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[Monito
             "active",
             "warn_threshold",
             "err_threshold",
-            "custom_icon",
             "description",
             "notes",
         ]
@@ -116,7 +105,10 @@ class MonitorAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[Monito
         ctx = self.get_common_context(request, pk)
         assert_object_or_404(self.object)
         ctx["icons"] = sorted(
-            [p.name for p in (Path(settings.PACKAGE_DIR) / "static" / "images" / "icons").glob("*.*")]
+            [
+                (p.name, request.build_absolute_uri(static(f"images/icons/{p.name}")))
+                for p in (Path(settings.PACKAGE_DIR) / "static" / "images" / "icons").glob("*.*")
+            ]
         )
         if request.method == "POST":
             form = ChangeIconForm(request.POST)
@@ -169,7 +161,7 @@ class MonitorAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[Monito
 
 
 @admin.register(LogCheck)
-class LogCheckAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[LogCheck]):
+class LogCheckAdmin(BirderAdminMixin, admin.ModelAdmin[LogCheck]):
     list_display = ("timestamp", "monitor", "status")
     list_filter = ("status", "timestamp", ("monitor", AutoCompleteFilter))
     readonly_fields = ("timestamp", "monitor", "status", "payload")
@@ -179,6 +171,14 @@ class LogCheckAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[LogCh
 
 
 @admin.register(Environment)
-class EnvironmentAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[LogCheck]):
+class EnvironmentAdmin(BirderAdminMixin, admin.ModelAdmin[LogCheck]):
     list_display = ("name",)
     search_fields = ("name",)
+
+
+admin.site.unregister(FlagState)
+
+
+@admin.register(FlagState)
+class FlagStateAdmin(BirderAdminMixin, admin.ModelAdmin[FlagState]):
+    form = FlagStateForm

@@ -1,0 +1,45 @@
+{% extends "admin/change_form.html" %}{% load admin_urls birder markdown_deux_tags static unfold %}
+{% block extrahead %}{{ block.super }}
+    {{ form.media }}
+{% endblock extrahead %}
+
+{% block last-breadcrumb %}
+    {% url opts|admin_urlname:'change' original.pk as link %}
+    {% include 'unfold/helpers/breadcrumb_item.html' with link=link name=original|truncatewords:'18' %}
+    {% include 'unfold/helpers/breadcrumb_item.html' with link='' name="Change Icon" %}
+{% endblock last-breadcrumb %}
+
+{% block nav-global %} {% endblock %}
+
+{% block content %}
+    <section>
+        <form method="post" id="config_form">
+            <div class="icon-list">
+                {% for i in icons %}
+                    <div class="frame" data-icon="{{ i.1 }}">
+                        <div>
+                            <img src="{{ i.1 }}">
+                        </div>
+                        <label>{{ i.0 }}</label>
+                    </div>
+                {% endfor %}
+
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                {{ form }}
+                <div id="submit-row2" class="">
+                    <div>
+                        <div>
+                            <button type="submit" class="primary">Save</button>
+                            <button type="button" onclick="javascript: location.href='..'" class="secondary">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </form>
+    </section>
+{% endblock content %}
+
+{% block submit_buttons_bottom %}{% endblock %}

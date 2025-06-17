@@ -21,7 +21,13 @@ ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 # Application definition
 
 INSTALLED_APPS = [
+    "birder.theme",
     "daphne",
+    "unfold",  # before django.contrib.admin
+    "unfold.contrib.filters",  # optional, if special filters are needed
+    "unfold.contrib.forms",  # optional, if special form elements are needed
+    "unfold.contrib.inlines",  # optional, if special inlines are needed
+    "unfold.contrib.simple_history",  # optional, if dja
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -38,7 +44,6 @@ INSTALLED_APPS = [
     "social_django",
     "tailwind",
     "birder",
-    "birder.theme",
     "birder.ws",
     *env("EXTRA_APPS"),
 ]
@@ -190,3 +195,4 @@ from .fragments.crypt import *  # noqa
 from .fragments.dramatiq import *  # noqa
 from .fragments.social_auth import *  # noqa
 from .fragments.tailwind import *  # noqa
+from .fragments.unfold import *  # noqa

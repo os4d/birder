@@ -1,0 +1,38 @@
+{% extends "admin/change_form.html" %}{% load admin_urls birder markdown_deux_tags static unfold %}
+{# {% block extrastyle %} #}
+{# <link rel="stylesheet" href="{% static 'admin/css/forms.css' %}"></link> #}
+{# <link rel="stylesheet" href="{% static 'birder-admin.css' %}"></link> #}
+{# {% endblock extrastyle %} #}
+
+
+{% block last-breadcrumb %}
+    {% url opts|admin_urlname:'change' original.pk as link %}
+    {% include 'unfold/helpers/breadcrumb_item.html' with link=link name=original|truncatewords:'18' %}
+    {% include 'unfold/helpers/breadcrumb_item.html' with link='' name="Configure" %}
+{% endblock last-breadcrumb %}
+
+{% block nav-global %} {% endblock %}
+
+{# {% block extrahead %}{{ block.super }} #}
+{# {{ form.media }} #}
+{# {% endblock extrahead %} #}
+
+{% block content %}
+    {{ form_help }}
+    <form method="post" id="config_form">
+        {% csrf_token %}
+{# <table> #}
+            {{ form }}
+{# </table> #}
+        <div id="submit-row2" class="">
+            <div>
+                <div>
+                    <button type="submit" class="primary">Save</button>
+                    <button type="submit" name="check" class="secondary">Check + Save</button>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock content %}
+
+{% block submit_buttons_bottom %}{% endblock %}

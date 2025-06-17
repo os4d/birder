@@ -17,6 +17,7 @@ CONFIG: dict[str, ConfigItem] = {
     "CSRF_TRUSTED_ORIGINS": (list, []),
     "DATABASE_URL": (str, "sqlite:///birder.sqlite3"),
     "DEBUG": (bool, False),
+    "ENVIRONMENT": (list, []),
     "EXTRA_APPS": (list, []),
     "GOOGLE_CLIENT_ID": (str, ""),
     "GOOGLE_CLIENT_SECRET": (str, ""),

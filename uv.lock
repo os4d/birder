@@ -574,15 +574,49 @@ wheels = [
 
 [[package]]
 name = "django-admin-extra-buttons"
-version = "2.1.1"
-source = { registry = "https://pypi.org/simple" }
+source = { editable = "../../saxix/django-admin-extra-buttons" }
 dependencies = [
     { name = "django-stubs" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/26/5f/ed95a22ea69fdb661896f42bc2d3343685e5126c8206464004c674d5ac3f/django_admin_extra_buttons-2.1.1.tar.gz", hash = "sha256:3c9e5cdcf05c7c8003748c07960a56bb77c46a85a9bef2714777a715397f3288", size = 12903, upload-time = "2025-05-20T11:43:51.339Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/18/8f/db79e3fc78e5ac4972d760d43fedf99ad4bf7ed410031c6de0c72b237c41/django_admin_extra_buttons-2.1.1-py3-none-any.whl", hash = "sha256:4ebd96d67c1992d8d81ed6816545a9035007e00dec64b58bbd73f3ac3999e7e6", size = 21748, upload-time = "2025-05-20T11:43:48.745Z" },
+
+[package.metadata]
+requires-dist = [{ name = "django-stubs" }]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "covdefaults", specifier = ">=2.3" },
+    { name = "django-webtest", specifier = ">=1.9.13" },
+    { name = "factory-boy", specifier = ">=3.3.1" },
+    { name = "pdbpp", specifier = ">=0.10.3" },
+    { name = "pre-commit", specifier = ">=4.2" },
+    { name = "pyquery", specifier = ">=2.0.1" },
+    { name = "pytest", specifier = ">=8.3.3" },
+    { name = "pytest-cov", specifier = ">=5" },
+    { name = "pytest-django", specifier = ">=4.9" },
+    { name = "pytest-echo", specifier = ">=1.8.1" },
+    { name = "ruff", specifier = ">=0.9.9" },
+    { name = "toml", specifier = ">=0.10.2" },
+    { name = "tox", specifier = ">=4.20" },
 ]
+dj = [{ name = "django" }]
+docs = [
+    { name = "markdown-include", specifier = ">=0.8.1" },
+    { name = "mdx-gh-links", specifier = ">=0.4" },
+    { name = "mkdocs", specifier = ">=1.6.1" },
+    { name = "mkdocs-autolinks-plugin", specifier = ">=0.7.1" },
+    { name = "mkdocs-autorefs", specifier = ">=1.3.1" },
+    { name = "mkdocs-awesome-pages-plugin", specifier = ">=2.10.1" },
+    { name = "mkdocs-ezlinks-plugin", specifier = ">=0.1.14" },
+    { name = "mkdocs-glightbox", specifier = ">=0.4" },
+    { name = "mkdocs-include-markdown-plugin", specifier = ">=6.2.2" },
+    { name = "mkdocs-macros-plugin", specifier = ">=1.3.7" },
+    { name = "mkdocs-markdownextradata-plugin", specifier = ">=0.2.6" },
+    { name = "mkdocs-material", specifier = ">=9.6.5" },
+    { name = "mkdocs-material-extensions", specifier = ">=1.3.1" },
+    { name = "mkdocstrings", specifier = ">=0.28.1" },
+    { name = "mkdocstrings-python", specifier = ">=1.16.1" },
+]
+type-check = [{ name = "mypy" }]
 
 [[package]]
 name = "django-adminfilters"
@@ -754,6 +788,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ba/5b/0dbe271fef3c2274b83dbcb1b19fa3dacf1f7e542382819294644e78ea8b/django_timezone_field-7.1.tar.gz", hash = "sha256:b3ef409d88a2718b566fabe10ea996f2838bc72b22d3a2900c0aa905c761380c", size = 13727, upload-time = "2025-01-11T17:49:54.486Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ec/09/7a808392a751a24ffa62bec00e3085a9c1a151d728c323a5bab229ea0e58/django_timezone_field-7.1-py3-none-any.whl", hash = "sha256:93914713ed882f5bccda080eda388f7006349f25930b6122e9b07bf8db49c4b4", size = 13177, upload-time = "2025-01-11T17:49:52.142Z" },
+]
+
+[[package]]
+name = "django-unfold"
+version = "0.60.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a0/d9/d5f0c37bb3f8d9a0ad0a960bc6aa73f1708ab495a1ee9ebe601f688abc62/django_unfold-0.60.0.tar.gz", hash = "sha256:bacb4a65fb7c1d711b518c47189f9895bc2816280c5b1863e403f5d41966895b", size = 1062758, upload-time = "2025-06-16T07:08:41.099Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ad/1c/ddeb44295524cc4772c8faf38c008047bfcec43682e48391d830b39d63bd/django_unfold-0.60.0-py3-none-any.whl", hash = "sha256:bf7cc89a825b4a9c7851bfb048e01b8775bc7e5509c9905fba63711eee3363f2", size = 1167966, upload-time = "2025-06-16T07:08:39.625Z" },
 ]
 
 [[package]]
@@ -1818,6 +1864,7 @@ dependencies = [
     { name = "django-stubs" },
     { name = "django-tailwind" },
     { name = "django-timezone-field" },
+    { name = "django-unfold" },
     { name = "django-valkey", extra = ["libvalkey"] },
     { name = "djangorestframework" },
     { name = "dramatiq" },
@@ -1914,7 +1961,7 @@ requires-dist = [
     { name = "click", specifier = ">=8.1.8" },
     { name = "daphne", specifier = ">=4.1.2" },
     { name = "django", specifier = ">=5.2" },
-    { name = "django-admin-extra-buttons", specifier = ">=1.6" },
+    { name = "django-admin-extra-buttons", editable = "../../saxix/django-admin-extra-buttons" },
     { name = "django-adminfilters", specifier = ">=2.5.2" },
     { name = "django-constance", specifier = ">=4.1.3" },
     { name = "django-csp", specifier = ">=3.8" },
@@ -1927,8 +1974,9 @@ requires-dist = [
     { name = "django-regex", specifier = ">=0.5" },
     { name = "django-strategy-field", specifier = ">=3.1" },
     { name = "django-stubs", specifier = ">=5.2" },
-    { name = "django-tailwind", specifier = ">=3.8" },
+    { name = "django-tailwind", specifier = ">=4" },
     { name = "django-timezone-field", specifier = ">=7" },
+    { name = "django-unfold", specifier = ">=0.60.0" },
     { name = "django-valkey", extras = ["libvalkey"], specifier = ">=0.1.8" },
     { name = "djangorestframework", specifier = ">=3.15.2" },
     { name = "dramatiq", specifier = ">=1.17.1" },
