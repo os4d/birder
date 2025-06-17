@@ -21,7 +21,7 @@ x-env: &env
 
 services:
   birder:
-    image: os4d/birder:2.0rc2.dev2
+    image: os4d/birder:local
     <<: [*env]
     ports:
       - 8000:8000

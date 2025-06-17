@@ -188,6 +188,7 @@ LOGGING = {
 }
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_HSTS_SECONDS = env("SECURE_HSTS_SECONDS")
 
 from .fragments.app import *  # noqa
 from .fragments.constance import *  # noqa

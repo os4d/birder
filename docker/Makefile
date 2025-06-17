@@ -54,12 +54,14 @@ build: ## build docker image
 		-e ADMIN_PASSWORD="password" \
 		-e CSRF_TRUSTED_ORIGINS="http://localhost:8000" \
 		-e CRYPT_SALT_KEYS="123" \
-		-e CRYPT_KEYS="123" \
+		-e CRYPT_KEYS="really-unsafe-super-secret-crypt-key-just-for-testing" \
 		-e DEBUG="1" \
 		-e CACHE_URL="redis://host.docker.internal:6379" \
 		-e VALKEY_URL="redis://host.docker.internal:6379" \
 		-e DATABASE_URL=sqlite:///birder.sqlite \
 		-e LOGGING_LEVEL="DEBUG" \
+		-e SECURE_HSTS_SECONDS=10 \
+		-e SECRET_KEY="really-unsafe-super-secret-key-just-for-testing-purposes" \
 		-e SUPERUSERS=${SUPERUSERS} \
 		-e STATIC_URL="static/" \
 		${RUN_OPTIONS} \
