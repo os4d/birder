@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "dramatiq_crontab",
     "adminfilters",
     "constance",
+    "recurrence",
     "flags",
     "social_django",
     "tailwind",

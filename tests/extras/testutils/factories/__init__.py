@@ -1,4 +1,5 @@
 from .base import get_factory_for_model
+from .deadline import DeadlineFactory
 from .logcheck import LogCheckFactory
 from .monitor import MonitorFactory
 from .project import EnvironmentFactory, ProjectFactory
@@ -6,6 +7,7 @@ from .user import SuperUserFactory, UserFactory
 from .userrole import UserRoleFactory
 
 __all__ = [
+    "DeadlineFactory",
     "EnvironmentFactory",
     "LogCheckFactory",
     "MonitorFactory",

@@ -42,6 +42,7 @@ dependencies = [
   "django-fernet-encrypted-fields>=0.3",
   "django-flags>=5.0.13",
   "django-markdown-deux>=1.0.6",
+  "django-recurrence>=1.11.1",
   "django-redis>=5.4",
   "django-regex>=0.5",
   "django-strategy-field>=3.1",
@@ -140,6 +141,7 @@ builder = [
 mypy = [
   "djangorestframework-stubs",
   "mypy",
+  "types-python-dateutil",
 ]
 
 [tool.hatch]

@@ -16,7 +16,7 @@ from flags.models import FlagState
 from unfold.admin import ModelAdmin as UnfoldModelAdmin
 
 from .forms import ChangeIconForm, FlagStateForm, MonitorForm
-from .models import Environment, LogCheck, Monitor, Project, User
+from .models import Deadline, Environment, LogCheck, Monitor, Project, User
 from .tasks import queue_trigger
 from .ws.utils import notify_ui
 
@@ -174,6 +174,14 @@ class LogCheckAdmin(BirderAdminMixin, admin.ModelAdmin[LogCheck]):
 class EnvironmentAdmin(BirderAdminMixin, admin.ModelAdmin[LogCheck]):
     list_display = ("name",)
     search_fields = ("name",)
+
+
+@admin.register(Deadline)
+class DeadlineAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[LogCheck]):
+    autocomplete_fields = ("monitor",)
+
+    list_display = ("monitor", "start", "end", "recurrences")
+    search_fields = ("monitor__name",)
 
 
 admin.site.unregister(FlagState)

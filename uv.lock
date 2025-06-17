@@ -710,6 +710,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/26/af/3ed785b661e4545709ba1618926bb33bd585d1fd2faa42a548756743e874/django-markdown-deux-1.0.6.zip", hash = "sha256:1f7b4da6b4dd1a9a84e3da90887d356f8afdd9a1e7d6468c081b8ac50a7980b1", size = 18157, upload-time = "2023-05-05T13:10:03.516Z" }
 
 [[package]]
+name = "django-recurrence"
+version = "1.11.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+    { name = "python-dateutil" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d1/c7/e8d8539d8ccb3ee6498206b6ecef6cd551c3a281e28ae16812b9bc868da3/django-recurrence-1.11.1.tar.gz", hash = "sha256:9c89444e651a78c587f352c5f63eda48ab2f53996347b9fcdff2d248f4fcff70", size = 133440, upload-time = "2022-01-25T10:14:06.734Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3d/0a/5dc0f1f408a5b5f00c64ec57f3868248ed65ee660980118867b1279eca96/django_recurrence-1.11.1-py3-none-any.whl", hash = "sha256:0c65f30872599b5813a9bab6952dada23c55894f28674490a753ada559f14bc5", size = 127256, upload-time = "2022-01-25T10:14:05.319Z" },
+]
+
+[[package]]
 name = "django-redis"
 version = "5.4.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1858,6 +1871,7 @@ dependencies = [
     { name = "django-fernet-encrypted-fields" },
     { name = "django-flags" },
     { name = "django-markdown-deux" },
+    { name = "django-recurrence" },
     { name = "django-redis" },
     { name = "django-regex" },
     { name = "django-strategy-field" },
@@ -1946,6 +1960,7 @@ docs = [
 mypy = [
     { name = "djangorestframework-stubs" },
     { name = "mypy" },
+    { name = "types-python-dateutil" },
 ]
 
 [package.metadata]
@@ -1970,6 +1985,7 @@ requires-dist = [
     { name = "django-fernet-encrypted-fields", specifier = ">=0.3" },
     { name = "django-flags", specifier = ">=5.0.13" },
     { name = "django-markdown-deux", specifier = ">=1.0.6" },
+    { name = "django-recurrence", specifier = ">=1.11.1" },
     { name = "django-redis", specifier = ">=5.4" },
     { name = "django-regex", specifier = ">=0.5" },
     { name = "django-strategy-field", specifier = ">=3.1" },
@@ -2056,6 +2072,7 @@ docs = [
 mypy = [
     { name = "djangorestframework-stubs" },
     { name = "mypy" },
+    { name = "types-python-dateutil" },
 ]
 
 [[package]]
@@ -3307,6 +3324,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/70/60/8cd6a3d78d00ceeb2193c02b7ed08f063d5341ccdfb24df88e61f383048e/typeguard-4.4.2.tar.gz", hash = "sha256:a6f1065813e32ef365bc3b3f503af8a96f9dd4e0033a02c28c4a4983de8c6c49", size = 75746, upload-time = "2025-02-16T16:28:26.205Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/cf/4b/9a77dc721aa0b7f74440a42e4ef6f9a4fae7324e17f64f88b96f4c25cc05/typeguard-4.4.2-py3-none-any.whl", hash = "sha256:77a78f11f09777aeae7fa08585f33b5f4ef0e7335af40005b0c422ed398ff48c", size = 35801, upload-time = "2025-02-16T16:28:24.793Z" },
+]
+
+[[package]]
+name = "types-python-dateutil"
+version = "2.9.0.20250516"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ef/88/d65ed807393285204ab6e2801e5d11fbbea811adcaa979a2ed3b67a5ef41/types_python_dateutil-2.9.0.20250516.tar.gz", hash = "sha256:13e80d6c9c47df23ad773d54b2826bd52dbbb41be87c3f339381c1700ad21ee5", size = 13943, upload-time = "2025-05-16T03:06:58.385Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c5/3f/b0e8db149896005adc938a1e7f371d6d7e9eca4053a29b108978ed15e0c2/types_python_dateutil-2.9.0.20250516-py3-none-any.whl", hash = "sha256:2b2b3f57f9c6a61fba26a9c0ffb9ea5681c9b83e69cd897c6b5f668d9c0cab93", size = 14356, upload-time = "2025-05-16T03:06:57.249Z" },
 ]
 
 [[package]]

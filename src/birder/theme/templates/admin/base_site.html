@@ -1,8 +1,6 @@
 {% extends "admin/base.html" %}
 
-{% block extrastyle %}
-<link style="sty">
-{% endblock extrastyle %}
+{% block extrastyle %}{% endblock %}
 
 {% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
 
