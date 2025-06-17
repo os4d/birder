@@ -162,6 +162,3 @@ packages = [ "src/birder" ]
 
 [tool.uv]
 package = true
-
-[tool.uv.sources]
-django-admin-extra-buttons = { path = "../../saxix/django-admin-extra-buttons", editable = true }

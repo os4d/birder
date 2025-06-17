@@ -1,0 +1,5 @@
+{% spaceless %}<li class="border-base-200 dark:border-base-700 hover:text-primary-600 max-md:last:rounded-b-default max-md:first:rounded-t-default md:first:rounded-l-default md:last:rounded-r-default dark:hover:text-primary-500 max-md:-mt-px border md:-ml-px">
+<a href="{{ button.url }}{% if is_popup %}&_popup=1{% endif %}"
+        {% include "admin_extra_buttons/includes/attrs.html" with button=button %}>
+    {% if button.icon %}<i class="{{ button.icon }}"></i>&nbsp;{% endif %}{{ button.label|title }}</a>
+</li>{% endspaceless %}

@@ -5,6 +5,10 @@
   --color-base: #fff;
   --color-primary: #3f3cbb;
 }
+.aeb-button{
+  @apply cursor-pointer flex grow items-center gap-2 px-3 py-2 text-left whitespace-nowrap;
+}
+
 .monitor-icon{
   @apply w-full float-right;
   img{

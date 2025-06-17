@@ -22,8 +22,7 @@
             <div class="chart-container w-full text-white ">
                 <canvas id="barChart" class="p-2"></canvas>
             </div>
-            <script>doit({{ labels }}, {{ data }}, {{ group_by }}, "{% if monitor.strategy.mode == 1 %}red{% else %}
-                green{% endif %}")</script>
+            <script>doit({{ labels }}, {{ data }}, {{ group_by }}, "{% if monitor.strategy.mode == 1 %}red{% else %}green{% endif %}")</script>
             <div class="my-2 flex text-xs">
                 <img class="w-4 mr-5" src="{% static 'images/clock.svg' %}">
                 <div class="w-32">Last check:</div>
