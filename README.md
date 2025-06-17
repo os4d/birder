@@ -4,7 +4,7 @@
 
 [![Test](https://github.com/os4d/birder/actions/workflows/test.yml/badge.svg)](https://github.com/os4d/birder/actions/workflows/test.yml)
 [![Lint](https://github.com/os4d/birder/actions/workflows/lint.yml/badge.svg)](https://github.com/os4d/birder/actions/workflows/lint.yml)
-[![codecov](https://codecov.io/github/os4d/birder/graph/badge.svg?token=FBUB7HML5S)](https://codecov.io/github/os4d/birder)
+[![codecov](https://codecov.io/github/os4d/birder/graph/badge.svg?token=DPDAWG3FHP)](https://codecov.io/github/os4d/birder)
 [![Documentation](https://github.com/os4d/birder/actions/workflows/docs.yml/badge.svg)](https://os4d.github.io/birder/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/os4d/birder)](https://hub.docker.com/repository/docker/os4d/birder/tags)
 [![Pypi](https://badge.fury.io/py/os4d-birder.svg)](https://badge.fury.io/py/os4d-birder)

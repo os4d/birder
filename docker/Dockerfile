@@ -45,7 +45,7 @@ zlib1g-dev  \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install uwsgi uv
+RUN pip install uwsgi uv circus
 
 # ------- builder -------
 FROM deps AS builder
@@ -71,7 +71,7 @@ FROM base_os AS dist
 ADD docker/conf /conf/
 ADD docker/bin/* /usr/local/bin/
 
-COPY --from=builder /usr/local/bin/uwsgi /usr/local/bin/
+COPY --from=builder /usr/local/bin/uwsgi /usr/local/bin/circusd /usr/local/bin/
 COPY --from=builder /venv /venv
 
 ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin:/usr/sbin \
