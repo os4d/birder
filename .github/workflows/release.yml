@@ -57,4 +57,4 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/actions/workflows/dockerize.yml/dispatches \
-            -d "{\"ref\":\"refs/tags/${{ github.ref_name }}\", \"inputs\": {\"version\": \"${{ github.ref_name }}\"}"
+          -d '{"ref":"${{ github.ref }}", "inputs": {"git_reference": "${{ github.ref_name }}", "tag": "${{ github.ref_name }}", "latest": "true"}')
