@@ -1,10 +1,6 @@
-{% extends "admin/base.html" %}{% load static %}
+{% extends "admin/base.html" %}
 
-{% block extrastyle %}
-    {{ block.super }}
-<link rel="stylesheet" href="{% static "birder-admin.css" %}">
-
-{% endblock extrastyle %}
+{% block extrastyle %}{% endblock %}
 
 {% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
 

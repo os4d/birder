@@ -91,8 +91,12 @@ class Project(models.Model):
         return reverse("project-env", kwargs={"project_id": self.pk, "env": env.name})
 
     def clean(self) -> None:
-        if self.default_environment and not self.environments.filter(pk=self.default_environment.pk).exists():
-            raise ValidationError(_("Default environment mus be one of selected environment"))
+        if (
+            self.pk
+            and self.default_environment
+            and not self.environments.filter(pk=self.default_environment.pk).exists()
+        ):
+            raise ValidationError(_("Default environment must be one of selected environment"))
         super().clean()
 
     @cached_property

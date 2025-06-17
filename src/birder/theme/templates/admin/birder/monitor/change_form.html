@@ -1,0 +1,11 @@
+{% extends "admin_extra_buttons/change_form.html" %}{% load static %}
+{% block extrahead %}{{ block.super }}
+    {{ form.media }}
+{% endblock extrahead %}
+
+{% block last-breadcrumb %}
+    {{ block.super }}
+    <div class="monitor-icon">
+        <img src="{{ original.icon }}">
+    </div>
+{% endblock last-breadcrumb %}

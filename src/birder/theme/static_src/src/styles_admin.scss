@@ -1,0 +1,35 @@
+@import "tailwindcss";
+@source "../../../**/*.{html,py,js}";
+
+@theme {
+  --color-base: #fff;
+  --color-primary: #3f3cbb;
+}
+.aeb-button{
+  @apply cursor-pointer flex grow items-center gap-2 px-3 py-2 text-left whitespace-nowrap;
+}
+
+.monitor-icon{
+  @apply w-full float-right;
+  img{
+    @apply w-12  float-right;
+  }
+}
+#submit-row2 {
+  @apply relative lg:sticky lg:bottom-0 z-40;
+  div {
+    @apply backdrop-blur-xs bg-white/80 pb-4 px-4 dark:bg-gray-900/80 lg:border-t lg:border-gray-200 relative lg:py-0 dark:border-gray-800;
+    div {
+      @apply flex flex-col-reverse gap-3 items-center mx-auto lg:flex-row-reverse container lg:h-[64px];
+      button {
+        @apply block border rounded border-transparent cursor-pointer font-medium px-3 py-2 text-white lg:w-auto lg:block;
+        &.primary {
+          @apply bg-red-600;
+        }
+        &.secondary {
+          @apply border-gray-200 transition-all hover:bg-gray-50 lg:block dark:border-gray-700  dark:hover:text-gray-200 dark:hover:bg-gray-900;
+        }
+      }
+    }
+  }
+}

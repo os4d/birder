@@ -4,12 +4,14 @@ from django.contrib.auth.views import LogoutView
 from django.urls import include, path
 
 from birder import views
+from birder.manage.site import ManageSite
 
 handler400 = views.error_400
 handler403 = views.error_403
 handler404 = views.error_404
 handler500 = views.error_500
 
+manage = ManageSite("manage")
 urlpatterns = [
     path("errors/400/", handler400, name="errors-400"),
     path("errors/403/", handler403, name="errors-403"),
@@ -17,6 +19,7 @@ urlpatterns = [
     path("errors/500/", handler500, name="errors-500"),
     path("social/", include("social_django.urls", namespace="social")),
     path("admin/", admin.site.urls),
+    path("manage/", manage.urls),
     path("login/", views.LoginView.as_view(), name="login"),
     path("logout/", LogoutView.as_view(), name="logout"),
     path("trigger/<int:pk>/<str:token>/", views.trigger, name="trigger"),

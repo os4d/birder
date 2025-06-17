@@ -770,6 +770,18 @@ wheels = [
 ]
 
 [[package]]
+name = "django-unfold"
+version = "0.60.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a0/d9/d5f0c37bb3f8d9a0ad0a960bc6aa73f1708ab495a1ee9ebe601f688abc62/django_unfold-0.60.0.tar.gz", hash = "sha256:bacb4a65fb7c1d711b518c47189f9895bc2816280c5b1863e403f5d41966895b", size = 1062758, upload-time = "2025-06-16T07:08:41.099Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ad/1c/ddeb44295524cc4772c8faf38c008047bfcec43682e48391d830b39d63bd/django_unfold-0.60.0-py3-none-any.whl", hash = "sha256:bf7cc89a825b4a9c7851bfb048e01b8775bc7e5509c9905fba63711eee3363f2", size = 1167966, upload-time = "2025-06-16T07:08:39.625Z" },
+]
+
+[[package]]
 name = "django-valkey"
 version = "0.2.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1832,6 +1844,7 @@ dependencies = [
     { name = "django-stubs" },
     { name = "django-tailwind" },
     { name = "django-timezone-field" },
+    { name = "django-unfold" },
     { name = "django-valkey", extra = ["libvalkey"] },
     { name = "djangorestframework" },
     { name = "dramatiq" },
@@ -1943,8 +1956,9 @@ requires-dist = [
     { name = "django-regex", specifier = ">=0.5" },
     { name = "django-strategy-field", specifier = ">=3.1" },
     { name = "django-stubs", specifier = ">=5.2" },
-    { name = "django-tailwind", specifier = ">=3.8" },
+    { name = "django-tailwind", specifier = ">=4" },
     { name = "django-timezone-field", specifier = ">=7" },
+    { name = "django-unfold", specifier = ">=0.60" },
     { name = "django-valkey", extras = ["libvalkey"], specifier = ">=0.1.8" },
     { name = "djangorestframework", specifier = ">=3.15.2" },
     { name = "dramatiq", specifier = ">=1.17.1" },

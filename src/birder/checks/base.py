@@ -3,11 +3,13 @@ from typing import TYPE_CHECKING, Any
 
 from django import forms
 from django.forms.forms import DeclarativeFieldsMetaclass
+from django.http import HttpRequest
 from django.template.base import Template
 from django.template.context import Context
 from django.utils.functional import SimpleLazyObject
 from django.utils.safestring import mark_safe
 from markdown_deux import markdown
+from unfold.widgets import BASE_INPUT_CLASSES
 
 if TYPE_CHECKING:
     from birder.models import Monitor
@@ -43,6 +45,16 @@ class WriteOnlyField(forms.CharField):
 
 class ConfigForm(forms.Form, metaclass=DefaultsMetaclass):
     help_text = ""
+
+    def __init__(
+        self,
+        request: HttpRequest | None = None,
+        *args: Any,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(request, *args, **kwargs)
+        for f in self.fields.values():
+            f.widget.attrs["class"] = " ".join(BASE_INPUT_CLASSES)
 
     def render_help(self, context: dict[str, Any], **extra_context: Any) -> str:
         return mark_safe(  # noqa: S308
