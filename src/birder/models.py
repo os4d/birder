@@ -1,10 +1,12 @@
 from collections.abc import Iterable
-from datetime import datetime
+from datetime import date, datetime
 from enum import StrEnum
 from functools import cached_property
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
+import recurrence.fields
 from constance import config
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, Group
 from django.core.cache import cache
@@ -41,6 +43,9 @@ KEY_PROGRAM_STATUS = "{0}:program:{1.pk}:program_status"
 KEY_PROGRAM_CHECKS = "{0}:program:{1.pk}:checks"
 
 valkey = Valkey.from_url(settings.DRAMATIQ_VALKEY_URL)
+
+if TYPE_CHECKING:
+    from django.db.models.manager import _T
 
 
 def get_cache_key(pattern: str, *args: Any) -> str:
@@ -141,6 +146,17 @@ class UserRole(models.Model):
         return self.user.username
 
 
+class MonitorQuerySet(models.query.QuerySet):
+    pass
+
+
+class MonitorManager(models.Manager):
+    queryset_class = MonitorQuerySet
+
+    def get_queryset(self) -> "models.QuerySet[_T]":
+        return super().get_queryset().select_related("environment", "project")
+
+
 class Monitor(models.Model):
     class Status(StrEnum):
         SUCCESS = "ok"
@@ -183,14 +199,19 @@ class Monitor(models.Model):
         "(or missing notifications in case or remote invocation) produce an error",
     )
 
+    objects = MonitorManager()
+
     class Meta(TypedModelMeta):
-        ordering = ("name",)
+        ordering = (
+            "project__name",
+            "name",
+        )
         constraints = [
             models.UniqueConstraint("project", Lower("name"), name="unique_project_monitor_name"),
         ]
 
     def __str__(self) -> str:
-        return self.name
+        return f"{self.project.name}/{self.name} ({self.environment.name})"
 
     def get_absolute_url(self) -> str:
         return reverse(
@@ -364,3 +385,34 @@ class LogCheck(models.Model):
 
     def __str__(self) -> str:
         return self.monitor.name
+
+
+class Deadline(models.Model):
+    monitor = models.ForeignKey(Monitor, on_delete=models.CASCADE, related_name="deadlines")
+    title = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    start = models.DateField(default=timezone.now)
+    end = models.DateField(blank=True, null=True)  # type: ignore[misc]
+    recurrences = recurrence.fields.RecurrenceField()
+    warn_threshold = models.IntegerField(default=7, help_text="How many days before the deadline should warn monitor")
+    alarm_threshold = models.IntegerField(default=1, help_text="How many days before the deadline should alarm monitor")
+
+    class Meta:
+        ordering = ["-start"]
+
+    def __str__(self) -> str:
+        return self.title
+
+    @cached_property
+    def next(self) -> date:
+        return self.recurrences.after(datetime.today(), inc=True).date()
+
+    @property
+    def is_warn(self) -> bool:
+        warn_offset = (datetime.today() - relativedelta(days=self.warn_threshold)).date()
+        return self.next > warn_offset
+
+    @property
+    def is_expiring(self) -> bool:
+        alarm_offset = (datetime.today() - relativedelta(days=self.warn_threshold)).date()
+        return self.next > alarm_offset

@@ -8,7 +8,7 @@
     <div class="px-2 sm:px-10 md:px-32 xl:px-80">
         <div id="monitor-{{ monitor.pk }}" class="monitor-detail">
             <div class="flex items-start mb-4">
-                    <div class="flex-shrink "><img class="icon" src="{{ monitor.icon }}"></div>
+                <div class="flex-shrink "><img class="icon" src="{{ monitor.icon }}"></div>
                 <div class="flex-grow w-max-2/3 text-4xl overflow-clip pl-3">{{ monitor.name|truncatechars:"20" }}</div>
                 <div class="flex-shrink text-center text-sm">
                     <img class="w-12 align-top status status-{{ monitor.status }}" src="{% status monitor.status %}">
@@ -22,7 +22,8 @@
             <div class="chart-container w-full text-white ">
                 <canvas id="barChart" class="p-2"></canvas>
             </div>
-            <script>doit({{ labels }}, {{ data }}, {{ group_by }}, "{% if monitor.strategy.mode == 1 %}red{% else %}green{% endif %}")</script>
+            <script>doit({{ labels }}, {{ data }}, {{ group_by }}, "{% if monitor.strategy.mode == 1 %}red{% else %}
+                green{% endif %}")</script>
             <div class="my-2 flex text-xs">
                 <img class="w-4 mr-5" src="{% static 'images/clock.svg' %}">
                 <div class="w-32">Last check:</div>
@@ -64,9 +65,23 @@
                     </div>
                 {% endfor %}
             </div>
-            <div>
-
-            </div>
+            <table class="m-0 p-0">
+                {% for deadline in monitor.deadlines.all %}
+                    <tr>
+                        <td class="w-4 text-center px-2 p-0">
+                            {% if deadline.is_expiring %}
+                                <div class="dot bg-red-600 w-4 h-4"></div>
+                            {% elif deadline.is_warn %}
+                                <div class="dot bg-orange-400"></div>
+                            {% else %}
+                                <div class="dot bg-gray-300"></div>
+                            {% endif %}
+                        </td>
+                        <td class="w-32 break-keep">{{ deadline.next|date:"l, d M Y" }}</td>
+                        <td class="w-80 break-all">{{ deadline.title }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
         </div>
 
     </div>
