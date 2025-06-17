@@ -72,6 +72,13 @@ def monitor(project) -> "Monitor":
 
 
 @pytest.fixture
+def deadline(project) -> "Monitor":
+    from testutils.factories import DeadlineFactory
+
+    return DeadlineFactory()
+
+
+@pytest.fixture
 def user_role(project):
     from testutils.factories import UserRoleFactory
 
