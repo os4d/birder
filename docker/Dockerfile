@@ -1,4 +1,4 @@
-FROM python:3.13-slim-bookworm AS base_os
+FROM python:3.12-slim-bookworm AS base_os
 ARG VERSION
 ARG GIT_SHA
 ARG BUILD_DATE
@@ -99,5 +99,5 @@ LABEL org.opencontainers.image.revision=$GIT_SHA
 LABEL org.opencontainers.image.source="https://github.com/os4d/birder/tree/${GIT_SHA:-develop}/"
 LABEL org.opencontainers.image.title="Birder"
 LABEL org.opencontainers.image.version="$VERSION"
-LABEL org.opencontainers.image.url="https://hub.docker.com/repository/docker/os4d/bbirder/tags/"
+LABEL org.opencontainers.image.url="https://hub.docker.com/repository/docker/os4d/birder/tags/"
 LABEL org.opencontainers.image.vendor="OS4D"

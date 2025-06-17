@@ -7,7 +7,7 @@ import birder
 
 
 @click.group()
-@click.version_option(version=birder.VERSION)
+@click.version_option(version=birder.VERSION, message="Birder %(version)s")
 def cli(**kwargs: Any) -> None:
     import django
 
