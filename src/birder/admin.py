@@ -149,11 +149,13 @@ class MonitorAdmin(BirderAdminMixin, admin.ModelAdmin[Monitor]):
         self.get_common_context(request, pk)
         monitor: Monitor = self.object
         assert_object_or_404(monitor)
-
-        if monitor.run():
-            self.message_user(request, "Monitor checked", level=messages.SUCCESS)
-        else:
-            self.message_user(request, "Monitor failed", level=messages.ERROR)
+        try:
+            if monitor.run():
+                self.message_user(request, "Monitor checked", level=messages.SUCCESS)
+            else:
+                self.message_user(request, "Monitor failed", level=messages.ERROR)
+        except Exception as e:  # noqa #BLE001
+            self.message_user(request, str(e), level=messages.ERROR)
 
     @button()
     def configure(self, request: HttpRequest, pk: str) -> HttpResponse:

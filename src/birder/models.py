@@ -403,7 +403,7 @@ class Deadline(models.Model):
     description = models.TextField(blank=True)
     start = models.DateField(default=timezone.now, help_text="Start date")
     end = models.DateField(blank=True, null=True)  # type: ignore[misc]
-    time = models.TimeField(blank=True, null=True, help_text="The time at which the activity/task happpen")
+    time = models.TimeField(blank=True, null=True, help_text="The time at which the activity/task happpen")  # type: ignore[misc]
 
     recurrences = recurrence.fields.RecurrenceField()
     warn_threshold = models.IntegerField(default=7, help_text="How many days before the deadline should warn monitor")

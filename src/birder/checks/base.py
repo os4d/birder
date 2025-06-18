@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, Any
 
 from django import forms
 from django.forms.forms import DeclarativeFieldsMetaclass
-from django.http import HttpRequest
 from django.template.base import Template
 from django.template.context import Context
 from django.utils.functional import SimpleLazyObject
@@ -49,11 +48,10 @@ class ConfigForm(forms.Form, metaclass=DefaultsMetaclass):
 
     def __init__(
         self,
-        request: HttpRequest | None = None,
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        super().__init__(request, *args, **kwargs)
+        super().__init__(*args, **kwargs)
         for f in self.fields.values():
             f.widget.attrs["class"] = " ".join(BASE_INPUT_CLASSES)
 
