@@ -13,7 +13,8 @@ CONFIG: dict[str, ConfigItem] = {
     "AZURE_CLIENT_KEY": (str, ""),
     "AZURE_CLIENT_SECRET": (str, ""),
     "AZURE_TENANT_ID": (str, ""),
-    "CACHE_URL": (str, "redis://cache-url:6379/0"),
+    "CACHE_URL": (str, ""),
+    "CHANNEL_BROKER": (str, ""),
     "CRYPT_KEYS": (list, []),
     "CRYPT_SALT_KEYS": (list, []),
     "CSRF_TRUSTED_ORIGINS": (list, []),
@@ -24,6 +25,7 @@ CONFIG: dict[str, ConfigItem] = {
     "GOOGLE_CLIENT_ID": (str, ""),
     "GOOGLE_CLIENT_SECRET": (str, ""),
     "LOG_LEVEL": (str, "ERROR"),
+    "REDIS_SERVER": (str, "redis://redis-server:6379/0"),
     "SECRET_KEY": (str, ""),
     "SECURE_HSTS_SECONDS": (int, 0),
     "SOCIAL_AUTH_LOGIN_URL": (str, "/login/"),
@@ -33,6 +35,6 @@ CONFIG: dict[str, ConfigItem] = {
     "STATIC_ROOT": (str, "/app/static/"),
     "STATIC_URL": (str, "static/"),
     "SUPERUSERS": (list, []),
-    "VALKEY_URL": (str, "redis://valkey-url:6379/0"),
+    "TASK_BROKER": (str, ""),
 }
 env = Env(**CONFIG)

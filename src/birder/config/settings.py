@@ -88,7 +88,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [env("VALKEY_URL")],
+            "hosts": [env("CHANNEL_BROKER") or env("REDIS_SERVER")],
         },
     },
 }
@@ -97,7 +97,7 @@ CHANNEL_LAYERS = {
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {"default": env.db("DATABASE_URL")}
-CACHE_URL = env("CACHE_URL")
+CACHE_URL = env("CACHE_URL") or env("REDIS_SERVER")
 CACHES = {
     "default": {
         "BACKEND": "redis_lock.django_cache.RedisCache",

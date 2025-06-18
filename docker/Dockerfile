@@ -75,19 +75,22 @@ COPY --from=builder /usr/local/bin/uwsgi /usr/local/bin/circusd /usr/local/bin/
 COPY --from=builder /venv /venv
 
 ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin:/usr/sbin \
-    VERSION=$VERSION \
-    PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
     DJANGO_SETTINGS_MODULE="birder.config.settings" \
-    STATIC_URL="/static/" \
-    PYTHONPATH=""\
     GIT_SHA=$GIT_SHA \
     PGSSLCERT="/tmp/postgresql.crt" \
-    UWSGI_PROCESSES=4
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=""\
+    PYTHONUNBUFFERED=1 \
+    START_APP=true \
+    START_CRON=true \
+    START_WORKER=true \
+    STATIC_URL="/static/" \
+    UWSGI_PROCESSES=4 \
+    VERSION=$VERSION
 
 EXPOSE 8000
-ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["run"]
+ENTRYPOINT ["docker-entrypoint.sh"]
 
 LABEL maintainer="brd@os4d.org"
 LABEL org.opencontainers.image.authors="brd@os4d.org"

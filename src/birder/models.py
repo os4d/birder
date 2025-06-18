@@ -21,9 +21,9 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from django_stubs_ext.db.models import TypedModelMeta
 from encrypted_fields import EncryptedJSONField
+from redis import Redis
 from strategy_field.fields import StrategyField
 from timezone_field import TimeZoneField
-from valkey import Valkey
 
 from birder.checks.base import BaseCheck
 from birder.checks.registry import registry
@@ -42,7 +42,7 @@ KEY_PROGRAM_STATUS = "{0}:program:{1.pk}:program_status"
 
 KEY_PROGRAM_CHECKS = "{0}:program:{1.pk}:checks"
 
-valkey = Valkey.from_url(settings.DRAMATIQ_VALKEY_URL)
+redis = Redis.from_url(settings.CACHE_URL)
 
 if TYPE_CHECKING:
     from django.db.models.manager import _T
@@ -101,7 +101,7 @@ class Project(models.Model):
 
     @cached_property
     def data(self) -> dict:
-        v = valkey.hgetall(get_cache_key(KEY_PROGRAM_CHECKS, self))
+        v = redis.hgetall(get_cache_key(KEY_PROGRAM_CHECKS, self))
         return {k.decode("utf-8"): v.decode("utf-8") for k, v in v.items()}  # type: ignore[union-attr]
 
     @cached_property
@@ -281,7 +281,7 @@ class Monitor(models.Model):
             cache.set(get_cache_key(KEY_STATUS, self), st, timeout=86400)
 
             key = get_cache_key(KEY_PROGRAM_CHECKS, self.project)
-            valkey.hset(key, str(self.pk), st)
+            redis.hset(key, str(self.pk), st)
         else:
             result = False
             if self.last_timestamp_success:

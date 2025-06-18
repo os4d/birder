@@ -1,15 +1,12 @@
-import dramatiq.brokers.redis
-import valkey
+from redis import ConnectionPool
 
 from ..settings import env
 
-dramatiq.brokers.redis.redis = valkey
-
-DRAMATIQ_VALKEY_URL = env("VALKEY_URL")
+DRAMATIQ_VALKEY_URL = env("TASK_BROKER") or env("REDIS_SERVER")
 DRAMATIQ_BROKER = {
     "BROKER": "dramatiq.brokers.redis.RedisBroker",
     "OPTIONS": {
-        "connection_pool": valkey.ConnectionPool.from_url(DRAMATIQ_VALKEY_URL),
+        "connection_pool": ConnectionPool.from_url(DRAMATIQ_VALKEY_URL),
     },
     "MIDDLEWARE": [
         # "dramatiq.middleware.Prometheus",

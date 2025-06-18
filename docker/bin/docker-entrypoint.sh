@@ -10,18 +10,27 @@ chown -R birder:os4d /app /var/lib/nginx
 echo "Command line is: '$1'"
 
 case "$1" in
-    run)
-       django-admin upgrade
-       circusd /conf/circus.ini
+    run | "")
+      birder upgrade
+      circusd /conf/circus.ini
+      ;;
+    check)
+       birder check --deploy
       ;;
     upgrade)
-      django-admin upgrade --force
+      birder upgrade --force
+      ;;
+    app)
+      export START_WORKER=false
+      export START_CRON=false
+      export START_APP=true
+      circusd /conf/circus.ini
       ;;
     worker)
-      set -- gosu brd:os4d djano-admin rundramatiq
+      set -- gosu brd:os4d django-admin rundramatiq
       ;;
     beat)
-      set -- gosu brd:os4d djano-admin crontab
+      set -- gosu brd:os4d django-admin crontab
       ;;
 esac
 
