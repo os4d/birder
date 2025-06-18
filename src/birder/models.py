@@ -102,7 +102,7 @@ class Project(models.Model):
     @cached_property
     def data(self) -> dict:
         v = redis.hgetall(get_cache_key(KEY_PROGRAM_CHECKS, self))
-        return {k.decode("utf-8"): v.decode("utf-8") for k, v in v.items()}  # type: ignore[union-attr]
+        return {k.decode("utf-8"): v.decode("utf-8") for k, v in v.items()}
 
     @cached_property
     def failures(self) -> int:
