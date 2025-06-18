@@ -174,7 +174,7 @@ jobs:
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           https://api.github.com/repos/${{ github.repository }}/actions/workflows/dockerize.yml/dispatches \
-          -d '{"ref":"${{ github.ref }}", "inputs": {"git_reference": "${{ needs.test.outputs.commit }}", "tag": "${{ github.ref_name }}"}')
+          -d '{"ref":"${{ github.ref }}", "inputs": {"git_reference": "${{ needs.test.outputs.commit }}", "tag": "${{ github.ref_name }}"}}')
         CURL_EXIT_CODE=$?
         if [[ $CURL_EXIT_CODE -ne 0 ]]; then
           printf "::error::cURL failed %d.\nOutput cURL: %s\n" "$CURL_EXIT_CODE" "$RES"
