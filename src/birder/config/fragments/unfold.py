@@ -1,9 +1,12 @@
-from typing import Any
+from typing import TYPE_CHECKING
 
 from django.conf import settings
-from django.http import HttpRequest
 from django.templatetags.static import static
 from django.urls import reverse_lazy
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest
+
 
 COMMON_CONFIG = {
     "SITE_TITLE": "Birder: ",
@@ -93,22 +96,5 @@ MANAGE_CONFIG = {
 }
 
 
-def dashboard_callback(request: HttpRequest, context: dict[str, Any]) -> dict[str, Any]:
-    context.update(
-        {
-            "sample": "example",  # this will be injected into templates/admin/index.html
-        }
-    )
-    return context
-
-
 def environment_callback(request: "HttpRequest") -> tuple[str, str]:
     return settings.ENVIRONMENT  # type: ignore[return-value]
-
-
-def badge_callback(request: "HttpRequest") -> int:
-    return 3
-
-
-def permission_callback(request: "HttpRequest") -> bool:
-    return request.user.is_superuser

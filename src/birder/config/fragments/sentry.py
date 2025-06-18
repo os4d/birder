@@ -10,7 +10,6 @@ from .. import env
 from . import app
 
 SENTRY_DSN = env("SENTRY_DSN")
-SENTRY_PROJECT = env("SENTRY_PROJECT")
 sentry_logging = LoggingIntegration(
     level=logging.INFO,  # Capture info and above as breadcrumbs
     event_level=logging.ERROR,  # Send errors as events
