@@ -1,23 +1,22 @@
 x-env: &env
   environment:
-    - DEBUG=false
-    - ALLOWED_HOSTS=*
-    - CSRF_COOKIE_SECURE=False
-    - CSRF_TRUSTED_ORIGINS=http://localhost:8000
-    - SECRET_KEY=sensitive-secret-key
-    - CACHE_URL=redis://redis/1
-    - CRYPT_SALT_KEYS=123
-    - CRYPT_KEYS=123
-    - VALKEY_URL=redis://redis/2
-    - POSTGRES_PASSWORD=password
-    - POSTGRES_DB=birder
-    - POSTGRES_USER=postgres
-    - POSTGRES_HOST_AUTH_METHOD=trust
-    - DATABASE_URL=postgres://postgres:password@db:5432/birder
     - ADMIN_EMAIL=admin@example.com
     - ADMIN_PASSWORD=password
+    - ALLOWED_HOSTS=*
+    - CRYPT_KEYS=123
+    - CRYPT_SALT_KEYS=123
+    - CSRF_COOKIE_SECURE=False
+    - CSRF_TRUSTED_ORIGINS=http://localhost:8000
+    - DATABASE_URL=postgres://postgres:password@db:5432/birder
+    - DEBUG=false
     - GOOGLE_CLIENT_ID=
     - GOOGLE_CLIENT_SECRET=
+    - POSTGRES_DB=birder
+    - POSTGRES_HOST_AUTH_METHOD=trust
+    - POSTGRES_PASSWORD=password
+    - POSTGRES_USER=postgres
+    - REDIS_SERVER=redis://redis/2
+    - SECRET_KEY=sensitive-secret-key
 
 services:
   birder:
@@ -41,7 +40,7 @@ services:
     <<:  [*env]
     restart: always
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "db", "-d", "birder" ]
+      test: [ "CMD", "pg_isready", "-U", "postgres", "-d", "birder" ]
       start_period: 5s
       start_interval: 1s
       interval: 5s
