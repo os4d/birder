@@ -138,6 +138,8 @@ class MonitorAdmin(BirderAdminMixin, admin.ModelAdmin[Monitor]):
         ctx = self.get_common_context(request, pk)
         monitor: Monitor = self.object
         assert_object_or_404(monitor)
+        if not isinstance(monitor.configuration, dict):
+            monitor.configuration = {}
         if monitor.strategy.config_class:
             if request.method == "POST":
                 form = monitor.strategy.config_class(request.POST, initial=monitor.configuration)

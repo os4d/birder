@@ -61,7 +61,7 @@ def project(environment):
 
     env1 = EnvironmentFactory(name="development")
     env2 = EnvironmentFactory(name="production")
-    return ProjectFactory(environments=[env1, env2])
+    return ProjectFactory(environments=[env1, env2], default_environment=env1)
 
 
 @pytest.fixture

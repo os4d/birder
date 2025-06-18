@@ -1,4 +1,4 @@
 from .. import env
 
 SUPERUSERS = env("SUPERUSERS")
-ENVIRONMENT = env("ENVIRONMENT")
+ENVIRONMENT = env("ENVIRONMENT") or ["develop", "info"]

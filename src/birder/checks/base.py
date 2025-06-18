@@ -45,6 +45,7 @@ class WriteOnlyField(forms.CharField):
 
 class ConfigForm(forms.Form, metaclass=DefaultsMetaclass):
     help_text = ""
+    initial = {}
 
     def __init__(
         self,
@@ -131,7 +132,10 @@ class BaseCheck:
 
     @property
     def address(self) -> str:
-        return self.address_format.format(**self.config)
+        try:
+            return self.address_format.format(**self.config)
+        except (ValueError, KeyError):
+            return ""
 
     def check(self, raise_error: bool = False) -> bool:
         """Perform the check."""

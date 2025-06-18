@@ -103,7 +103,7 @@ def dashboard_callback(request: HttpRequest, context: dict[str, Any]) -> dict[st
 
 
 def environment_callback(request: "HttpRequest") -> tuple[str, str]:
-    return settings.ENVIRONMENT
+    return settings.ENVIRONMENT  # type: ignore[return-value]
 
 
 def badge_callback(request: "HttpRequest") -> int:

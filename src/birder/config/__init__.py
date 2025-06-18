@@ -32,6 +32,7 @@ CONFIG: dict[str, ConfigItem] = {
     "SOCIAL_AUTH_RAISE_EXCEPTIONS": (bool, False),
     "SOCIAL_AUTH_REDIRECT_IS_HTTPS": (bool, False),
     "SOCIAL_AUTH_WHITELISTED_DOMAINS": (list, []),
+    "SENTRY_DSN": (str, ""),
     "STATIC_ROOT": (str, "/app/static/"),
     "STATIC_URL": (str, "static/"),
     "SUPERUSERS": (list, []),
