@@ -23,6 +23,10 @@ class LoginForm(AuthenticationForm):
 class ChangeIconForm(forms.Form):
     icon = forms.URLField(required=False)
 
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["icon"].widget.attrs["class"] = " ".join(SELECT_CLASSES)
+
     @property
     def media(self) -> forms.Media:
         media = super().media

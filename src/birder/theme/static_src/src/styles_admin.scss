@@ -1,20 +1,22 @@
 @import "tailwindcss";
+
 @source "../../../**/*.{html,py,js}";
 
 @theme {
   --color-base: #fff;
   --color-primary: #3f3cbb;
 }
-.aeb-button{
+.aeb-button {
   @apply cursor-pointer flex grow items-center gap-2 px-3 py-2 text-left whitespace-nowrap;
 }
 
-.monitor-icon{
+.monitor-icon {
   @apply w-full float-right;
-  img{
+  img {
     @apply w-12  float-right;
   }
 }
+
 #submit-row2 {
   @apply relative lg:sticky lg:bottom-0 z-40;
   div {
@@ -26,9 +28,74 @@
         &.primary {
           @apply bg-red-600;
         }
+
         &.secondary {
           @apply border-gray-200 transition-all hover:bg-gray-50 lg:block dark:border-gray-700  dark:hover:text-gray-200 dark:hover:bg-gray-900;
         }
+      }
+    }
+  }
+}
+
+.icon-list {
+  @apply grid grid-cols-8 gap-2;
+
+  gap: 5px;
+  //background-color: #e3e2e2;
+  padding: 10px;
+
+  .frame {
+    border: 1px solid black;
+    border-radius: 2px;
+    padding: 10px;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+      background-color: white;
+    &:hover {
+      border-color: white;
+    }
+
+
+    img {
+      height: 40px;
+    }
+
+    label {
+      color: black;
+    }
+  }
+}
+
+
+form#config_form {
+  width: 100%;
+
+  th {
+
+  }
+
+  td {
+    width: 100%;
+
+    input[type=text], input[type=url], input[type=email], input[type=password], textarea {
+      width: 80%;
+    }
+  }
+
+}
+
+html.dark {
+  div.recurrence-widget {
+
+    a.recurrence-label {
+      color: white;
+    }
+
+    table.grid {
+      td.active {
+        color: #FFFFFF;
+        background-color: #cf2222;
       }
     }
   }

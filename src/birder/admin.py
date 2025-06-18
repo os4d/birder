@@ -179,7 +179,7 @@ class EnvironmentAdmin(BirderAdminMixin, admin.ModelAdmin[LogCheck]):
 
 
 @admin.register(Deadline)
-class DeadlineAdmin(ExtraButtonsMixin, AdminFiltersMixin, admin.ModelAdmin[LogCheck]):
+class DeadlineAdmin(BirderAdminMixin, admin.ModelAdmin[LogCheck]):
     autocomplete_fields = ("monitor",)
 
     list_display = ("monitor", "start", "end", "recurrences")
