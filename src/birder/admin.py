@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 from admin_extra_buttons.decorators import button
 from admin_extra_buttons.mixins import ExtraButtonsMixin
@@ -8,6 +9,7 @@ from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin as _UserAdmin
 from django.db.models import Model, QuerySet
+from django.forms import Form
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.templatetags.static import static
@@ -19,6 +21,9 @@ from .forms import ChangeIconForm, FlagStateForm, MonitorForm
 from .models import Deadline, Environment, LogCheck, Monitor, Project, User
 from .tasks import queue_trigger
 from .ws.utils import notify_ui
+
+if TYPE_CHECKING:
+    from django.contrib.admin.options import _FieldGroups
 
 
 class BirderAdminMixin(ExtraButtonsMixin, AdminFiltersMixin, UnfoldModelAdmin):
@@ -38,6 +43,7 @@ class ProjectAdmin(BirderAdminMixin, admin.ModelAdmin[Project]):
         "public",
     )
     filter_horizontal = ("environments",)
+    conditional_fields = {"default_environment": "not pk"}
 
     def get_changeform_initial_data(self, request: HttpRequest) -> dict:
         initial = super().get_changeform_initial_data(request)
@@ -48,6 +54,16 @@ class ProjectAdmin(BirderAdminMixin, admin.ModelAdmin[Project]):
     def monitors(self, request: HttpRequest, pk: str) -> HttpResponseRedirect:
         url = reverse("admin:birder_monitor_changelist")
         return HttpResponseRedirect(f"{url}?project__exact={pk}")
+
+    def get_fields(self, request: "HttpRequest", obj: Project | None = None) -> "_FieldGroups":
+        if obj:
+            return super().get_fields(request, obj)
+        return ["name", "environments"]
+
+    def save_model(self, request: HttpRequest, obj: Model, form: Form, change: Any) -> None:
+        if not obj.pk:
+            obj.default_environment = form.cleaned_data["environments"].first()
+        super().save_model(request, obj, form, change)
 
 
 def assert_object_or_404(obj: Model | None) -> None:
@@ -69,9 +85,15 @@ class MonitorAdmin(BirderAdminMixin, admin.ModelAdmin[Monitor]):
     autocomplete_fields = ("environment", "project")
     form = MonitorForm
     change_form_template = None
+    fields = (
+        "name",
+        "project",
+        "environment",
+        "strategy",
+    )
 
     @admin.display(ordering="strategy")
-    def checker(self, obj: Monitor) -> bool:
+    def checker(self, obj: Monitor) -> str:
         return obj.strategy.__class__.__name__
 
     @admin.display()
