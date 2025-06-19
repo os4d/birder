@@ -1,9 +1,11 @@
 from contextlib import nullcontext as does_not_raise
 from typing import TYPE_CHECKING
+from unittest.mock import patch
 
 import pytest
 from django.http import Http404
 from django.urls import reverse
+from pyquery import PyQuery
 from pytest_django.fixtures import SettingsWrapper
 from strategy_field.utils import fqn
 
@@ -72,6 +74,16 @@ def test_monitor_check(app: "DjangoTestApp", mocked_responses, monitor: Monitor)
 
     mocked_responses.add("GET", monitor.strategy.config["url"], status=200)
     res.click("Check")
+
+
+def test_monitor_check_error(app: "DjangoTestApp", mocked_responses, monitor: Monitor) -> None:
+    url = reverse("admin:birder_monitor_change", args=[monitor.pk])
+    res = app.get(url)
+    with patch.object(Monitor, "run") as m:
+        m.side_effect = Exception("Error executing")
+        res = res.click("Check").follow()
+        pq = PyQuery(res.body)
+        assert pq(".errornote").text() == "Error executing"
 
 
 def test_monitor_configure(app: "DjangoTestApp", mocked_responses, monitor: Monitor) -> None:

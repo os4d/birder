@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 import responses
+from django.utils.deprecation import RemovedInDjango60Warning
 
 if TYPE_CHECKING:
     from django_webtest import DjangoTestApp
@@ -18,6 +19,12 @@ sys.path.insert(0, str(here / "extras"))
 
 
 def pytest_configure(config):
+    import warnings
+
+    warnings.filterwarnings("ignore", category=DeprecationWarning, module="pyasn1.codec.ber.encoder")
+    warnings.filterwarnings("ignore", category=UserWarning, module="pytest_celery.vendors.worker")
+    warnings.filterwarnings("ignore", category=RemovedInDjango60Warning, module="django.db.models")
+
     os.environ["DJANGO_SETTINGS_MODULE"] = "birder.config.settings"
     os.environ["SECRET_KEY"] = "super-secret"
     os.environ["STATIC_URL"] = "static/"

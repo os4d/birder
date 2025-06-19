@@ -22,7 +22,7 @@ class LoginForm(AuthenticationForm):
 
 
 class ChangeIconForm(forms.Form):
-    icon = forms.URLField(required=False)
+    icon = forms.URLField(required=False, assume_scheme="https")
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
