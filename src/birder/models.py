@@ -228,7 +228,7 @@ class Monitor(models.Model):
             "monitor-detail", kwargs={"project_id": self.project.pk, "env": self.environment.name, "pk": self.pk}
         )
 
-    @cached_property
+    @property
     def icon(self) -> str:
         if self.custom_icon and self.custom_icon.startswith("http"):
             return self.custom_icon

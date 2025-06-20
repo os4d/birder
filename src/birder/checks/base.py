@@ -132,7 +132,7 @@ class BaseCheck:
     def address(self) -> str:
         try:
             return self.address_format.format(**self.config)
-        except (ValueError, KeyError):
+        except (ValueError, KeyError, TypeError):
             return ""
 
     def check(self, raise_error: bool = False) -> bool:

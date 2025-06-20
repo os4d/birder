@@ -1,5 +1,6 @@
 from unittest import mock
 
+import pytest
 from freezegun import freeze_time
 
 from birder.exceptions import CheckError
@@ -43,6 +44,12 @@ def test_model_monitor_run_local_trigger(monitor: Monitor):
         assert not monitor.run()
         assert monitor.failures == 3
         assert monitor.status == Monitor.Status.FAIL
+
+
+@pytest.mark.parametrize("icon", ["http:/example.com/image.jpg", "static/logo.jpg", ""])
+def test_model_monitor_icon(monitor: Monitor, icon):
+    monitor.custom_icon = icon
+    assert monitor.icon
 
 
 def test_model_monitor_run_remote_trigger(monitor: Monitor):

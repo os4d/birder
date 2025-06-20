@@ -15,6 +15,13 @@ def test_http():
     assert c.config == c.config_class.DEFAULTS
 
 
+def test_address():
+    c = HttpCheck(Mock(configuration={"url": "http://www.google.com/?a=1", "timeout": 10, "status_success": "200"}))
+    assert c.address
+    c = HttpCheck(Mock(configuration=22))
+    assert c.address == ""
+
+
 def test_http_check_success(mocked_responses):
     mocked_responses.add("GET", "http://www.google.com/", status=200)
     c = HttpCheck(Mock(configuration={"url": "http://www.google.com/?a=1", "timeout": 10, "status_success": "200"}))
