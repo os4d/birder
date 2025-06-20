@@ -195,6 +195,7 @@ from .fragments.constance import *  # noqa
 from .fragments.crypt import *  # noqa
 
 from .fragments.dramatiq import *  # noqa
+from .fragments.sentry import *  # noqa
 from .fragments.social_auth import *  # noqa
 from .fragments.tailwind import *  # noqa
 from .fragments.unfold import *  # noqa

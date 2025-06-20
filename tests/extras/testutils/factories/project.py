@@ -1,3 +1,5 @@
+from typing import Any
+
 import factory
 
 from birder.models import Environment, Project
@@ -10,6 +12,10 @@ class ProjectFactory(AutoRegisterModelFactory):
 
     class Meta:
         model = Project
+
+    @classmethod
+    def _after_postgeneration(cls, instance: "Project", create: bool, results: Any = None):
+        instance.save()
 
     @factory.post_generation
     def environments(self, create, extracted, **kwargs):

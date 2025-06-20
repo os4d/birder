@@ -1,8 +1,10 @@
+import datetime
+
 import factory.fuzzy
 from strategy_field.utils import fqn
 
 from birder.checks import HttpCheck
-from birder.models import Monitor
+from birder.models import DataHistory, Monitor
 
 from .base import AutoRegisterModelFactory
 from .project import EnvironmentFactory, ProjectFactory
@@ -16,3 +18,11 @@ class MonitorFactory(AutoRegisterModelFactory):
 
     class Meta:
         model = Monitor
+
+
+class DataHistoryFactory(AutoRegisterModelFactory):
+    monitor = factory.SubFactory(MonitorFactory)
+    date = factory.fuzzy.FuzzyDate(datetime.date.today())
+
+    class Meta:
+        model = DataHistory

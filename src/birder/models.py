@@ -63,7 +63,7 @@ class Project(models.Model):
     bitcaster_url = models.URLField(blank=True, help_text="The URL to the Bitcaster notification endpoint.")
     environments = models.ManyToManyField("Environment", related_name="projects", blank=False)
     icon = models.CharField(blank=True, default="", max_length=255)
-    default_environment = models.ForeignKey("Environment", null=True, on_delete=models.PROTECT)  # type: ignore[misc]
+    default_environment = models.ForeignKey("Environment", blank=True, null=True, on_delete=models.PROTECT)  # type: ignore[misc]
 
     class Meta:
         ordering = ["name"]
@@ -173,9 +173,13 @@ class Monitor(models.Model):
     environment = models.ForeignKey(Environment, on_delete=models.SET_NULL, null=True, blank=False)  # type: ignore[misc]
     name = models.CharField(max_length=255, unique=True)
     position = models.PositiveIntegerField(default=0)
-    description = models.TextField(blank=True, help_text="short description  to display in the monitor detail page")
-    notes = models.TextField(blank=True, help_text="Notes about the monitor. Only visible to Staff")
-    custom_icon = models.CharField(blank=True, default="", max_length=255)
+    description = models.TextField(blank=True, help_text="short description to display in the monitor detail page")
+    notes = models.TextField(
+        blank=True, help_text="Notes about the monitor. Hidden by default, Requires special permission."
+    )
+    custom_icon = models.CharField(
+        blank=True, default="", max_length=255, help_text="The URL to the custom icon endpoint."
+    )
     strategy = StrategyField(registry=registry)
     configuration = EncryptedJSONField(default=dict, help_text="Checker configuration")
     data = models.BinaryField(blank=True, null=True, default=None)  # type: ignore[misc]
@@ -214,6 +218,8 @@ class Monitor(models.Model):
             models.UniqueConstraint("project", Lower("name"), name="unique_project_monitor_name"),
         ]
 
+        permissions = (("can_see_notes", "Can see monitor private notes"),)
+
     def __str__(self) -> str:
         return f"{self.project.name}/{self.name} ({self.environment.name})"
 
@@ -222,7 +228,7 @@ class Monitor(models.Model):
             "monitor-detail", kwargs={"project_id": self.project.pk, "env": self.environment.name, "pk": self.pk}
         )
 
-    @cached_property
+    @property
     def icon(self) -> str:
         if self.custom_icon and self.custom_icon.startswith("http"):
             return self.custom_icon
@@ -392,11 +398,13 @@ class LogCheck(models.Model):
 
 
 class Deadline(models.Model):
-    monitor = models.ForeignKey(Monitor, on_delete=models.CASCADE, related_name="deadlines")
     title = models.CharField(max_length=100)
+    monitor = models.ForeignKey(Monitor, on_delete=models.CASCADE, related_name="deadlines")
     description = models.TextField(blank=True)
-    start = models.DateField(default=timezone.now)
+    start = models.DateField(default=timezone.now, help_text="Start date")
     end = models.DateField(blank=True, null=True)  # type: ignore[misc]
+    time = models.TimeField(blank=True, null=True, help_text="The time at which the activity/task happpen")  # type: ignore[misc]
+
     recurrences = recurrence.fields.RecurrenceField()
     warn_threshold = models.IntegerField(default=7, help_text="How many days before the deadline should warn monitor")
     alarm_threshold = models.IntegerField(default=1, help_text="How many days before the deadline should alarm monitor")

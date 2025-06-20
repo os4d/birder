@@ -38,19 +38,17 @@
                 <div class="w-32">Last failure:</div>
                 <div class="ml-2 last-failure">{{ monitor.last_timestamp_failure|format_date }}</div>
             </div>
-
-
             <div class="my-2 flex text-xs">
                 <img class="w-4 mr-5" src="{% static 'images/icons/host1.svg' %}">
                 <div class="w-32">System address</div>
                 <div class="w-32">{{ monitor.strategy.address }} </div>
             </div>
-            <div class="my-2">
-                {{ monitor.description|markdown }}
+            <div class="my-2 border p-2 rounded-sm ">
+                {{ monitor.description|safe }}
             </div>
-            {% if user.is_staff %}
+            {% if 'monitor.can_see_notes' in perms %}
                 <div class="my-2 border rounded-sm p-2 border-gray-400 bg-gray-400 text-black">
-                    {{ monitor.notes|markdown }}
+                    {{ monitor.notes|safe }}
                 </div>
             {% endif %}
             <div class="border-b">&nbsp</div>

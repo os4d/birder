@@ -1,3 +1,5 @@
+from typing import Any
+
 import factory
 from django.contrib.auth.models import Group, Permission
 
@@ -19,13 +21,15 @@ class GroupFactory(AutoRegisterModelFactory):
         model = Group
         django_get_or_create = ("name",)
 
+    @classmethod
+    def _after_postgeneration(cls, instance: "Group", create: bool, results: Any = None):
+        instance.save()
+
     @factory.post_generation
     def permissions(self, create, extracted, **kwargs):
         if not create:
-            # Simple build, do nothing.
             return
 
         if extracted:
-            # A list of groups were passed in, use them
             for perm in extracted:
                 self.permissions.add(perm)

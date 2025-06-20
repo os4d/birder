@@ -34,7 +34,6 @@ def test_project_create(app: "DjangoTestApp", environment: Environment) -> None:
     res = app.get(url)
     res.forms["project_form"]["name"] = "Test Project"
     res.forms["project_form"]["environments"] = [environment.pk]
-    res.forms["project_form"]["default_environment"] = environment.pk
     res = res.forms["project_form"].submit()
 
     assert res.status_code == 302, res.showbrowser()

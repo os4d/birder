@@ -3,6 +3,7 @@ from typing import Any
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from flags.forms import FlagStateForm as FlagStateForm_
+from unfold.contrib.forms.widgets import WysiwygWidget
 from unfold.widgets import BASE_INPUT_CLASSES, CHECKBOX_CLASSES, SELECT_CLASSES
 
 from birder.models import Monitor, Project, User
@@ -21,7 +22,7 @@ class LoginForm(AuthenticationForm):
 
 
 class ChangeIconForm(forms.Form):
-    icon = forms.URLField(required=False)
+    icon = forms.URLField(required=False, assume_scheme="https")
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -41,7 +42,13 @@ class ChangeIconForm(forms.Form):
         return media
 
 
+# class ProjectForm(forms.ModelForm):
+
+
 class MonitorForm(forms.ModelForm):
+    notes = forms.CharField(required=False, widget=WysiwygWidget)
+    description = forms.CharField(required=False, widget=WysiwygWidget)
+
     class Meta:
         model = Monitor
         fields = (
