@@ -47,6 +47,8 @@ jobs:
         with:
           attestations: true
   dockerize:
+    needs:
+      - release
     runs-on: ubuntu-latest
     permissions:
       actions: write
