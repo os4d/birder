@@ -1,16 +1,19 @@
 {% extends "layout.html" %}{% load birder i18n static %}
 {% block content %}
-        <style>
-        .red{
+    <style>
+        .red {
             fill: red
         }
-        .green{
+
+        .green {
             fill: green;
         }
-        .orange{
+
+        .orange {
             fill: orange;
         }
-        .unknown{
+
+        .unknown {
             fill: grey;
         }
     </style>
@@ -19,7 +22,7 @@
             {{ birder.system.last_check|default_if_none:"" }}
         </div>
     </div>
-    <div class="" id="project-grid">
+    <div class="h-auto min-h-150 block" id="project-grid">
         {% for project in projects %}
             <a class="cursor-pointer h-full" href="{{ project.get_absolute_url }}">
                 <div class="monitor-panel grid grid-cols-1"
@@ -38,6 +41,10 @@
                     </div>
                 </div>
             </a>
+            {% empty %}
+            <div class="w-full col-span-full text-center align-center">
+                {% translate "There are no available projects" %}
+            </div>
         {% endfor %}
     </div>
 {% endblock content %}

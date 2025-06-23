@@ -47,7 +47,11 @@ class IndexView(CommonContextMixin, TemplateView):
     js_files = ["index%s.js"]
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        kwargs["projects"] = Project.objects.filter(public=True)
+        if self.request.user.is_authenticated:
+            qs = Project.objects.all()
+        else:
+            qs = Project.objects.filter(public=True)
+        kwargs["projects"] = qs
         return super().get_context_data(**kwargs)
 
 
