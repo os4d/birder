@@ -4,6 +4,7 @@ from urllib.parse import parse_qsl, urlparse
 from .amqp import AmqpCheck
 from .base import BaseCheck
 from .celery import CeleryCheck, CeleryQueueCheck
+from .elastic_search import ElasticSearchCheck
 from .ftp import FtpCheck
 from .http import HttpCheck
 from .json import JsonCheck
@@ -37,6 +38,7 @@ registry.register(SMTPCheck)
 registry.register(SSHCheck)
 registry.register(TCPCheck)
 registry.register(XMLCheck)
+registry.register(ElasticSearchCheck)
 
 
 def parse_uri(uri: str) -> dict[str, str | Any]:

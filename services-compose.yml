@@ -122,6 +122,19 @@ services:
       MINIO_ACCESS_KEY: AKIAIOSFODNN7EXAMPLE
       MINIO_SECRET_KEY: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 
+
+  elasticsearch:
+#    image: elasticsearch:8.14.0
+    image: bitnami/elasticsearch:8.14.0
+    platform: linux/amd64
+    ports:
+      - "19200:9200"
+      - "19300:9300"
+    environment:
+      "discovery.type": single-node
+      "cluster.routing.allocation.disk.threshold_enabled": false
+
+
   createbuckets:
     image: minio/mc
     depends_on:

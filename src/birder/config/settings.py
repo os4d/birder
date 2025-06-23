@@ -165,6 +165,9 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "handlers": {
+        "null": {
+            "class": "logging.NullHandler",
+        },
         "console": {
             "class": "logging.StreamHandler",
         },
@@ -174,6 +177,11 @@ LOGGING = {
         "level": "WARNING",
     },
     "loggers": {
+        "elastic_transport": {
+            "handlers": ["null"],
+            "level": get_log_level_for("elastic"),
+            "propagate": False,
+        },
         "django": {
             "handlers": ["console"],
             "level": get_log_level_for("django"),
