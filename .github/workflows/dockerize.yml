@@ -48,8 +48,14 @@ jobs:
           ref: ${{ github.event.inputs.git_reference }}
           fetch-depth: 0
 
+      - name: Check git status 1.0
+        run: git status
+
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v6
+
+      - name: Check git status 1.1
+        run: git status
 
       - name: Set target input
         id: config
@@ -83,6 +89,11 @@ jobs:
         uses: docker/setup-buildx-action@v3
         with:
           platforms: linux/amd64
+
+      - name: Check git status 1.2
+        run: |
+              git status
+              git log -n 1
 
       - name: Build and push tag ${{ steps.config.outputs.tag }} (v${{ steps.config.outputs.git_reference }})
         uses: docker/build-push-action@v6

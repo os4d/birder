@@ -72,6 +72,7 @@ ADD docker/conf /conf/
 ADD docker/bin/* /usr/local/bin/
 
 COPY --from=builder /usr/local/bin/uwsgi /usr/local/bin/circusd /usr/local/bin/
+COPY --from=builder /RELEASE /RELEASE
 COPY --from=builder /venv /venv
 
 ENV PATH=/venv/bin:/usr/local/bin/:/usr/bin:/bin:/usr/sbin \
