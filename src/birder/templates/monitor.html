@@ -15,7 +15,7 @@
                     <img class="w-4 align-top counter" src="{% number monitor.failures %}">
                     {% if user.is_staff %}
                         <a class="mt-4" target="_admin"
-                           href="{% url "admin:birder_monitor_change" monitor.pk %}">admin</a>
+                           href="{% url "console:birder_monitor_change" monitor.pk %}">admin</a>
                     {% endif %}
                 </div>
             </div>
