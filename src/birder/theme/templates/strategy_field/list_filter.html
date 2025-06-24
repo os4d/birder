@@ -1,0 +1,24 @@
+{% load i18n %}
+
+<div class="flex flex-col group mb-5 last:mb-4">
+    <div class="flex flex-col gap-2">
+        <label for="id_filter_{{ spec.field.name }}"
+               class="block font-semibold text-font-important-light dark:text-font-important-dark">
+            By {{ spec.title }}
+        </label>
+
+        <div class="grow relative max-w-2xl">
+            <select class="select2 select2-container select2-container--admin-autocomplete"
+                    data-theme="admin-autocomplete"
+                    name="{{ spec.field.name }}__exact"
+                    class="border border-base-200 bg-white font-medium min-w-20 placeholder-base-400 rounded-default shadow-xs text-font-default-light text-sm focus:outline-2 focus:-outline-offset-2 focus:outline-primary-600 group-[.errors]:border-red-600 focus:group-[.errors]:outline-red-600 dark:bg-base-900 dark:border-base-700 dark:text-font-default-dark dark:group-[.errors]:border-red-500 dark:focus:group-[.errors]:outline-red-500 dark:scheme-dark group-[.primary]:border-transparent px-3 py-2 w-full pr-8! max-w-2xl appearance-none truncate unfold-admin-autocomplete admin-autocomplete select2-hidden-accessible"
+                    id="id_filter_{{ spec.field.name }}" onchange="location.href=this.options[selectedIndex].value">
+                {% for choice in choices %}
+                    <option{% if choice.selected %} selected="selected"{% endif %}
+                    class="ml-5"
+                                                    value="{{ choice.query_string|iriencode }}">{{ choice.display }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</div>

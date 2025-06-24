@@ -9,6 +9,16 @@ if TYPE_CHECKING:
     from django.http import HttpRequest
 
 COMMON_CONFIG = {
+    "SITE_DROPDOWN": [
+        {
+            "icon": "diamond",
+            "title": _("Birder"),
+            "link": "https://github.com/os4d/birder",
+        },
+        # ...
+    ],
+    "ENVIRONMENT": "birder.config.fragments.unfold.environment_callback",  # environment name in header
+    "SHOW_HISTORY": True,
     "SITE_TITLE": "Birder: ",
     "SITE_HEADER": "Birder",
     "SITE_SUBHEADER": "Appears under SITE_HEADER",
@@ -76,7 +86,6 @@ COMMON_CONFIG = {
 }
 UNFOLD = {
     **COMMON_CONFIG,
-    "ENVIRONMENT": "birder.config.fragments.unfold.environment_callback",  # environment name in header
     "SHOW_VIEW_ON_SITE": True,  # show/hide "View on site" button, default: True
     "LOGIN": {
         "image": lambda request: static("images/birder.svg"),
@@ -90,8 +99,7 @@ UNFOLD = {
 MANAGE_CONFIG = {
     **COMMON_CONFIG,
     "SITE_SYMBOL": "speed",  # symbol from icon set
-    "SHOW_HISTORY": True,  # show/hide "History" button, default: True
-    "SHOW_BACK_BUTTON": False,  # show/hide "Back" button on changeform in header, default: False
+    "SHOW_BACK_BUTTON": True,  # show/hide "Back" button on changeform in header, default: False
     "THEME": "dark",  # Force theme: "dark" or "light". Will disable theme switcher
     "LOGIN": {
         "image": lambda request: static("images/birder.svg"),
@@ -142,6 +150,20 @@ MANAGE_CONFIG = {
             },
         ],
     },
+    "TABS": [
+        {
+            "models": [
+                "birder.project",
+            ],
+            "items": [
+                {
+                    "title": _("Environments"),
+                    "link": reverse_lazy("console:birder_environment_changelist"),
+                    "permission": True,
+                },
+            ],
+        }
+    ],
 }
 
 

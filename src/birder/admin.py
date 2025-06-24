@@ -7,7 +7,9 @@ from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilt
 from adminfilters.mixin import AdminFiltersMixin
 from django.conf import settings
 from django.contrib import admin, messages
-from django.contrib.auth.admin import UserAdmin as _UserAdmin
+from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import Group
 from django.db.models import Model, QuerySet
 from django.forms import Form
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseRedirect
@@ -15,7 +17,9 @@ from django.shortcuts import render
 from django.templatetags.static import static
 from django.urls import reverse
 from flags.models import FlagState
+from strategy_field.admin import StrategyFieldListFilter
 from unfold.admin import ModelAdmin as UnfoldModelAdmin
+from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
 from .forms import ChangeIconForm, FlagStateForm, MonitorForm
 from .models import Deadline, Environment, LogCheck, Monitor, Project, User
@@ -31,8 +35,11 @@ class BirderAdminMixin(ExtraButtonsMixin, AdminFiltersMixin, UnfoldModelAdmin):
 
 
 @admin.register(User)
-class UserAdmin(_UserAdmin[User]):
+class UserAdmin(BaseUserAdmin, BirderAdminMixin):
     search_fields = ("username",)
+    form = UserChangeForm
+    add_form = UserCreationForm
+    change_password_form = AdminPasswordChangeForm
 
 
 @admin.register(Project)
@@ -71,6 +78,10 @@ def assert_object_or_404(obj: Model | None) -> None:
         raise Http404
 
 
+class StrategyFieldListComboFilter(StrategyFieldListFilter):
+    template = "strategy_field/list_filter.html"
+
+
 @admin.register(Monitor)
 class MonitorAdmin(BirderAdminMixin, admin.ModelAdmin[Monitor]):
     search_fields = ("name",)
@@ -78,7 +89,7 @@ class MonitorAdmin(BirderAdminMixin, admin.ModelAdmin[Monitor]):
     list_filter = (
         ("project", LinkedAutoCompleteFilter.factory(parent=None)),
         ("environment", LinkedAutoCompleteFilter.factory(parent=None)),
-        "strategy",
+        ("strategy", StrategyFieldListComboFilter),
         "active",
     )
     actions = ["check_selected"]
@@ -209,8 +220,14 @@ class DeadlineAdmin(BirderAdminMixin, admin.ModelAdmin[LogCheck]):
 
 
 admin.site.unregister(FlagState)
+admin.site.unregister(Group)
 
 
 @admin.register(FlagState)
 class FlagStateAdmin(BirderAdminMixin, admin.ModelAdmin[FlagState]):
     form = FlagStateForm
+
+
+@admin.register(Group)
+class GroupAdmin(BaseGroupAdmin, BirderAdminMixin):
+    pass
