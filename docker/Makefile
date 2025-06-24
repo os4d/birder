@@ -39,7 +39,7 @@ build: ## build docker image
 			-t ${DOCKER_IMAGE_NAME}:${VERSION} \
 			-t ${DOCKER_IMAGE_NAME}:local \
 			-f docker/Dockerfile .
-	docker images | grep "${DOCKER_IMAGE_NAME}" | grep ${VERSION}
+	docker images | grep "${DOCKER_IMAGE_NAME}" | grep -e ${VERSION} -e local
 
 
 .run:
