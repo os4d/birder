@@ -63,6 +63,7 @@ ignore = [
     "D213", # multi-line-summary-second-line
 #    "DJ007", # Do not use `__all__` with `ModelForm`, use `fields` instead
     "ISC001",  # conflicts with ruff format command
+    "SIM108", #  Use ternary operator
 ]
 
 [format]

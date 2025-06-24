@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from typing import Any
 
 import amqp.exceptions
@@ -14,12 +15,14 @@ from flower.utils.broker import Broker
 from ..exceptions import CheckError
 from .base import BaseCheck, ConfigForm
 
+logger = logging.getLogger(__name__)
+
 
 class CeleryConfig(ConfigForm):
     broker = forms.ChoiceField(choices=[("amqp", "amqp"), ("redis", "redis")])
     hostname = forms.CharField()
     port = forms.IntegerField(required=True)
-    extra = forms.CharField(required=False)
+    extra = forms.CharField(required=False, help_text="Extra information. Es. database number")
     min_workers = forms.IntegerField(
         required=True, validators=[MinValueValidator(1)], help_text="Minimum number of workers", initial=1
     )
@@ -53,6 +56,7 @@ class CeleryCheck(BaseCheck):
             kombu.exceptions.KombuError,
             amqp.exceptions.AMQPError,
         ) as e:
+            logger.exception(e)
             if raise_error:
                 raise CheckError("Celery check failed") from e
         return False
