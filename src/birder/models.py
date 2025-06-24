@@ -261,46 +261,61 @@ class Monitor(models.Model):
         timestamp = datetime.now()
         self.store_error(timestamp)
 
-    def run(self) -> bool:
-        timestamp = datetime.now()
-        self.store_last_timestamp_check()
-        if self.strategy.mode == BaseCheck.LOCAL_TRIGGER:
-            try:
-                result = self.strategy.check(raise_error=True)
-            except CheckError:
-                result = False
-
-            if result:
-                self.reset_current_errors()
-                self.store_last_timestamp_success()
-                st = Monitor.Status.SUCCESS
-            else:
-                self.store_error(timestamp)
-                self.store_last_timestamp_failure()
-                error_count = self.incr_current_errors()
-                if error_count >= self.err_threshold:
-                    st = Monitor.Status.FAIL
-                elif error_count >= self.warn_threshold:
-                    st = Monitor.Status.WARN
-                else:
-                    st = Monitor.Status.SUCCESS
-            cache.set(get_cache_key(KEY_STATUS, self), st, timeout=86400)
-
-            key = get_cache_key(KEY_PROGRAM_CHECKS, self.project)
-            redis.hset(key, str(self.pk), st)
-        else:
+    def _check_remote_status(self, timestamp: datetime) -> bool:
+        # check remote system
+        try:
+            result = self.strategy.check(raise_error=True)
+        except CheckError:
             result = False
-            if self.last_timestamp_success:
-                time_difference = timestamp - self.last_timestamp_success
-                offset = int(time_difference.total_seconds() // 60)
-                if offset:
-                    self.incr_current_errors()
-                    self.store_last_timestamp_failure()
-                else:
-                    self.store_last_timestamp_success()
+
+        if result:
+            self.reset_current_errors()
+            self.store_last_timestamp_success()
+            st = Monitor.Status.SUCCESS
+        else:
+            self.store_error(timestamp)
+            self.store_last_timestamp_failure()
+            error_count = self.incr_current_errors()
+            if error_count >= self.err_threshold:
+                st = Monitor.Status.FAIL
+            elif error_count >= self.warn_threshold:
+                st = Monitor.Status.WARN
             else:
+                st = Monitor.Status.SUCCESS
+        cache.set(get_cache_key(KEY_STATUS, self), st, timeout=86400)
+
+        key = get_cache_key(KEY_PROGRAM_CHECKS, self.project)
+        redis.hset(key, str(self.pk), st)
+        return result
+
+    def _check_remote_trigger(self, timestamp: datetime) -> bool:
+        # check last time remote system pinged Birder
+
+        if self.last_timestamp_success:
+            time_difference = timestamp - self.last_timestamp_success
+            offset = int(time_difference.total_seconds() // 60)
+            if offset:
                 self.incr_current_errors()
                 self.store_last_timestamp_failure()
+                result = False
+            else:
+                self.store_last_timestamp_success()
+                result = True
+        else:
+            self.incr_current_errors()
+            self.store_last_timestamp_failure()
+            result = False
+
+        return result
+
+    def run(self, timestamp: datetime | None = None) -> bool:
+        if not timestamp:
+            timestamp = datetime.now()
+        self.store_last_timestamp_check()
+        if self.strategy.mode == BaseCheck.LOCAL_TRIGGER:
+            result = self._check_remote_status(timestamp)
+        else:
+            result = self._check_remote_trigger(timestamp)
 
         notify_ui("update", self)
         monitor_update.send(sender=Monitor, instance=self, result=result, timestamp=timestamp)

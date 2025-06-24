@@ -161,6 +161,10 @@ def get_log_level_for(app: str) -> str:
     return os.environ.get(f"{app.upper()}_LOG_LEVEL", env("LOG_LEVEL"))
 
 
+def should_propagate(app: str) -> bool:
+    return f"{app.upper()}_LOG_LEVEL" in os.environ
+
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -168,16 +172,29 @@ LOGGING = {
         "console": {
             "class": "logging.StreamHandler",
         },
+        "null": {
+            "class": "logging.NullHandler",
+        },
     },
     "root": {
         "handlers": ["console"],
-        "level": "WARNING",
+        "level": get_log_level_for("root"),
     },
     "loggers": {
         "django": {
-            "handlers": ["console"],
+            "handlers": ["null"],
             "level": get_log_level_for("django"),
-            "propagate": False,
+            "propagate": should_propagate("django"),
+        },
+        "kombu": {
+            "handlers": ["null"],
+            "level": get_log_level_for("kombu"),
+            "propagate": should_propagate("kombu"),
+        },
+        "redis": {
+            "handlers": ["null"],
+            "level": get_log_level_for("redis"),
+            "propagate": should_propagate("redis"),
         },
         "birder": {
             "handlers": ["console"],
