@@ -55,6 +55,9 @@ def get_cache_key(pattern: str, *args: Any) -> str:
 class User(AbstractUser):
     time_zone = TimeZoneField(default="UTC")
 
+    class Meta:
+        permissions = (("can_access_console", "Can Access Console"),)
+
 
 class Project(models.Model):
     environments: "models.ManyToManyField[Environment, Environment]"
@@ -234,7 +237,9 @@ class Monitor(models.Model):
             return self.custom_icon
         if self.custom_icon:
             return static(f"images/icons/{self.custom_icon}")
-        return static(f"images/icons/{self.strategy.icon}")
+        if self.strategy:
+            return static(f"images/icons/{self.strategy.icon}")
+        return static("images/question.svg")
 
     def store_error(self, timestamp: datetime) -> None:
         """Set corresponding minute of the day's bit."""
