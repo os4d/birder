@@ -3,12 +3,22 @@ from typing import TYPE_CHECKING
 from django.conf import settings
 from django.templatetags.static import static
 from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
 
-
 COMMON_CONFIG = {
+    "SITE_DROPDOWN": [
+        {
+            "icon": "diamond",
+            "title": _("Birder"),
+            "link": "https://github.com/os4d/birder",
+        },
+        # ...
+    ],
+    "ENVIRONMENT": "birder.config.fragments.unfold.environment_callback",  # environment name in header
+    "SHOW_HISTORY": True,
     "SITE_TITLE": "Birder: ",
     "SITE_HEADER": "Birder",
     "SITE_SUBHEADER": "Appears under SITE_HEADER",
@@ -69,10 +79,13 @@ COMMON_CONFIG = {
             "important-dark": "var(--color-base-100)",  # text-base-100
         },
     },
+    "SIDEBAR": {
+        "show_search": True,  # Search in applications and models names
+        "show_all_applications": True,  # Dropdown with all applications and models
+    },
 }
 UNFOLD = {
     **COMMON_CONFIG,
-    "ENVIRONMENT": "birder.config.fragments.unfold.environment_callback",  # environment name in header
     "SHOW_VIEW_ON_SITE": True,  # show/hide "View on site" button, default: True
     "LOGIN": {
         "image": lambda request: static("images/birder.svg"),
@@ -86,13 +99,71 @@ UNFOLD = {
 MANAGE_CONFIG = {
     **COMMON_CONFIG,
     "SITE_SYMBOL": "speed",  # symbol from icon set
-    "SHOW_HISTORY": True,  # show/hide "History" button, default: True
-    "SHOW_BACK_BUTTON": False,  # show/hide "Back" button on changeform in header, default: False
+    "SHOW_BACK_BUTTON": True,  # show/hide "Back" button on changeform in header, default: False
     "THEME": "dark",  # Force theme: "dark" or "light". Will disable theme switcher
     "LOGIN": {
         "image": lambda request: static("images/birder.svg"),
-        "redirect_after": lambda request: reverse_lazy("manage:index"),
+        "redirect_after": lambda request: reverse_lazy("console:index"),
     },
+    "SIDEBAR": {
+        "show_search": False,  # Search in applications and models names
+        "show_all_applications": False,  # Dropdown with all applications and models
+        "navigation": [
+            {
+                "title": _("Configuration"),
+                "separator": True,  # Top border
+                "collapsible": False,  # Collapsible group of links
+                "items": [
+                    {
+                        "title": _("Projects"),
+                        "icon": "P",
+                        "link": reverse_lazy("console:birder_project_changelist"),
+                    },
+                    {
+                        "title": _("Environments"),
+                        "icon": "E",
+                        "link": reverse_lazy("console:birder_environment_changelist"),
+                    },
+                    {
+                        "title": _("Monitors"),
+                        "icon": "M",
+                        "link": reverse_lazy("console:birder_monitor_changelist"),
+                    },
+                    {
+                        "title": _("Deadlines"),
+                        "icon": "D",
+                        "link": reverse_lazy("console:birder_deadline_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": _("Security"),
+                "separator": True,  # Top border
+                "collapsible": False,  # Collapsible group of links
+                "items": [
+                    {
+                        "title": _("Users"),
+                        "icon": "people",
+                        "link": reverse_lazy("console:birder_user_changelist"),
+                    },
+                ],
+            },
+        ],
+    },
+    "TABS": [
+        {
+            "models": [
+                "birder.project",
+            ],
+            "items": [
+                {
+                    "title": _("Environments"),
+                    "link": reverse_lazy("console:birder_environment_changelist"),
+                    "permission": True,
+                },
+            ],
+        }
+    ],
 }
 
 
