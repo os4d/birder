@@ -93,22 +93,21 @@ jobs:
       - name: Check git status 1.2
         run: |
               git status
-              git log -n 1
       - name: Build and push tag ${{ steps.config.outputs.tag }} (v${{ steps.config.outputs.git_reference }})
         run: |
             uv build --sdist -o dist/
             ls -al dist/
-#            docker build \
-#              --progress=plain \
-#              --platform=linux/amd64 \
-#              --build-arg VERSION=${{ steps.config.outputs.git_reference }} \
-#              --build-arg GIT_SHA=${{ steps.config.outputs.commit_sha }} \
-#              --build-arg BUILD_DATE='${{ steps.config.outputs.build_date }}' \
-#              --cache-from os4d/birder:latest \
-#              -t os4d/birder:${{ steps.config.outputs.tag }} \
-#              -f docker/Dockerfile .
-#
-#            docker push os4d/birder:${{ steps.config.outputs.tag }}
+            docker build \
+              --progress=plain \
+              --platform=linux/amd64 \
+              --build-arg VERSION=${{ steps.config.outputs.git_reference }} \
+              --build-arg GIT_SHA=${{ steps.config.outputs.commit_sha }} \
+              --build-arg BUILD_DATE='${{ steps.config.outputs.build_date }}' \
+              --cache-from os4d/birder:latest \
+              -t os4d/birder:${{ steps.config.outputs.tag }} \
+              -f docker/Dockerfile .
+
+            docker push os4d/birder:${{ steps.config.outputs.tag }}
 
       - name: Tag as latest
         if: ${{ github.event.inputs.latest == 'true' }}
