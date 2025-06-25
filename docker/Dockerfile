@@ -64,6 +64,8 @@ WORKDIR /code
 COPY . /code
 
 RUN ls -al /code/src/
+RUN ls -al /code/dist
+
 RUN uv venv --no-cache $VIRTUAL_ENV \
     && uv sync --no-dev --frozen --no-editable \
     && uv pip install dist/*
