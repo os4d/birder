@@ -175,9 +175,6 @@ LOGGING = {
         "console": {
             "class": "logging.StreamHandler",
         },
-        "null": {
-            "class": "logging.NullHandler",
-        },
     },
     "root": {
         "handlers": ["console"],
