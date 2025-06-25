@@ -102,8 +102,7 @@ jobs:
               --build-arg VERSION=${{ steps.config.outputs.git_reference }} \
               --build-arg GIT_SHA=${{ steps.config.outputs.commit_sha }} \
               --build-arg BUILD_DATE=${{ steps.config.outputs.build_date }} \
-              --cache-from ${DOCKER_IMAGE_NAME}:local \
-              --cache-from ${DOCKER_IMAGE_NAME}:latest \
+              --cache-from os4d/birder:latest \
               -t os4d/birder:${{ steps.config.outputs.tag }} \
               -f docker/Dockerfile .
             docker push os4d/birder:${{ steps.config.outputs.tag }}
