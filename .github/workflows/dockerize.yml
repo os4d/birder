@@ -94,21 +94,39 @@ jobs:
         run: |
               git status
               git log -n 1
-
       - name: Build and push tag ${{ steps.config.outputs.tag }} (v${{ steps.config.outputs.git_reference }})
-        uses: docker/build-push-action@v6
-        id: build
-        with:
-          context: .
-          file: docker/Dockerfile
-          push: true
-          tags: |
-            os4d/birder:${{ steps.config.outputs.tag }}
-            ${{ github.event.inputs.latest == 'true' && 'os4d/birder:latest' || null}}
-          build-args: |
-            VERSION=${{ steps.config.outputs.git_reference }}
-            BUILD_DATE=${{ steps.config.outputs.build_date }}
-            GIT_SHA=${{ steps.config.outputs.commit_sha }}
+        run: |
+            docker build \
+              --progress=plain \
+              --platform=linux/amd64 \
+              --build-arg VERSION=${{ steps.config.outputs.git_reference }} \
+              --build-arg GIT_SHA=${{ steps.config.outputs.commit_sha }} \
+              --build-arg BUILD_DATE=${{ steps.config.outputs.build_date }} \
+              --cache-from ${DOCKER_IMAGE_NAME}:local \
+              --cache-from ${DOCKER_IMAGE_NAME}:latest \
+              -t os4d/birder:${{ steps.config.outputs.tag }} \
+              -f docker/Dockerfile .
+            docker push os4d/birder:${{ steps.config.outputs.tag }}
+
+      - name: Tag as latest
+        if: ${{ github.event.inputs.latest }}
+        run:
+          docker push os4d/birder:${{ steps.config.outputs.tag }} os4d/birder:latest
+
+#      - name: Build and push tag ${{ steps.config.outputs.tag }} (v${{ steps.config.outputs.git_reference }})
+#        uses: docker/build-push-action@v6
+#        id: build
+#        with:
+#          context: .
+#          file: docker/Dockerfile
+#          push: true
+#          tags: |
+#            os4d/birder:${{ steps.config.outputs.tag }}
+#            ${{ github.event.inputs.latest == 'true' && 'os4d/birder:latest' || null}}
+#          build-args: |
+#            VERSION=${{ steps.config.outputs.git_reference }}
+#            BUILD_DATE=${{ steps.config.outputs.build_date }}
+#            GIT_SHA=${{ steps.config.outputs.commit_sha }}
 
       - name: Info
         run: |

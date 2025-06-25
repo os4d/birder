@@ -5,14 +5,13 @@
 !docker/bin
 !docker/conf
 !src/birder/**/*
-!tests/*
-!.git
-
 !src/birder/version.py
+!.git
+!dist/*
+
 !pyproject.toml
 !uv.lock
 !pytest.ini
-
 !LICENSE.md
 !README.md
 !AUTHORS
