@@ -65,7 +65,10 @@ COPY . /code
 
 RUN ls -al /code/src/
 RUN uv venv --no-cache $VIRTUAL_ENV \
-    && uv sync --no-dev --frozen --no-editable --no-cache
+    && uv sync --no-dev --frozen --no-editable \
+    && uv build --sdist -o pkg/ \
+    && ls -al pkg/ \
+    && uv pip install pkg/*
 
 FROM base_os AS dist
 ADD docker/conf /conf/
