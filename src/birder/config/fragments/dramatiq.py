@@ -1,3 +1,7 @@
+import logging
+
+import dramatiq
+from dramatiq import Broker, Worker
 from redis import ConnectionPool
 
 from ..settings import env
@@ -9,7 +13,8 @@ DRAMATIQ_BROKER = {
         "connection_pool": ConnectionPool.from_url(DRAMATIQ_VALKEY_URL),
     },
     "MIDDLEWARE": [
-        # "dramatiq.middleware.Prometheus",
+        "birder.config.fragments.dramatiq.BirderLoggingMiddleware",
+        "dramatiq.middleware.Prometheus",
         "dramatiq.middleware.AgeLimit",
         "dramatiq.middleware.TimeLimit",
         "dramatiq.middleware.Callbacks",
@@ -18,6 +23,41 @@ DRAMATIQ_BROKER = {
         "django_dramatiq.middleware.AdminMiddleware",
     ],
 }
+DRAMATIQ_WORKER_PROCESSES = env("WORKER_PROCESSES")
+DRAMATIQ_WORKER_THREADS = env("WORKER_THREADS")
 
 DRAMATIQ_TASKS_DATABASE = "default"
-DRAMATIQ_AUTODISCOVER_MODULES = ["tasks"]
+
+DRAMATIQ_LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+        "null": {
+            "class": "logging.NullHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "ERROR",
+    },
+}
+
+
+def configure_logger(name: str) -> None:
+    log = logging.getLogger(name)
+    log.setLevel(logging.ERROR)
+    handlers = [h for h in log.handlers if not isinstance(h, logging.StreamHandler)]
+    log.handlers = handlers
+
+
+def configure_logging() -> None:
+    for name in ("birder.checks", "kombu", "redis", "celery", "dramatiq", "redis.connection", "kombu.connection"):
+        configure_logger(name)
+
+
+class BirderLoggingMiddleware(dramatiq.Middleware):
+    def after_worker_boot(self, broker: Broker, worker: Worker) -> None:
+        configure_logging()

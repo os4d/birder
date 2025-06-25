@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import multiprocessing
 from typing import Any
 
 from environ import Env
@@ -37,5 +38,7 @@ CONFIG: dict[str, ConfigItem] = {
     "STATIC_URL": (str, "static/"),
     "SUPERUSERS": (list, []),
     "TASK_BROKER": (str, ""),
+    "WORKER_PROCESSES": (int, multiprocessing.cpu_count()),
+    "WORKER_THREADS": (int, 8),
 }
 env = Env(**CONFIG)

@@ -29,6 +29,7 @@ exclude_lines =
     if __name__ == .__main__.:
     if TYPE_CHECKING:
     if settings.DEBUG:
+    except KeyboardInterrupt as e:
 
 
 #fail_under = 95

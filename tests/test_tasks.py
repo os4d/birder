@@ -1,3 +1,6 @@
+from unittest.mock import Mock
+
+from birder.config.fragments.dramatiq import BirderLoggingMiddleware
 from birder.tasks import clean_log, process, queue_trigger, store_history
 
 
@@ -15,3 +18,8 @@ def test_clean_log(db):
 
 def test_store_history(monitor):
     store_history()
+
+
+def test_middleware():
+    m = BirderLoggingMiddleware()
+    m.after_worker_boot(Mock(), Mock())

@@ -3,6 +3,7 @@ import sys
 from datetime import datetime, timedelta
 
 import dramatiq
+from billiard.exceptions import TimeLimitExceeded
 from constance import config
 from django.core.management.color import make_style
 from django.utils import timezone
@@ -16,17 +17,27 @@ from birder.ws.utils import notify_ui
 logger = logging.getLogger(__name__)
 
 style = make_style()
+SECOND = 1000
+MINUTE = SECOND * 60
 
 
-@dramatiq.actor
+@dramatiq.actor(max_age=MINUTE * 2, time_limit=SECOND * 5)
 def queue_trigger(pk: str | int) -> None:
+    timestamp = datetime.now()
     try:
         m = Monitor.objects.get(active=True, pk=pk)
-        sys.stdout.write(style.SUCCESS(f"Run Monitor {m}\n"))
-        logger.info(f"Monitor #{pk} triggered")
-        m.run()
     except Monitor.DoesNotExist:  # pragma: no cover
         logger.warning(f"Monitor #{pk} does not exist")
+        return
+    try:
+        sys.stdout.write(style.SUCCESS(f"Run Monitor {m}\n"))
+        logger.info(f"Monitor #{pk} triggered")
+        m.run(timestamp)
+    except TimeLimitExceeded:
+        m.store_error(timestamp)
+        m.store_last_timestamp_failure()
+    except AttributeError:  # pragma: no cover
+        logger.warning(f"Monitor #{pk} does not have a valid strategy")
 
 
 @cron("*/1 * * * *")  # every 1 minute

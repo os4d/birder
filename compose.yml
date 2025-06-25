@@ -20,8 +20,8 @@ x-env: &env
 
 services:
   birder:
-    image: os4d/birder:latest
-    pull_policy: always
+    image: os4d/birder:local
+#    pull_policy: always
     <<: [*env]
     ports:
       - 8000:8000
