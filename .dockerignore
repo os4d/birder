@@ -6,7 +6,7 @@
 !docker/conf
 !src/birder/**/*
 !src/birder/version.py
-!.git
+!.git/**
 !dist/*
 
 !pyproject.toml
