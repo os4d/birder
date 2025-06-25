@@ -96,6 +96,7 @@ jobs:
               git log -n 1
       - name: Build and push tag ${{ steps.config.outputs.tag }} (v${{ steps.config.outputs.git_reference }})
         run: |
+            uv build --sdist -o dist/
             docker build \
               --progress=plain \
               --platform=linux/amd64 \
@@ -105,6 +106,7 @@ jobs:
               --cache-from os4d/birder:latest \
               -t os4d/birder:${{ steps.config.outputs.tag }} \
               -f docker/Dockerfile .
+
             docker push os4d/birder:${{ steps.config.outputs.tag }}
 
       - name: Tag as latest
