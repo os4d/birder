@@ -65,6 +65,17 @@ def test_monitor_add(app: "DjangoTestApp", mocked_responses, project: "Project")
     res = res.click("Check")
 
 
+def test_monitor_run(app: "DjangoTestApp", mocked_responses, monitor: Monitor) -> None:
+    url = reverse("admin:birder_monitor_change", args=[monitor.pk])
+
+    mocked_responses.add("GET", monitor.strategy.config["url"], status=500)
+    res = app.get(url)
+    res.click("Run")
+
+    mocked_responses.add("GET", monitor.strategy.config["url"], status=200)
+    res.click("Run")
+
+
 def test_monitor_check(app: "DjangoTestApp", mocked_responses, monitor: Monitor) -> None:
     url = reverse("admin:birder_monitor_change", args=[monitor.pk])
 
@@ -76,12 +87,12 @@ def test_monitor_check(app: "DjangoTestApp", mocked_responses, monitor: Monitor)
     res.click("Check")
 
 
-def test_monitor_check_error(app: "DjangoTestApp", mocked_responses, monitor: Monitor) -> None:
+def test_monitor_run_error(app: "DjangoTestApp", mocked_responses, monitor: Monitor) -> None:
     url = reverse("admin:birder_monitor_change", args=[monitor.pk])
     res = app.get(url)
     with patch.object(Monitor, "run") as m:
         m.side_effect = Exception("Error executing")
-        res = res.click("Check").follow()
+        res = res.click("Run").follow()
         pq = PyQuery(res.body)
         assert pq(".errornote").text() == "Error executing"
 

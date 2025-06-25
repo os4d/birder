@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -21,6 +22,8 @@ from .forms import ChangeIconForm, FlagStateForm, MonitorForm
 from .models import Deadline, Environment, LogCheck, Monitor, Project, User
 from .tasks import queue_trigger
 from .ws.utils import notify_ui
+
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from django.contrib.admin.options import _FieldGroups
@@ -144,8 +147,8 @@ class MonitorAdmin(BirderAdminMixin, admin.ModelAdmin[Monitor]):
 
         return render(request, "admin/birder/monitor/change_icon.html", ctx)
 
-    @button(label="Check")
-    def manual_check(self, request: HttpRequest, pk: str) -> HttpResponse:
+    @button(label="Run")
+    def manual_run(self, request: HttpRequest, pk: str) -> HttpResponse:
         self.get_common_context(request, pk)
         monitor: Monitor = self.object
         assert_object_or_404(monitor)
@@ -156,6 +159,18 @@ class MonitorAdmin(BirderAdminMixin, admin.ModelAdmin[Monitor]):
                 self.message_user(request, "Monitor failed", level=messages.ERROR)
         except Exception as e:  # noqa #BLE001
             self.message_user(request, str(e), level=messages.ERROR)
+
+    @button(label="Check")
+    def manual_check(self, request: HttpRequest, pk: str) -> HttpResponse:
+        self.get_common_context(request, pk)
+        monitor: Monitor = self.object
+        assert_object_or_404(monitor)
+        try:
+            monitor.strategy.check(raise_error=True)
+            self.message_user(request, "Monitor check success", level=messages.SUCCESS)
+        except Exception as e:  # noqa #BLE001
+            logger.exception("Monitor check failed", exc_info=e)
+            self.message_user(request, f"Monitor check failure: {e}", level=messages.ERROR)
 
     @button()
     def configure(self, request: HttpRequest, pk: str) -> HttpResponse:
