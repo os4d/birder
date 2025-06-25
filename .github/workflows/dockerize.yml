@@ -108,9 +108,10 @@ jobs:
             docker push os4d/birder:${{ steps.config.outputs.tag }}
 
       - name: Tag as latest
-        if: ${{ github.event.inputs.latest }}
+        if: ${{ github.event.inputs.latest == 'true' }}
         run:
-          docker push os4d/birder:${{ steps.config.outputs.tag }} os4d/birder:latest
+          docker tag os4d/birder:${{ steps.config.outputs.tag }} os4d/birder:latest
+          docker push os4d/birder:latest
 
 #      - name: Build and push tag ${{ steps.config.outputs.tag }} (v${{ steps.config.outputs.git_reference }})
 #        uses: docker/build-push-action@v6
