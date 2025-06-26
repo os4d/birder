@@ -63,12 +63,11 @@ RUN mkdir /code /venv
 WORKDIR /code
 COPY . /code
 
-RUN ls -al /code/dist \
-    && git status
+RUN uvx --with hatch-vcs hatchling metadata version
 
 RUN uv venv $VIRTUAL_ENV \
-    && uv sync --no-dev --frozen --no-editable \
-    && uvx --with hatch-vcs hatchling metadata version
+    && uv export --no-emit-workspace --no-hashes -o requirements-frozen.txt \
+    && pip install -c requirements-frozen.txt dist/*.whl
 
 FROM base_os AS dist
 ADD docker/conf /conf/

@@ -6,7 +6,7 @@ CMD?="run"
 RUN_OPTIONS?=
 
 .DEFAULT_GOAL := help
-.PHONY: help run build shell
+.PHONY: help run shell
 
 
 define PRINT_HELP_PYSCRIPT
@@ -27,8 +27,7 @@ help:
 
 
 build: ## build docker image
-	@cd .. && rm -fr dist/*
-	@cd .. && uv build --sdist -o dist/
+	@cd .. && rm -fr dist/* && uv build --wheel -o dist/
 	DOCKER_BUILDKIT=1 cd .. && docker build \
 			--progress=plain \
 			--platform=linux/amd64 \
@@ -40,7 +39,7 @@ build: ## build docker image
 			-t ${DOCKER_IMAGE_NAME}:${VERSION} \
 			-t ${DOCKER_IMAGE_NAME}:local \
 			-f docker/Dockerfile .
-	docker images | grep "${DOCKER_IMAGE_NAME}" | grep -e ${VERSION} -e local
+#	docker images | grep "${DOCKER_IMAGE_NAME}" | grep -e ${VERSION} -e local
 
 
 .run:
