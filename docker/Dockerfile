@@ -68,7 +68,7 @@ RUN ls -al /code/dist \
 
 RUN uv venv $VIRTUAL_ENV \
     && uv sync --no-dev --frozen --no-editable \
-    && uv pip install dist/*
+    && uvx --with hatch-vcs hatchling metadata version
 
 FROM base_os AS dist
 ADD docker/conf /conf/
