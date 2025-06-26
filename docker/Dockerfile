@@ -67,7 +67,7 @@ RUN uvx --with hatch-vcs hatchling metadata version
 
 RUN uv venv $VIRTUAL_ENV \
     && uv export --no-emit-workspace --no-hashes -o requirements-frozen.txt \
-    && pip install -c requirements-frozen.txt dist/*.whl
+    && uv pip install -c requirements-frozen.txt dist/*.whl
 
 FROM base_os AS dist
 ADD docker/conf /conf/

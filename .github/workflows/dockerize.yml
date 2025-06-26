@@ -95,7 +95,7 @@ jobs:
               git status
       - name: Build and push tag ${{ steps.config.outputs.tag }} (v${{ steps.config.outputs.git_reference }})
         run: |
-            uv build --sdist -o dist/
+            uv build -o dist/
             ls -al dist/
             docker build \
               --progress=plain \

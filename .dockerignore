@@ -8,6 +8,7 @@
 !src/birder/version.py
 !.git
 !.git/**
+!dist
 !dist/*
 
 !pyproject.toml
