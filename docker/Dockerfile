@@ -63,9 +63,10 @@ RUN mkdir /code /venv
 WORKDIR /code
 COPY . /code
 
-RUN ls -al /code/dist
+RUN ls -al /code/dist \
+    && git status
 
-RUN uv venv --no-cache $VIRTUAL_ENV \
+RUN uv venv $VIRTUAL_ENV \
     && uv sync --no-dev --frozen --no-editable \
     && uv pip install dist/*
 

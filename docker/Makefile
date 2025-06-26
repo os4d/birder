@@ -1,6 +1,6 @@
 DOCKER_IMAGE_NAME?=os4d/birder
 VERSION:=$(shell cd .. && uvx --with hatch-vcs hatchling metadata version)
-BUILD_DATE:="$(shell date +"%Y-%m-%d %H:%M")"
+BUILD_DATE:=$(shell date +"%Y-%m-%d %H:%M")
 SOURCE_COMMIT=$(shell git rev-parse --short HEAD)
 CMD?="run"
 RUN_OPTIONS?=
@@ -34,7 +34,7 @@ build: ## build docker image
 			--platform=linux/amd64 \
 			--build-arg VERSION=${VERSION} \
 			--build-arg GIT_SHA=${SOURCE_COMMIT} \
-			--build-arg BUILD_DATE=${BUILD_DATE} \
+			--build-arg BUILD_DATE='${BUILD_DATE}' \
 			--cache-from ${DOCKER_IMAGE_NAME}:local \
 			--cache-from ${DOCKER_IMAGE_NAME}:latest \
 			-t ${DOCKER_IMAGE_NAME}:${VERSION} \
