@@ -20,7 +20,7 @@ classifiers = [
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.12",
 ]
-dynamic = [ "optional-dependencies", "version" ]
+dynamic = [ "version" ]
 dependencies = [
   "attrs>=24.3",
   "beautifulsoup4>=4.12.3",
