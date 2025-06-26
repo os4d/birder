@@ -148,12 +148,8 @@ jobs:
       run: |
           VERSION=$( uvx --with hatch-vcs hatchling metadata version )
           COMMIT_SHA=$(git rev-parse "$GITHUB_SHA")
-
-          uv build --wheel
-
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "commit=$COMMIT_SHA" >> $GITHUB_OUTPUT
-
           echo "::notice title=VERSION:: Build local package $VERSION"
           echo "::notice title=COMMIT:: Build local package $COMMIT_SHA"
 

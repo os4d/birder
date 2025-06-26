@@ -100,7 +100,7 @@ jobs:
             docker build \
               --progress=plain \
               --platform=linux/amd64 \
-              --build-arg VERSION=${{ steps.config.outputs.git_reference }} \
+              --build-arg VERSION=${{ steps.config.outputs.version }} \
               --build-arg GIT_SHA=${{ steps.config.outputs.commit_sha }} \
               --build-arg BUILD_DATE='${{ steps.config.outputs.build_date }}' \
               --cache-from os4d/birder:latest \
