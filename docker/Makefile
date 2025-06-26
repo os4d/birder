@@ -27,7 +27,7 @@ help:
 
 
 build: ## build docker image
-	@cd .. && rm -fr dist/* && uv build --wheel -o dist/
+	@cd .. && rm -fr dist/* && uv build --sdist -o dist/
 	DOCKER_BUILDKIT=1 cd .. && docker build \
 			--progress=plain \
 			--platform=linux/amd64 \
