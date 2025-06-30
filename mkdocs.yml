@@ -87,32 +87,6 @@ plugins:
       heading_offset: 0
       recursive: true
 
-nav:
-  - Home: index.md
-  - Checks:
-      - AMQP: checks/amqp.md
-      - Celery: checks/celery.md
-      - ElasticSearch: checks/elastic_search.md
-      - FTP: checks/ftp.md
-      - HTTP: checks/http.md
-      - JSON: checks/json.md
-      - LDAP: checks/ldap.md
-      - Memcache: checks/memcache.md
-      - MySQL: checks/mysql.md
-      - Passive: checks/passive.md
-      - PostgreSQL: checks/pg.md
-      - Redis: checks/redis.md
-      - S3: checks/s3.md
-      - SMTP: checks/smtp.md
-      - SSH: checks/ssh.md
-      - TCP: checks/tcp.md
-      - XML: checks/xml.md
-  - Checks: checks.md
-  - Docker: docker.md
-  - Environment Variables: environment_variables.md
-  - Contributing: contributing.md
-  - Security: security.md
-  - License: license.md
 
 watch:
   - src/

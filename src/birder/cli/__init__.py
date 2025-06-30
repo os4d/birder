@@ -19,4 +19,4 @@ def main() -> None:
     cli(prog_name=birder.NAME, obj={}, max_content_width=100)
 
 
-from . import bg, check, deadlines, monitor, upgrade  # noqa: F401,E402
+from . import bg, check, deadlines, env, monitor, upgrade  # noqa: F401,E402
