@@ -6,7 +6,8 @@ pip-wheel-metadata
 coverage.xml
 junit.xml
 build
-
+downloaded_files
+__pycache__
 
 docker/*.tar.gz
 docker/*.whl
