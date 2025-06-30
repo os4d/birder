@@ -87,12 +87,6 @@ plugins:
       heading_offset: 0
       recursive: true
 
-#nav:
-#  - Home: index.md
-#  - Environment Variables: environment_variables.md
-#  - Contributing: contributing.md
-#  - Security: security.md
-#  - License: license.md
 
 watch:
   - src/
