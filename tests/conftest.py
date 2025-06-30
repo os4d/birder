@@ -99,3 +99,14 @@ def passive_monitor(project) -> "Monitor":
     from birder.checks import HealthCheck
 
     return MonitorFactory(project=project, strategy=HealthCheck)
+
+
+@pytest.fixture(scope="session", autouse=True)
+async def close_channels_redis_connections():
+    yield
+    from channels.layers import channel_layers
+
+    if channel_layers:
+        for channel_layer in channel_layers.all():
+            if hasattr(channel_layer, "close_pools"):
+                await channel_layer.close_pools()
