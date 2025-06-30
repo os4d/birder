@@ -30,7 +30,11 @@ def test_login(db, client):
     with mock.patch("social_core.backends.base.BaseAuth.request") as mock_request:
         url = reverse("social:complete", kwargs={"backend": "google-oauth2"})
         url += "?code=2&state=1"
-        mock_request.return_value.json.return_value = {"access_token": "123"}
+        mock_request.return_value.json.return_value = {
+            "access_token": "123",
+            "uid": "test_uid",
+            "provider": "google-oauth2",
+        }
         with mock.patch(
             "django.contrib.sessions.backends.base.SessionBase.set_expiry",
             side_effect=[OverflowError, None],
