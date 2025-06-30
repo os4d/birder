@@ -1,6 +1,7 @@
 nav:
   - About: index.md
   - docker.md
+  - environment_variables.md
   - checks.md
   - security.md
   - contributing.md
