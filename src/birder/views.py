@@ -12,11 +12,11 @@ from django.shortcuts import get_object_or_404, render
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView
-from django.views.generic.base import ContextMixin, View, TemplateView
+from django.views.generic.base import ContextMixin, TemplateView, View
 
 from birder.checks import BaseCheck
 from birder.forms import LoginForm
-from birder.models import Project, Monitor
+from birder.models import Monitor, Project
 from birder.utils.dates import format_minutes_as_time, get_start_of_day
 from birder.ws.utils import notify_ui
 

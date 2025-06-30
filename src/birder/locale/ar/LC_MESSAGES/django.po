@@ -1,0 +1,166 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-30 21:11+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+#: src/birder/config/fragments/unfold.py:15 src/birder/console/site.py:23
+#: src/birder/console/site.py:24
+msgid "Birder"
+msgstr "بيردر"
+
+#: src/birder/config/fragments/unfold.py:113
+msgid "Configuration"
+msgstr "الإعدادات"
+
+#: src/birder/config/fragments/unfold.py:118
+msgid "Projects"
+msgstr "المشاريع"
+
+#: src/birder/config/fragments/unfold.py:123
+#: src/birder/config/fragments/unfold.py:160
+msgid "Environments"
+msgstr "البيئات"
+
+#: src/birder/config/fragments/unfold.py:128
+msgid "Monitors"
+msgstr "الشاشات"
+
+#: src/birder/config/fragments/unfold.py:133
+msgid "Deadlines"
+msgstr "المواعيد النهائية"
+
+#: src/birder/config/fragments/unfold.py:140
+msgid "Security"
+msgstr "الأمان"
+
+#: src/birder/config/fragments/unfold.py:145
+msgid "Users"
+msgstr "المستخدمون"
+
+#: src/birder/console/site.py:22
+msgid "Birder Admin console"
+msgstr "لوحة تحكم بيردر الإدارية"
+
+#: src/birder/console/site.py:40
+msgid "Personal info"
+msgstr "المعلومات الشخصية"
+
+#: src/birder/console/site.py:42
+msgid "Permissions"
+msgstr "الأذونات"
+
+#: src/birder/console/site.py:53
+msgid "Important dates"
+msgstr "تواريخ مهمة"
+
+#: src/birder/models.py:102
+msgid "Default environment must be one of selected environment"
+msgstr "يجب أن تكون البيئة الافتراضية واحدة من البيئات المختارة"
+
+#: src/birder/theme/templates/admin/base_site.html:5
+msgid "Django site admin"
+msgstr "إدارة موقع جانغو"
+
+#: src/birder/theme/templates/admin/base_site.html:8
+msgid "Django administration"
+msgstr "إدارة جانغو"
+
+#: src/birder/theme/templates/admin/change_form.html:18
+msgid "Home"
+msgstr "الرئيسية"
+
+#: src/birder/theme/templates/admin/change_form.html:33
+#, python-format
+msgid "Add %(name)s"
+msgstr "إضافة %(name)s"
+
+#: src/birder/theme/templates/env.html:9
+#: src/birder/theme/templates/index.html:22
+#: src/birder/theme/templates/project.html:10
+msgid "Last Update"
+msgstr "آخر تحديث"
+
+#: src/birder/theme/templates/env.html:13
+msgid "Select Project"
+msgstr "اختر مشروع"
+
+#: src/birder/theme/templates/env.html:20
+#: src/birder/theme/templates/project.html:14
+msgid "Select Environment"
+msgstr "اختر بيئة"
+
+#: src/birder/theme/templates/index.html:46
+msgid "There are no available projects"
+msgstr "لا توجد مشاريع متاحة"
+
+#: src/birder/theme/templates/layout.html:48
+msgid "Hi"
+msgstr "مرحباً"
+
+#: src/birder/theme/templates/layout.html:51
+msgid "logout"
+msgstr "تسجيل الخروج"
+
+#: src/birder/theme/templates/layout.html:54
+msgid "login"
+msgstr "تسجيل الدخول"
+
+#: src/birder/theme/templates/layout.html:58
+#: src/birder/theme/templates/monitor.html:18
+msgid "admin"
+msgstr "المسؤول"
+
+#: src/birder/theme/templates/login.html:8
+msgid "Login"
+msgstr "تسجيل الدخول"
+
+#: src/birder/theme/templates/login.html:32
+msgid "Login/Sign Up with Google"
+msgstr "تسجيل الدخول/الاشتراك باستخدام جوجل"
+
+#: src/birder/theme/templates/login.html:40
+msgid "or login with e-mail"
+msgstr "أو تسجيل الدخول بالبريد الإلكتروني"
+
+#: src/birder/theme/templates/login.html:58
+msgid "Sign In"
+msgstr "تسجيل الدخول"
+
+#: src/birder/theme/templates/monitor.html:28
+msgid "Last check"
+msgstr "آخر فحص"
+
+#: src/birder/theme/templates/monitor.html:33
+msgid "Last success"
+msgstr "آخر نجاح"
+
+#: src/birder/theme/templates/monitor.html:38
+msgid "Last failure"
+msgstr "آخر فشل"
+
+#: src/birder/theme/templates/monitor.html:43
+msgid "System address"
+msgstr "عنوان النظام"
+
+#: src/birder/theme/templates/project.html:37
+msgid "Last Check"
+msgstr "آخر فحص"
+
+#: src/birder/views.py:126
+msgid "Invalid Token"
+msgstr "رمز غير صالح"
