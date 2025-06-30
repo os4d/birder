@@ -191,6 +191,16 @@ LOGGING = {
             "level": get_log_level_for("django"),
             "propagate": should_propagate("django"),
         },
+        "dramatiq": {
+            "handlers": ["null"],
+            "level": get_log_level_for("dramatiq"),
+            "propagate": False,
+        },
+        "urllib3": {
+            "handlers": ["null"],
+            "level": get_log_level_for("urllib3"),
+            "propagate": should_propagate("urllib3"),
+        },
         "kombu": {
             "handlers": ["null"],
             "level": get_log_level_for("kombu"),
