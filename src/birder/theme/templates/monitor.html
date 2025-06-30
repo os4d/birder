@@ -15,7 +15,7 @@
                     <img class="w-4 align-top counter" src="{% number monitor.failures %}">
                     {% if user.is_staff %}
                         <a class="mt-4" target="_admin"
-                           href="{% url "console:birder_monitor_change" monitor.pk %}">admin</a>
+                           href="{% url "console:birder_monitor_change" monitor.pk %}">{% translate "admin" %}</a>
                     {% endif %}
                 </div>
             </div>
@@ -25,22 +25,22 @@
             <script>doit({{ labels }}, {{ data }}, {{ group_by }}, "{% if monitor.strategy.mode == 1 %}red{% else %}green{% endif %}")</script>
             <div class="my-2 flex text-xs">
                 <img class="w-4 mr-5" src="{% static 'images/clock.svg' %}">
-                <div class="w-32">Last check:</div>
+                <div class="w-32">{% translate "Last check" %}:</div>
                 <div class="ml-2 last-check">{{ monitor.last_timestamp_check|format_date }}</div>
             </div>
             <div class="my-2 flex text-xs">
                 <img class="w-4 mr-5" src="{% static 'images/ok.svg' %}">
-                <div class="w-32">Last success:</div>
+                <div class="w-32">{% translate "Last success" %}:</div>
                 <div class="ml-2 last-success">{{ monitor.last_timestamp_success|format_date }}</div>
             </div>
             <div class="my-2 flex text-xs">
                 <img class="w-4 mr-5" src="{% static 'images/ko.svg' %}">
-                <div class="w-32">Last failure:</div>
+                <div class="w-32">{% translate "Last failure" %}:</div>
                 <div class="ml-2 last-failure">{{ monitor.last_timestamp_failure|format_date }}</div>
             </div>
             <div class="my-2 flex text-xs">
                 <img class="w-4 mr-5" src="{% static 'images/icons/host1.svg' %}">
-                <div class="w-32">System address</div>
+                <div class="w-32">{% translate "System address" %}</div>
                 <div class="w-32">{{ monitor.strategy.address }} </div>
             </div>
             <div class="my-2 border p-2 rounded-sm ">
