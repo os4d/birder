@@ -109,6 +109,7 @@ nav:
       - XML: checks/xml.md
   - Checks: checks.md
   - Docker: docker.md
+  - Environment Variables: environment_variables.md
   - Contributing: contributing.md
   - Security: security.md
   - License: license.md
