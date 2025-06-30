@@ -832,6 +832,15 @@ wheels = [
 ]
 
 [[package]]
+name = "dnspython"
+version = "2.7.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b5/4a/263763cb2ba3816dd94b08ad3a33d5fdae34ecb856678773cc40a3605829/dnspython-2.7.0.tar.gz", hash = "sha256:ce9c432eda0dc91cf618a5cedf1a4e142651196bbcd2c80e89ed5a907e5cfaf1", size = 345197, upload-time = "2024-10-05T20:14:59.362Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/68/1b/e0a87d256e40e8c888847551b20a017a6b98139178505dc7ffb96f04e954/dnspython-2.7.0-py3-none-any.whl", hash = "sha256:b4c34b7d10b51bcc3a5071e7b8dee77939f1e878477eeecc965e9835f63c6c86", size = 313632, upload-time = "2024-10-05T20:14:57.687Z" },
+]
+
+[[package]]
 name = "docker"
 version = "7.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1854,6 +1863,7 @@ dependencies = [
     { name = "django-timezone-field" },
     { name = "django-unfold" },
     { name = "djangorestframework" },
+    { name = "dnspython" },
     { name = "dramatiq" },
     { name = "dramatiq-crontab", extra = ["sentry"] },
     { name = "durations-nlp" },
@@ -1968,6 +1978,7 @@ requires-dist = [
     { name = "django-timezone-field", specifier = ">=7" },
     { name = "django-unfold", specifier = ">=0.60" },
     { name = "djangorestframework", specifier = ">=3.15.2" },
+    { name = "dnspython", specifier = ">=2.6.1" },
     { name = "dramatiq", specifier = ">=1.17.1" },
     { name = "dramatiq-crontab", extras = ["sentry"], specifier = ">=1.0.8" },
     { name = "durations-nlp", specifier = ">=1.0.1" },

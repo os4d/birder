@@ -51,6 +51,7 @@ dependencies = [
   "django-timezone-field>=7",
   "django-unfold>=0.60",
   "djangorestframework>=3.15.2",
+  "dnspython>=2.6.1",
   "dramatiq>=1.17.1",
   "dramatiq-crontab[sentry]>=1.0.8",
   "durations-nlp>=1.0.1",

@@ -1,6 +1,8 @@
 from unittest import mock
+from uuid import uuid4
 
 import pytest
+import responses
 from django.conf import settings
 from django.test import override_settings
 from django.urls import reverse
@@ -19,7 +21,7 @@ def user(db):
     SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET="2",
     SESSION_ENGINE="django.contrib.sessions.backends.db",
 )
-def test_login(db, client):
+def test_login(db, user, client):
     session = client.session
     session["google-oauth2_state"] = "1"
     session.save()
@@ -27,10 +29,34 @@ def test_login(db, client):
     res = client.get(reverse("social:begin", kwargs={"backend": "google-oauth2"}))
     assert res.status_code == 302
 
-    with mock.patch("social_core.backends.base.BaseAuth.request") as mock_request:
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            responses.POST,
+            "https://accounts.google.com/o/oauth2/token",
+            json={
+                "access_token": "123",
+                "uid": str(uuid4()),
+                "provider": "google-oauth2",
+            },
+            status=200,
+        )
+        rsps.add(
+            responses.GET,
+            "https://www.googleapis.com/oauth2/v3/userinfo",
+            json={
+                "sub": str(uuid4()),  # Unique user ID
+                "name": "Test User",
+                "given_name": "Test",
+                "family_name": "User",
+                "picture": "https://example.com/test.jpg",
+                "email": user.email,
+                "email_verified": True,
+            },
+            status=200,
+        )
+
         url = reverse("social:complete", kwargs={"backend": "google-oauth2"})
         url += "?code=2&state=1"
-        mock_request.return_value.json.return_value = {"access_token": "123"}
         with mock.patch(
             "django.contrib.sessions.backends.base.SessionBase.set_expiry",
             side_effect=[OverflowError, None],
