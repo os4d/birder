@@ -1,7 +1,6 @@
 from unittest.mock import Mock, patch
 
 import pytest
-import redis
 
 from birder.checks.memcache import MemCacheCheck
 from birder.exceptions import CheckError
@@ -31,7 +30,7 @@ def test_memcache_check_success():
 
 def test_memcache_check_fail():
     c = MemCacheCheck(configuration={"host": "localhost"})
-    with patch("redis.Redis.ping", side_effect=redis.ConnectionError):
+    with patch("pymemcache.client.base.Client._connect", side_effect=ConnectionError):
         assert not c.check()
         with pytest.raises(CheckError):
             c.check(True)
