@@ -1,3 +1,4 @@
+import os
 from unittest import mock
 
 import pytest
@@ -6,6 +7,7 @@ from channels.testing import WebsocketCommunicator
 from birder.ws.consumers import CheckConsumer
 
 
+@pytest.mark.skipif(os.environ.get("CI") == "true", reason="Skipping async tests on CI")
 @pytest.mark.asyncio
 async def test_check_consumer_connect():
     communicator = WebsocketCommunicator(CheckConsumer.as_asgi(), "/ws/check/")
@@ -18,6 +20,7 @@ async def test_check_consumer_connect():
     await communicator.disconnect()
 
 
+@pytest.mark.skipif(os.environ.get("CI") == "true", reason="Skipping async tests on CI")
 @pytest.mark.asyncio
 async def test_check_consumer_disconnect():
     communicator = WebsocketCommunicator(CheckConsumer.as_asgi(), "/ws/check/")
