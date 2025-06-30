@@ -10,6 +10,7 @@ from .http import HttpCheck
 from .json import JsonCheck
 from .ldap import LDAPCheck
 from .memcache import MemCacheCheck
+from .mongodb import MongoDbCheck
 from .mysql import MySQLCheck
 from .passive import HealthCheck
 from .pg import PostgresCheck
@@ -30,6 +31,7 @@ registry.register(HttpCheck)
 registry.register(JsonCheck)
 registry.register(LDAPCheck)
 registry.register(MemCacheCheck)
+registry.register(MongoDbCheck)
 registry.register(MySQLCheck)
 registry.register(PostgresCheck)
 registry.register(RedisCheck)

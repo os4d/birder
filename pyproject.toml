@@ -68,6 +68,7 @@ dependencies = [
   "prometheus-client==0.20",
   "psycopg2-binary>=2.9.10",
   "pymemcache>=4",
+  "pymongo>=4.6",
   "pymysql>=1.1.1",
   "python-redis-lock[django]>=4",
   "pytz>=2024.2",
@@ -113,6 +114,7 @@ dev = [
   "tox>=4.26",
   "watchdog[watchmedo]>=6",
 ]
+
 docs = [
   "markupsafe>=2.1.5",
   "mdx-gh-links>=0.4",

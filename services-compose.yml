@@ -89,6 +89,15 @@ services:
       LDAP_ROOT: dc=birder,dc=org
       LDAP_ADMIN_DN: cn=admin,dc=birder,dc=org
 
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: testuser
+      MONGO_INITDB_ROOT_PASSWORD: testpass
+      MONGO_INITDB_DATABASE: testdb
+
   smtp:
     image: bytemark/smtp
     restart: always
