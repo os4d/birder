@@ -19,6 +19,7 @@ from .registry import registry
 from .s3 import S3Check
 from .smtp import SMTPCheck
 from .ssh import SSHCheck
+from .ssl import SslCheck
 from .tcp import TCPCheck
 from .xml import XMLCheck
 
@@ -38,9 +39,9 @@ registry.register(RedisCheck)
 registry.register(S3Check)
 registry.register(SMTPCheck)
 registry.register(SSHCheck)
+registry.register(SslCheck)
 registry.register(TCPCheck)
 registry.register(XMLCheck)
-registry.register(ElasticSearchCheck)
 
 
 def parse_uri(uri: str) -> dict[str, str | Any]:
