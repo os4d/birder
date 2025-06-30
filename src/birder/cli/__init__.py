@@ -19,11 +19,4 @@ def main() -> None:
     cli(prog_name=birder.NAME, obj={}, max_content_width=100)
 
 
-from . import bg, check, deadlines, env, monitor, upgrade  # noqa: F401,E402
-
-cli.add_command(bg.bg)
-cli.add_command(check.check)
-cli.add_command(deadlines.deadlines)
-cli.add_command(env.env)
-cli.add_command(monitor.monitor)
-cli.add_command(upgrade.upgrade)
+from . import bg, check, deadlines, monitor, upgrade  # noqa: F401,E402
