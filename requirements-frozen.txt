@@ -634,7 +634,7 @@ tzdata==2025.2
     #   tzlocal
 tzlocal==5.3.1
     # via apscheduler
-urllib3==2.4.0
+urllib3==2.5.0
     # via
     #   botocore
     #   docker
