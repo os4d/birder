@@ -1,5 +1,6 @@
 import datetime
 import socket
+import ssl
 from unittest import mock
 
 import pytest
@@ -12,11 +13,21 @@ from birder.exceptions import CheckError
 @pytest.fixture
 def mock_ssl_socket():
     """Fixture to mock the SSL socket and certificate retrieval."""
-    with mock.patch("socket.create_connection") as mock_create_conn:
-        mock_sock = mock.MagicMock()
-        mock_ssock = mock.MagicMock()
-        mock_create_conn.return_value.__enter__.return_value = mock_sock
-        mock_sock.__enter__.return_value.wrap_socket.return_value.__enter__.return_value = mock_ssock
+    with (
+        mock.patch("socket.create_connection") as mock_create_conn,
+        mock.patch("ssl.create_default_context") as mock_create_context,
+    ):
+        mock_sock = mock.MagicMock(spec=socket.socket)
+        mock_ssock = mock.MagicMock(spec=ssl.SSLSocket)
+
+        # Mock the context manager __enter__ and __exit__
+        mock_create_conn.return_value = mock_sock
+        mock_sock.__enter__.return_value = mock_sock
+
+        mock_context = mock.MagicMock()
+        mock_create_context.return_value = mock_context
+        mock_context.wrap_socket.return_value = mock_ssock
+        mock_ssock.__enter__.return_value = mock_ssock
 
         def configure_cert(expiry_days_from_now):
             expiry_date = datetime.datetime.utcnow() + datetime.timedelta(days=expiry_days_from_now)
@@ -114,23 +125,23 @@ def test_ssl_check_exact_amber_threshold(mock_ssl_socket):
     assert check.status["days_left"] == 30
 
 
-def test_ssl_check_connection_error(mock_ssl_socket):
+def test_ssl_check_connection_error():
     """Test how the check handles a connection error."""
-    mock_ssl_socket.side_effect = socket.timeout("Connection timed out")
-    check = SslCheck(
-        configuration={
-            "url": "https://example.com",
-            "amber_days": 30,
-            "red_days": 10,
-            "timeout": 2,
-        }
-    )
-    assert check.check() is False
-    assert "error" in check.status
-    assert "timed out" in check.status["error"]
+    with mock.patch("socket.create_connection", side_effect=socket.timeout("Connection timed out")):
+        check = SslCheck(
+            configuration={
+                "url": "https://example.com",
+                "amber_days": 30,
+                "red_days": 10,
+                "timeout": 2,
+            }
+        )
+        assert check.check() is False
+        assert "error" in check.status
+        assert "timed out" in check.status["error"]
 
-    with pytest.raises(CheckError):
-        check.check(raise_error=True)
+        with pytest.raises(CheckError):
+            check.check(raise_error=True)
 
 
 def test_ssl_check_no_cert(mock_ssl_socket):
