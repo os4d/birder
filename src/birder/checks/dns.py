@@ -36,6 +36,7 @@ class DnsCheck(BaseCheck):
 
     icon = "world"
     config_class = DnsConfigForm
+    pragma = ["dns"]
 
     def check(self, raise_error: bool = False) -> bool:
         """Perform the check."""
