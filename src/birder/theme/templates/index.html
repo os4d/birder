@@ -19,7 +19,7 @@
     </style>
     <div class="w-full xl:px-8 px-4">
         <div class="float-right text-xs" id="lastUpdate">&nbsp;
-            {{ birder.system.last_check|default_if_none:"" }}
+            {% translate "Last Update" %}: {{ birder.system.last_check|default_if_none:"" }}
         </div>
     </div>
     <div class="h-auto min-h-150 block" id="project-grid">

@@ -1,0 +1,166 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-30 16:56+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/birder/config/fragments/unfold.py:15 src/birder/console/site.py:23
+#: src/birder/console/site.py:24
+msgid "Birder"
+msgstr "Birder"
+
+#: src/birder/config/fragments/unfold.py:113
+msgid "Configuration"
+msgstr "Configurazione"
+
+#: src/birder/config/fragments/unfold.py:118
+msgid "Projects"
+msgstr "Progetti"
+
+#: src/birder/config/fragments/unfold.py:123
+#: src/birder/config/fragments/unfold.py:160
+msgid "Environments"
+msgstr "Ambienti"
+
+#: src/birder/config/fragments/unfold.py:128
+msgid "Monitors"
+msgstr "Monitor"
+
+#: src/birder/config/fragments/unfold.py:133
+msgid "Deadlines"
+msgstr "Scadenze"
+
+#: src/birder/config/fragments/unfold.py:140
+msgid "Security"
+msgstr "Sicurezza"
+
+#: src/birder/config/fragments/unfold.py:145
+msgid "Users"
+msgstr "Utenti"
+
+#: src/birder/console/site.py:22
+msgid "Birder Admin console"
+msgstr "Console di amministrazione Birder"
+
+#: src/birder/console/site.py:40
+msgid "Personal info"
+msgstr "Informazioni personali"
+
+#: src/birder/console/site.py:42
+msgid "Permissions"
+msgstr "Permessi"
+
+#: src/birder/console/site.py:53
+msgid "Important dates"
+msgstr "Date importanti"
+
+#: src/birder/models.py:102
+msgid "Default environment must be one of selected environment"
+msgstr "L'ambiente predefinito deve essere uno degli ambienti selezionati"
+
+#: src/birder/theme/templates/admin/base_site.html:5
+msgid "Django site admin"
+msgstr "Amministrazione del sito Django"
+
+#: src/birder/theme/templates/admin/base_site.html:8
+msgid "Django administration"
+msgstr "Amministrazione Django"
+
+#: src/birder/theme/templates/admin/change_form.html:18
+msgid "Home"
+msgstr "Home"
+
+#: src/birder/theme/templates/admin/change_form.html:33
+#, python-format
+msgid "Add %(name)s"
+msgstr "Aggiungi %(name)s"
+
+#: src/birder/theme/templates/env.html:9
+#: src/birder/theme/templates/index.html:22
+#: src/birder/theme/templates/project.html:10
+msgid "Last Update"
+msgstr "Ultimo aggiornamento"
+
+#: src/birder/theme/templates/env.html:13
+msgid "Select Project"
+msgstr "Seleziona Progetto"
+
+#: src/birder/theme/templates/env.html:20
+#: src/birder/theme/templates/project.html:14
+msgid "Select Environment"
+msgstr "Seleziona Ambiente"
+
+#: src/birder/theme/templates/index.html:46
+msgid "There are no available projects"
+msgstr "Non ci sono progetti disponibili"
+
+#: src/birder/theme/templates/layout.html:48
+msgid "Hi"
+msgstr "Ciao"
+
+#: src/birder/theme/templates/layout.html:51
+msgid "logout"
+msgstr "Esci"
+
+#: src/birder/theme/templates/layout.html:54
+msgid "login"
+msgstr "Accedi"
+
+#: src/birder/theme/templates/layout.html:58
+#: src/birder/theme/templates/monitor.html:18
+msgid "admin"
+msgstr "Amministratore"
+
+#: src/birder/theme/templates/login.html:8
+msgid "Login"
+msgstr "Accesso"
+
+#: src/birder/theme/templates/login.html:32
+msgid "Login/Sign Up with Google"
+msgstr "Accedi/Registrati con Google"
+
+#: src/birder/theme/templates/login.html:40
+msgid "or login with e-mail"
+msgstr "o accedi con l'e-mail"
+
+#: src/birder/theme/templates/login.html:58
+msgid "Sign In"
+msgstr "Accedi"
+
+#: src/birder/theme/templates/monitor.html:28
+msgid "Last check"
+msgstr "Ultimo controllo"
+
+#: src/birder/theme/templates/monitor.html:33
+msgid "Last success"
+msgstr "Ultimo successo"
+
+#: src/birder/theme/templates/monitor.html:38
+msgid "Last failure"
+msgstr "Ultimo fallimento"
+
+#: src/birder/theme/templates/monitor.html:43
+msgid "System address"
+msgstr "Indirizzo di sistema"
+
+#: src/birder/theme/templates/project.html:37
+msgid "Last Check"
+msgstr "Ultimo controllo"
+
+#: src/birder/views.py:126
+msgid "Invalid Token"
+msgstr "Token non valido"

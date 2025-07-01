@@ -2,6 +2,7 @@ import json
 from datetime import datetime, timedelta
 from typing import Any
 
+from django.conf import settings
 from django.contrib.auth.views import LoginView as LoginView_
 from django.db.models import QuerySet
 from django.forms import Media
@@ -9,11 +10,11 @@ from django.http.request import HttpRequest
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.utils.safestring import mark_safe
-from django.views.generic import DetailView, TemplateView
-from django.views.generic.base import ContextMixin, View
+from django.utils.translation import gettext_lazy as _
+from django.views.generic import DetailView
+from django.views.generic.base import ContextMixin, TemplateView, View
 
 from birder.checks import BaseCheck
-from birder.config import settings
 from birder.forms import LoginForm
 from birder.models import Monitor, Project
 from birder.utils.dates import format_minutes_as_time, get_start_of_day
@@ -122,7 +123,7 @@ class LoginView(CommonContextMixin, LoginView_):
 def trigger(request: HttpRequest, pk: str, token: str) -> HttpResponse:
     m: Monitor = get_object_or_404(Monitor, pk=pk)
     if m.token != token:
-        return HttpResponse("Invalid Token", status=403)
+        return HttpResponse(_("Invalid Token"), status=403)
     if m.strategy.mode != BaseCheck.REMOTE_INVOCATION:
         return HttpResponse("Check not enabled for remote call", status=400)
     m.get()

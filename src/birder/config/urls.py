@@ -17,6 +17,7 @@ urlpatterns = [
     path("errors/404/", handler404, name="errors-404"),
     path("errors/500/", handler500, name="errors-500"),
     path("social/", include("social_django.urls", namespace="social")),
+    path("i18n/", include("django.conf.urls.i18n")),
     path("settings/", admin.site.urls),
     path("console/", console.urls),
     path("login/", views.LoginView.as_view(), name="login"),

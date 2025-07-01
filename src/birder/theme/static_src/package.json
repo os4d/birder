@@ -6,11 +6,11 @@
     "start": "npm run build:dev",
     "build": "npm run build:clean && npm run build:tailwind && npm run build:admin",
 
-    "build:clean": "rimraf ../static/css/*",
-    "build:tailwind": "cross-env NODE_ENV=production postcss ./src/styles.scss -o ../static/css/styles.css --minify",
-    "build:dev": "cross-env NODE_ENV=development postcss ./src/styles.scss -o ../static/css/styles.css --watch",
-
+    "site:clean": "rimraf ../static/css/*",
+    "site:tailwind": "cross-env NODE_ENV=production postcss ./src/styles.scss -o ../static/css/styles.css --minify",
+    "site:dev": "cross-env NODE_ENV=development postcss ./src/styles.scss -o ../static/css/styles.css --watch",
     "site:build": "cross-env NODE_ENV=production postcss ./src/styles.scss -o ../static/css/styles.css --minify",
+
     "admin:build": "cross-env NODE_ENV=production postcss ./src/styles_admin.scss -o ../static/css/styles_admin.css --minify",
     "admin:dev": "cross-env NODE_ENV=development postcss ./src/styles_admin.scss -o ../static/css/styles_admin.css --watch"
   },

@@ -7,11 +7,11 @@
     </div>
     <div class="w-full xl:px-8 px-4">
         <div class="float-right text-xs" id="lastUpdate">
-            {{ birder.system.last_check|default_if_none:"" }}
+            {% translate "Last Update" %}: {{ birder.system.last_check|default_if_none:"" }}
         </div>
         <div>
             <select name="env" class="program-selection">
-                <option value=""></option>
+                <option value="">{% translate "Select Environment" %}</option>
                 {% for env in environments %}
                     <option value="{% url "project-env" project.pk env.name %}"
                             {% if env.name == selected_env.name %}selected{% endif %}>{{ env.name }}</option>
@@ -34,7 +34,7 @@
                     <div class="counters">
                         {{ monitor.failures }} / {{ monitor.warn_threshold }} / {{ monitor.err_threshold }}
                     </div>
-                    <div class="last-check"></div>
+                    <div class="last-check">{% translate "Last Check" %}: {{ monitor.last_timestamp_check|format_date }}</div>
                 </div>
             </a>
         {% endfor %}

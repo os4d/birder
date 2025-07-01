@@ -4,6 +4,7 @@ from urllib.parse import parse_qsl, urlparse
 from .amqp import AmqpCheck
 from .base import BaseCheck
 from .celery import CeleryCheck, CeleryQueueCheck
+from .dns import DnsCheck
 from .elastic_search import ElasticSearchCheck
 from .ftp import FtpCheck
 from .http import HttpCheck
@@ -24,6 +25,7 @@ from .xml import XMLCheck
 registry.register(AmqpCheck)
 registry.register(CeleryCheck)
 registry.register(CeleryQueueCheck)
+registry.register(DnsCheck)
 registry.register(FtpCheck)
 registry.register(HealthCheck)
 registry.register(HttpCheck)
