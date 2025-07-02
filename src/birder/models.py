@@ -61,6 +61,8 @@ class User(AbstractUser):
 
 class Project(models.Model):
     environments: "models.ManyToManyField[Environment, Environment]"
+    monitors: "models.QuerySet[Monitor]"
+
     name = models.CharField(max_length=255, unique=True)
     public = models.BooleanField(default=False)
     bitcaster_url = models.URLField(blank=True, help_text="The URL to the Bitcaster notification endpoint.")
