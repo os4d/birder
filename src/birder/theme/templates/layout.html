@@ -26,12 +26,12 @@
             <nav class="z-30">
                 <ul class="md:flex items-center justify-between text-base pt-4 md:pt-0">
                     <li><a class="inline-block no-underline hover:underline py-2 px-4" href="/">Home</a></li>
-                    {% if monitor %}
-                        <li><a class="inline-block no-underline hover:underline py-2 px-4 w-8"
-                               href="{% url "project-detail" monitor.project.pk %}">{{ monitor.project.name }}</a></li>
-                    {% else %}
-                        <li><span class="inline-block no-underline hover:underline py-2 px-4 w-8"></span></li>
-                    {% endif %}
+{# {% if monitor %} #}
+{# <li><a class="inline-block no-underline hover:underline py-2 px-4 w-8" #}
+{# href="{% url "project-env" monitor.project.pk monitor.environment %}">{{ monitor.project.name }}</a></li> #}
+{# {% else %} #}
+{# <li><span class="inline-block no-underline hover:underline py-2 px-4 w-8"></span></li> #}
+{# {% endif %} #}
                 </ul>
             </nav>
         </div>
@@ -48,10 +48,10 @@
                 <div class="hidden sm:flex">{% translate "Hi" %}, {{ user }}&nbsp;&nbsp;</div>
                 <form method="post" action="{% url "logout" %}" id="logout-form">
                     {% csrf_token %}
-                    <button type="submit" class="btn-link">>{% translate "logout" %}</button>
+                    <button type="submit" class="btn-link cursor-pointer">{% translate "logout" %}</button>
                 </form>
             {% else %}
-                <a class="inline-block no-underline " href="{% url "login" %}">>{% translate "login" %}</a>
+                <a class="inline-block no-underline" href="{% url "login" %}">{% translate "login" %}</a>
             {% endif %}
             {% if user.is_staff %}
                 <a class="inline-block no-underline px-2" target="_admin"

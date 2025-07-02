@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any
 
 from django.conf import settings
@@ -17,7 +17,8 @@ from django.views.generic.base import ContextMixin, TemplateView, View
 from birder.checks import BaseCheck
 from birder.forms import LoginForm
 from birder.models import Monitor, Project
-from birder.utils.dates import format_minutes_as_time, get_start_of_day
+from birder.utils.charts import get_data_for_date
+from birder.utils.dates import get_start_of_day
 from birder.ws.utils import notify_ui
 
 
@@ -81,7 +82,7 @@ class ProjectView(CommonContextMixin, DetailView):
         kwargs["selected_env"] = env
         filters = {"environment": env}
         kwargs["project"] = project
-        monitors = Monitor.objects.filter(**filters).order_by("position", "name")
+        monitors = project.monitors.filter(**filters).order_by("position", "name")
         kwargs["monitors"] = monitors
         kwargs["environments"] = project.environments.order_by("name")
         for monitor in monitors:
@@ -98,20 +99,12 @@ class MonitorDetail(CommonContextMixin, DetailView):
         return super().get_queryset().select_related("environment", "project")
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        from birder.db import DataStore
-
         now = get_start_of_day(datetime.now())
-        bits = DataStore(self.object).get_all_entries(now)
         group_by = 5
-        data = [sum(bits[i : i + group_by]) for i in range(0, len(bits), group_by)]
-        kwargs["title"] = "{} - {}".format(
-            now.strftime("%H:%M"), (now + timedelta(hours=(len(bits) // 60) - 1)).strftime("%H:%M")
-        )
+        data, labels = get_data_for_date(self.object, now, group_by)
         kwargs["data"] = data
         kwargs["group_by"] = group_by
-        kwargs["labels"] = mark_safe(  # noqa: S308
-            json.dumps([format_minutes_as_time(i) for i in list(range(1, len(bits) + 1, group_by))])
-        )
+        kwargs["labels"] = mark_safe(json.dumps(labels))  # noqa: S308
         return super().get_context_data(**kwargs)
 
 

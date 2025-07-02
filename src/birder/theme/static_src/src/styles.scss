@@ -1,4 +1,5 @@
 @import "tailwindcss";
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 /**
@@ -9,7 +10,6 @@
   * the scope of this path.
   */
 @source "../../../**/*.{html,py,js}";
-
 
 
 body {
@@ -97,6 +97,19 @@ select.program-selection {
       @apply dark:text-white;
     }
 
+    .counters {
+      .item {
+        @apply w-full block flex;
+        .label {
+          @apply w-20 ;
+        }
+
+        .value {
+          @apply w-1/3;
+        }
+      }
+    }
+
     .status {
       @apply w-10 h-10;
     }
@@ -132,6 +145,23 @@ select.program-selection {
 
     @apply pt-0;
   }
+}
+
+.status-error {
+  @apply text-red-400;
+  fill: red;
+}
+
+.status-warn {
+
+}
+
+.status-unknown {
+  fill: #cccccc;
+}
+.status-ok, status-success {
+  color: #00dd00;
+  fill: #00dd00;
 }
 
 .dot {

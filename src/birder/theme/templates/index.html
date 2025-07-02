@@ -1,22 +1,5 @@
 {% extends "layout.html" %}{% load birder i18n static %}
 {% block content %}
-    <style>
-        .red {
-            fill: red
-        }
-
-        .green {
-            fill: green;
-        }
-
-        .orange {
-            fill: orange;
-        }
-
-        .unknown {
-            fill: grey;
-        }
-    </style>
     <div class="w-full xl:px-8 px-4">
         <div class="float-right text-xs" id="lastUpdate">&nbsp;
             {% translate "Last Update" %}: {{ birder.system.last_check|default_if_none:"" }}
@@ -31,13 +14,17 @@
                         <div class="flex-grow w-max-2/3 overflow-clip pl-3">{{ project.name|truncatechars:"20" }}
                         </div>
                         <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
-                            <circle class="unknown" cx="5" cy="5" r="5"></circle>
+                            <circle class="status-unknown" cx="5" cy="5" r="5"></circle>
                         </svg>
                     </div>
-                    <div class="counters flex">
-                        <div class="ok text-green-400">{{ project.success }}</div>
-                        <div class="warn text-orange-400 px-2">{{ project.warnings }}</div>
-                        <div class="ko text-red-700">{{ project.failures }}</div>
+                    <div class="text-xs align-top">
+                        {% for k,v in project.overview.items %}
+                            <div class="flex w-full {{ k }}">
+                                <span class="w-28 name">{{ k }}</span>
+                                <span class="w-8 errored">{{ v.0 }}</span>
+                                <span class="w-8 total">{{ v.1 }}</span>
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
             </a>
