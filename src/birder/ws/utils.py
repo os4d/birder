@@ -9,6 +9,7 @@ from asgiref.sync import async_to_sync
 from constance import config
 from strategy_field.utils import fqn
 
+from ..utils.charts import get_data_for_date
 from .consumers import GROUP
 
 if TYPE_CHECKING:
@@ -59,11 +60,12 @@ class JSONEncoder(JSONEncoder_):
         from birder.models import Monitor
 
         if isinstance(obj, Monitor):
+            data, labels = get_data_for_date(obj)
             return {
                 "id": obj.id,
                 "project": {
                     "id": obj.project.id,
-                    "data": json.loads(json.dumps(obj.project.data, cls=JSONEncoder)),
+                    "data": json.loads(json.dumps(obj.project.overview(), cls=JSONEncoder)),
                     "status": json.loads(json.dumps(obj.project.status, cls=JSONEncoder)),
                 },
                 "url": obj.get_absolute_url(),
@@ -77,6 +79,8 @@ class JSONEncoder(JSONEncoder_):
                 "icon": obj.icon,
                 "failures": obj.failures,
                 "thresholds": [obj.warn_threshold, obj.err_threshold],
+                "data": data,
+                "labels": labels,
             }
         if isinstance(obj, datetime):
             return obj.strftime(config.DATETIME_FORMAT)
