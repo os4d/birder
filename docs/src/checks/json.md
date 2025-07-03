@@ -1,3 +1,4 @@
+{% include "../_includes/checks_breadcrumb.md" %}
 # JSON Check
 
 This check extends the HTTP Check to validate the content of a JSON response. It sends an HTTP GET request to the specified URL, parses the JSON response, and can optionally validate the content using a JMESPath expression.

@@ -1,3 +1,4 @@
+{% include "../_includes/checks_breadcrumb.md" %}
 # ElasticSearch Check
 
 This check monitors the health of an Elasticsearch cluster. It connects to the specified hosts and verifies that the cluster status is "green".
@@ -11,4 +12,6 @@ This check monitors the health of an Elasticsearch cluster. It connects to the s
 
 ## Address Format
 
-The address format for this check is `{host}:{port}`.
+This check can also be referred to as:
+
+*   `ElasticSearchCheck`

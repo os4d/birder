@@ -1,3 +1,4 @@
+{% include "../_includes/checks_breadcrumb.md" %}
 # XML Check
 
 This check extends the HTTP Check to validate the content of an XML response. It sends an HTTP GET request to the specified URL, parses the XML response, and can optionally validate the content using an XPath expression.

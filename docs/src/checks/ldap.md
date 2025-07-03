@@ -1,3 +1,4 @@
+{% include "../_includes/checks_breadcrumb.md" %}
 # LDAP Check
 
 This check monitors the availability of an LDAP server. It attempts to bind to the server using the provided credentials to verify that the server is responsive and accessible.

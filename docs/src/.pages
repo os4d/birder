@@ -1,8 +1,7 @@
 nav:
-  - About: index.md
-  - docker.md
-  - environment_variables.md
-  - checks.md
+  - index.md
   - security.md
-  - contributing.md
+  - checks
+  - docker.md
+  - contributing
   - license.md

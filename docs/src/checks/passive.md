@@ -1,3 +1,4 @@
+{% include "../_includes/checks_breadcrumb.md" %}
 # Passive Check
 
 This check, also known as a Remote Health Check, is a passive monitoring solution. Unlike active checks that poll a service, this check waits for an external trigger to determine the health status. It provides a unique URL that an external service can use to notify Birder of its status.

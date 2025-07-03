@@ -1,3 +1,4 @@
+{% include "../_includes/checks_breadcrumb.md" %}
 # SSH Check
 
 This check monitors the availability of an SSH server. It attempts to connect to the specified host and port, and optionally authenticates with a username and password.

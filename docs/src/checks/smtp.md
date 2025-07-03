@@ -1,3 +1,4 @@
+{% include "../_includes/checks_breadcrumb.md" %}
 # SMTP Check
 
 This check monitors the availability of an SMTP server. It attempts to connect to the specified host and port, and optionally authenticates with a username and password.

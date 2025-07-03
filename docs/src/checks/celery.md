@@ -1,3 +1,4 @@
+{% include "../_includes/checks_breadcrumb.md" %}
 # Celery Check
 
 This document outlines the configuration for two types of Celery checks: `CeleryCheck` and `CeleryQueueCheck`.
