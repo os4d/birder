@@ -1,7 +1,8 @@
 // group_by = 5
 // labels = []
 // datapoints = []
-function doit(labels, datapoints, group_by, color) {
+var CHART;
+function doit(labels, datapoints, color) {
     const data = {
         labels: labels,
         datasets: [
@@ -32,7 +33,7 @@ function doit(labels, datapoints, group_by, color) {
             scales: {
                 y: {
                     //display: false,#}
-                    max: group_by,
+                    max: 5,
                     ticks: {
                         stepSize: 1,
                     }
@@ -51,14 +52,14 @@ function doit(labels, datapoints, group_by, color) {
         },
     }
 
-    var chartLine = new Chart(
+    CHART = new Chart(
         document.getElementById("barChart"),
         configChart
     );
 }
+
 django.jQuery(document).ready(function () {
     $ = django.jQuery;
-
     const address = 'ws://' + window.location.host + '/ws/checks/';
     let interval = null;
     let connectionError = 0;
@@ -89,6 +90,7 @@ django.jQuery(document).ready(function () {
 
         chatSocket.onmessage = function (e) {
             const payload = JSON.parse(e.data);
+            console.log(payload)
             if (payload.reason === 'update') {
                 window.location.reload();
             } else if (payload.reason === 'ping') {
@@ -96,13 +98,17 @@ django.jQuery(document).ready(function () {
             } else if (payload.reason === 'status') {
                 let m = payload.monitor;
                 let $target = $('#monitor-' + m.id);
-                if ($target.length){
+                if ($target.length) {
                     $target.find('div.counters').text(m.failures + " / " + m.thresholds[0] + " / " + m.thresholds[1]);
                     $target.find('div.last-check').text(m.last_check);
                     $target.find('div.last-success').text(m.last_success);
                     $target.find('div.last-failure').text(m.last_error);
                     $target.find('img.icon').attr("src", m.icon);
                     $target.find('img.status').attr("src", "/static/images/" + m.status + ".svg");
+                    var num = m.failures<=9 ? m.failures : "%23";
+                    $target.find('img.counter').attr("src", "/static/images/numbers/" + num + ".svg");
+                    CHART.data.datasets[0].data = m.data;
+                    CHART.update();
                     if (m.active) {
                         $target.removeClass("offline")
                     } else {

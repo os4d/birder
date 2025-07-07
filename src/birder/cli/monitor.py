@@ -21,11 +21,12 @@ def list_(ctx: Context, **kwargs: Any) -> None:
     data = Monitor.objects.values(
         "id",
         "project__name",
+        "environment__name",
         "name",
         "strategy",
         "active",
-    )
-    table = tabulate(data, [], tablefmt="simple")
+    ).order_by("project__name", "environment", "name")
+    table = tabulate(data, "keys", tablefmt="simple", showindex="always")
     click.echo(table)
 
 

@@ -87,7 +87,7 @@ def crontab(**kwargs: Any) -> None:
                 signal.signal(signal.SIGHUP, kill_softly)
                 signal.signal(signal.SIGTERM, kill_softly)
                 signal.signal(signal.SIGINT, kill_softly)
-                click.secho("Starting scheduler…", fg="green")
+                click.secho("Scheduler started…", fg="green")
                 scheduler.add_job(
                     utils.lock.extend,
                     IntervalTrigger(seconds=conf.get_settings().LOCK_REFRESH_INTERVAL),

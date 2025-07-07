@@ -1,7 +1,8 @@
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any
 
+from django.conf import settings
 from django.contrib.auth.views import LoginView as LoginView_
 from django.db.models import QuerySet
 from django.forms import Media
@@ -9,14 +10,15 @@ from django.http.request import HttpRequest
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.utils.safestring import mark_safe
-from django.views.generic import DetailView, TemplateView
-from django.views.generic.base import ContextMixin, View
+from django.utils.translation import gettext_lazy as _
+from django.views.generic import DetailView
+from django.views.generic.base import ContextMixin, TemplateView, View
 
 from birder.checks import BaseCheck
-from birder.config import settings
 from birder.forms import LoginForm
 from birder.models import Monitor, Project
-from birder.utils.dates import format_minutes_as_time, get_start_of_day
+from birder.utils.charts import get_data_for_date
+from birder.utils.dates import get_start_of_day
 from birder.ws.utils import notify_ui
 
 
@@ -80,7 +82,7 @@ class ProjectView(CommonContextMixin, DetailView):
         kwargs["selected_env"] = env
         filters = {"environment": env}
         kwargs["project"] = project
-        monitors = Monitor.objects.filter(**filters).order_by("position", "name")
+        monitors = project.monitors.filter(**filters).order_by("position", "name")
         kwargs["monitors"] = monitors
         kwargs["environments"] = project.environments.order_by("name")
         for monitor in monitors:
@@ -97,20 +99,12 @@ class MonitorDetail(CommonContextMixin, DetailView):
         return super().get_queryset().select_related("environment", "project")
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        from birder.db import DataStore
-
         now = get_start_of_day(datetime.now())
-        bits = DataStore(self.object).get_all_entries(now)
         group_by = 5
-        data = [sum(bits[i : i + group_by]) for i in range(0, len(bits), group_by)]
-        kwargs["title"] = "{} - {}".format(
-            now.strftime("%H:%M"), (now + timedelta(hours=(len(bits) // 60) - 1)).strftime("%H:%M")
-        )
+        data, labels = get_data_for_date(self.object, now, group_by)
         kwargs["data"] = data
         kwargs["group_by"] = group_by
-        kwargs["labels"] = mark_safe(  # noqa: S308
-            json.dumps([format_minutes_as_time(i) for i in list(range(1, len(bits) + 1, group_by))])
-        )
+        kwargs["labels"] = mark_safe(json.dumps(labels))  # noqa: S308
         return super().get_context_data(**kwargs)
 
 
@@ -122,7 +116,7 @@ class LoginView(CommonContextMixin, LoginView_):
 def trigger(request: HttpRequest, pk: str, token: str) -> HttpResponse:
     m: Monitor = get_object_or_404(Monitor, pk=pk)
     if m.token != token:
-        return HttpResponse("Invalid Token", status=403)
+        return HttpResponse(_("Invalid Token"), status=403)
     if m.strategy.mode != BaseCheck.REMOTE_INVOCATION:
         return HttpResponse("Check not enabled for remote call", status=400)
     m.get()

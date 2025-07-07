@@ -41,8 +41,9 @@ django.jQuery(document).ready(function () {
             } else if (payload.reason === 'status') {
                 let m = payload.monitor;
                 let $target = $('#monitor-' + m.id);
-                $target.find('div.counters').text(m.failures + " / " + m.thresholds[0] + " / " + m.thresholds[1]);
-                $target.find('div.last-check').text(m.last_check);
+                $target.find('div.counters .failures').text(m.failures);
+                $target.find('div.counters .thresholds').text(m.thresholds[0] + " / " + m.thresholds[1]);
+                $target.find('div.last-check .date').text(m.last_check);
                 $target.find('img.icon').attr("src", m.icon);
                 $target.find('img.status').attr("src", "/static/images/" + m.status + ".svg");
                 if (m.active) {

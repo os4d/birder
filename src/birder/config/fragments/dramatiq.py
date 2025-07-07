@@ -1,10 +1,11 @@
 import logging
+import logging.config
 
 import dramatiq
 from dramatiq import Broker, Worker
 from redis import ConnectionPool
 
-from ..settings import env
+from ..settings import LOGGING, env
 
 DRAMATIQ_VALKEY_URL = env("TASK_BROKER") or env("REDIS_SERVER")
 DRAMATIQ_BROKER = {
@@ -28,23 +29,6 @@ DRAMATIQ_WORKER_THREADS = env("WORKER_THREADS")
 
 DRAMATIQ_TASKS_DATABASE = "default"
 
-DRAMATIQ_LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-        },
-        "null": {
-            "class": "logging.NullHandler",
-        },
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": "ERROR",
-    },
-}
-
 
 def configure_logger(name: str) -> None:
     log = logging.getLogger(name)
@@ -60,4 +44,5 @@ def configure_logging() -> None:
 
 class BirderLoggingMiddleware(dramatiq.Middleware):
     def after_worker_boot(self, broker: Broker, worker: Worker) -> None:
+        logging.config.dictConfig(LOGGING)
         configure_logging()
