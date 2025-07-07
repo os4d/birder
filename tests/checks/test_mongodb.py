@@ -29,24 +29,33 @@ def test_mongodb_check_success(mongodb_config):
         assert check.check()
 
 
-def test_mongodb_check_connection_failure(mongodb_config):
+@patch("birder.checks.mongodb.logger")
+def test_mongodb_check_connection_failure(mock_logger, mongodb_config):
     with patch("birder.checks.mongodb.MongoClient", autospec=True) as mock_mongo_client:
-        mock_mongo_client.side_effect = ConnectionFailure("Connection failed")
+        conn_failure = ConnectionFailure("Connection failed")
+        mock_mongo_client.side_effect = conn_failure
         check = MongoDbCheck(configuration=mongodb_config)
         assert not check.check()
+        mock_logger.exception.assert_called_once_with("MongoDB check failed", exc_info=conn_failure)
 
 
-def test_mongodb_check_operation_failure(mongodb_config):
+@patch("birder.checks.mongodb.logger")
+def test_mongodb_check_operation_failure(mock_logger, mongodb_config):
     with patch("birder.checks.mongodb.MongoClient", autospec=True) as mock_mongo_client:
         mock_mongo_client.return_value.admin = MagicMock()
-        mock_mongo_client.return_value.admin.command.side_effect = OperationFailure("Auth failed")
+        op_failure = OperationFailure("Auth failed")
+        mock_mongo_client.return_value.admin.command.side_effect = op_failure
         check = MongoDbCheck(configuration=mongodb_config)
         assert not check.check()
+        mock_logger.exception.assert_called_once_with("MongoDB check failed", exc_info=op_failure)
 
 
-def test_mongodb_check_raise_error(mongodb_config):
+@patch("birder.checks.mongodb.logger")
+def test_mongodb_check_raise_error(mock_logger, mongodb_config):
     with patch("birder.checks.mongodb.MongoClient", autospec=True) as mock_mongo_client:
-        mock_mongo_client.side_effect = ServerSelectionTimeoutError("Connection failed")
+        timeout_error = ServerSelectionTimeoutError("Connection failed")
+        mock_mongo_client.side_effect = timeout_error
         check = MongoDbCheck(configuration=mongodb_config)
         with pytest.raises(CheckError):
             check.check(raise_error=True)
+        mock_logger.exception.assert_called_once_with("MongoDB check failed", exc_info=timeout_error)
