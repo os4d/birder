@@ -39,31 +39,37 @@
 
 .icon-list {
   @apply grid grid-cols-8 gap-2;
-
   gap: 5px;
-  //background-color: #e3e2e2;
   padding: 10px;
 
   .frame {
+    @apply bg-white;
+    @apply dark:text-white dark:bg-gray-500;
     border: 1px solid black;
     border-radius: 2px;
     padding: 10px;
     align-items: center;
     text-align: center;
     cursor: pointer;
-      background-color: white;
+
     &:hover {
       border-color: white;
     }
 
+    div {
+      @apply flex content-center;
+      img {
+        @apply mx-auto;
+        height: 40px;
 
-    img {
-      height: 40px;
+      }
     }
-
     label {
-      color: black;
+      @apply text-black;
+      @apply dark:text-white dark:bg-gray-500;
+      @apply hidden lg:block sm:hidden;
     }
+
   }
 }
 
