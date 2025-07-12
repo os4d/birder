@@ -235,12 +235,12 @@ CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_HSTS_SECONDS = env("SECURE_HSTS_SECONDS")
 
-from .fragments.app import *  # noqa
-from .fragments.constance import *  # noqa
-from .fragments.crypt import *  # noqa
+from .fragments.app import *  # noqa F403
+from .fragments.constance import *  # noqa F403
+from .fragments.crypt import *  # noqa F403
 
-from .fragments.dramatiq import *  # noqa
-from .fragments.sentry import *  # noqa
-from .fragments.social_auth import *  # noqa
-from .fragments.tailwind import *  # noqa
-from .fragments.unfold import *  # noqa
+from .fragments.dramatiq import *  # noqa F403
+from .fragments.sentry import *  # noqa F403
+from .fragments.social_auth import *  # noqa F403
+from .fragments.tailwind import *  # noqa F403
+from .fragments.unfold import *  # noqa F403

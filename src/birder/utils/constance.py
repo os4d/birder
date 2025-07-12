@@ -1,4 +1,5 @@
 import logging
+from tkinter import Widget
 from typing import Any
 
 from constance import config
@@ -28,7 +29,7 @@ class ObfuscatedInput(HiddenInput):
         return mark_safe(tpl.render(Context(context)))  # noqa: S308
 
 
-class WriteOnlyWidget:
+class WriteOnlyWidget(Widget):
     def format_value(self, value: Any) -> str:
         return super().format_value("***")
 

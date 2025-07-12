@@ -1,0 +1,3 @@
+[bandit]
+exclude_dirs = .venv,build,test
+skips = B308

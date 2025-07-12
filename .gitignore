@@ -18,6 +18,7 @@ src/birder/version.py
 
 !.git
 !.coveragerc
+!.bandit
 !.dockerignore
 !.github
 !.gitignore
