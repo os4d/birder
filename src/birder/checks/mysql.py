@@ -33,7 +33,7 @@ class MySQLCheck(BaseCheck):
             cfg["user"] = cfg.get("username", "")
         return cfg
 
-    def check(self, raise_error: bool = False) -> bool:
+    def _run_check(self, raise_error: bool = False) -> bool:
         try:
             conn = pymysql.connect(**self.config)
             cursor = conn.cursor()

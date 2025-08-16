@@ -33,7 +33,7 @@ class PostgresCheck(BaseCheck):
             cfg["user"] = cfg.get("username", "")
         return cfg
 
-    def check(self, raise_error: bool = False) -> bool:
+    def _run_check(self, raise_error: bool = False) -> bool:
         try:
             conn = psycopg2.connect(**self.config)
             cursor = conn.cursor()

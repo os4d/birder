@@ -22,7 +22,7 @@ class RedisCheck(BaseCheck):
     config_class = RedisConfig
     address_format = "{host}:{port}"
 
-    def check(self, raise_error: bool = False) -> bool:
+    def _run_check(self, raise_error: bool = False) -> bool:
         try:
             client = RedisClient(**self.config)
             client.ping()

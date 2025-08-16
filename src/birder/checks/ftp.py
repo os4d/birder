@@ -33,7 +33,7 @@ class FtpCheck(BaseCheck):
             cfg["passwd"] = cfg.get("password", "")
         return cfg
 
-    def check(self, raise_error: bool = False) -> bool:
+    def _run_check(self, raise_error: bool = False) -> bool:
         try:
             cfg = {**self.config}
             p = cfg.pop("port")

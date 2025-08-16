@@ -40,7 +40,7 @@ class ElasticSearchCheck(BaseCheck):
     config_class = ElasticSearchConfig
     address_format = "{host}:{port}"
 
-    def check(self, raise_error: bool = False) -> bool:
+    def _run_check(self, raise_error: bool = False) -> bool:
         try:
             cfg = {**self.config}
             hosts = cfg.pop("hosts").split(",")

@@ -30,7 +30,7 @@ class SSHCheck(BaseCheck):
         cfg["server"] = cfg.get("host", "")
         return cfg
 
-    def check(self, raise_error: bool = False) -> bool:
+    def _run_check(self, raise_error: bool = False) -> bool:
         try:
             s = pxssh.pxssh()
             return s.login(**self.config)

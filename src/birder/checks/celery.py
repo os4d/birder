@@ -30,7 +30,10 @@ class CeleryConfig(ConfigForm):
 
 
 class CeleryBaseCheck(BaseCheck):
-    def check(self, raise_error: bool = False) -> bool:
+    def _check(self, raise_error: bool = False) -> bool:
+        raise NotImplementedError()
+
+    def _run_check(self, raise_error: bool = False) -> bool:
         try:
             return self._check(raise_error)
         except (

@@ -30,7 +30,7 @@ class AmqpCheck(BaseCheck):
             cfg["hostname"] = cfg.get("host", "")
         return cfg
 
-    def check(self, raise_error: bool = False) -> bool:
+    def _run_check(self, raise_error: bool = False) -> bool:
         try:
             conn = KombuConnection(**self.config)
             conn.ensure_connection(max_retries=1)

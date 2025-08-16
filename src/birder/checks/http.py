@@ -67,7 +67,8 @@ class HttpCheck(BaseCheck):
             cfg["url"] = cfg.get("address", "")
         return cfg
 
-    def check(self, raise_error: bool = False) -> bool:
+    def _run_check(self, raise_error: bool = False) -> bool:
+        self.debug_info = None
         try:
             timeout = self.config["timeout"]
             match = self.config["match"]
@@ -87,6 +88,7 @@ class HttpCheck(BaseCheck):
                 return False
             return not (match and str(match) not in str(res.content))
         except (forms.ValidationError, requests.exceptions.RequestException) as e:
+            self.debug_info = {"exception": e}
             if raise_error:
                 raise CheckError("HTTP check failed") from e
         return False

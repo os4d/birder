@@ -21,7 +21,7 @@ class SMTPCheck(BaseCheck):
     config_class = SMTPConfig
     address_format = "{host}:{port}"
 
-    def check(self, raise_error: bool = False) -> bool:
+    def _run_check(self, raise_error: bool = False) -> bool:
         try:
             config = {**self.config}
             username, password = config.pop("username"), config.pop("password")

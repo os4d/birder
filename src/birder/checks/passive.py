@@ -34,5 +34,5 @@ class HealthCheck(BaseCheck):
     def address(self) -> str:
         return "-"
 
-    def check(self, raise_error: bool = False) -> bool:
+    def _run_check(self, raise_error: bool = False) -> bool:
         return True

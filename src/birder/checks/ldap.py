@@ -33,7 +33,7 @@ class LDAPCheck(BaseCheck):
             cfg["user"] = cfg.get("username", "")
         return cfg
 
-    def check(self, raise_error: bool = False) -> bool:
+    def _run_check(self, raise_error: bool = False) -> bool:
         try:
             config = {**self.config}
             host, port = config.pop("host"), config.pop("port")

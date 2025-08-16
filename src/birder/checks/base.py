@@ -115,6 +115,7 @@ class BaseCheck:
             raise ValueError("Must specify a configuration")  # pragma: no cover
         self.monitor: Monitor = owner
         self.status = {}
+        self.debug_info = None
 
     @classmethod
     def clean_config(cls, cfg: dict[str, Any]) -> dict[str, Any]:
@@ -135,5 +136,8 @@ class BaseCheck:
         except (ValueError, KeyError, TypeError):
             return ""
 
-    def check(self, raise_error: bool = False) -> bool:
+    def _run_check(self, raise_error: bool = False) -> bool:
         """Perform the check."""
+
+    def check(self, raise_error: bool = False) -> bool:
+        return self._run_check(raise_error)

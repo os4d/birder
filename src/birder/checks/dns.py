@@ -38,7 +38,7 @@ class DnsCheck(BaseCheck):
     config_class = DnsConfigForm
     pragma = ["dns"]
 
-    def check(self, raise_error: bool = False) -> bool:
+    def _run_check(self, raise_error: bool = False) -> bool:
         """Perform the check."""
         domain = self.config["domain"]
         query_type = self.config["query_type"]

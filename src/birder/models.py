@@ -209,15 +209,17 @@ class Monitor(models.Model):
     active = models.BooleanField(default=True)
     warn_threshold = models.PositiveIntegerField(
         default=1,
-        validators=[MinValueValidator(0), MaxValueValidator(9)],
-        help_text="how many consecutive failures "
-        "(or missing notifications in case or remote invocation) produce a warning",
+        validators=[MinValueValidator(1), MaxValueValidator(9)],
+        help_text=_(
+            "how many consecutive failures (or missing notifications in case or remote invocation) produce a warning"
+        ),
     )
     err_threshold = models.PositiveIntegerField(
         default=5,
-        validators=[MinValueValidator(0), MaxValueValidator(9)],
-        help_text="how many consecutive failures "
-        "(or missing notifications in case or remote invocation) produce an error",
+        validators=[MinValueValidator(1), MaxValueValidator(9)],
+        help_text=_(
+            "how many consecutive failures (or missing notifications in case or remote invocation) produce an error"
+        ),
     )
 
     objects = MonitorManager()

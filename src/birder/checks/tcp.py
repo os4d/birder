@@ -20,7 +20,7 @@ class TCPCheck(BaseCheck):
     config_class = TCPConfig
     address_format = "{hostname}:{port}"
 
-    def check(self, raise_error: bool = False) -> bool:
+    def _run_check(self, raise_error: bool = False) -> bool:
         try:
             with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
                 socket.setdefaulttimeout(self.config["timeout"])  # seconds (float)
