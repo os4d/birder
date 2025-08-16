@@ -97,7 +97,7 @@ def crontab(**kwargs: Any) -> None:
                 try:
                     scheduler.start()
                 except KeyboardInterrupt as e:
-                    click.secho(str(e), fg="orange")
+                    click.secho(str(e), fg="yellow")
                     click.secho("Shutting down scheduler…", fg="orange")
                     scheduler.shutdown()
 
