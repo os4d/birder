@@ -65,6 +65,8 @@ class JSONEncoder(JSONEncoder_):
                 "id": obj.id,
                 "project": {
                     "id": obj.project.id,
+                    "name": obj.project.name,
+                    "environment": obj.environment.name,
                     "data": json.loads(json.dumps(obj.project.overview(), cls=JSONEncoder)),
                     "status": json.loads(json.dumps(obj.project.status, cls=JSONEncoder)),
                 },
