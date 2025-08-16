@@ -31,13 +31,14 @@ django.jQuery(document).ready(function () {
 
         chatSocket.onmessage = function (e) {
             const payload = JSON.parse(e.data);
-            const project = payload.monitor.project;
+            if (payload.type === 'connect') { return };
             if (payload.reason === 'update') {
                 window.location.reload();
             } else if (payload.reason === 'ping') {
                 $('#lastUpdate').text(payload.ts);
             } else if (payload.reason === 'status') {
                 // let m = payload.monitor;
+                const project = payload.monitor.project;
                 let $target = $('#project-' + project.id);
                 var err = false;
                 Object.entries(project.data).forEach(([key, value]) => {
