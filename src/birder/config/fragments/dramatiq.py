@@ -28,6 +28,12 @@ DRAMATIQ_WORKER_PROCESSES = env("WORKER_PROCESSES")
 DRAMATIQ_WORKER_THREADS = env("WORKER_THREADS")
 
 DRAMATIQ_TASKS_DATABASE = "default"
+DRAMATIQ_LOGGING = {**LOGGING}
+DRAMATIQ_LOGGING.update(
+    {
+        "disable_existing_loggers": True,
+    }
+)
 
 
 def configure_logger(name: str) -> None:
@@ -44,5 +50,5 @@ def configure_logging() -> None:
 
 class BirderLoggingMiddleware(dramatiq.Middleware):
     def after_worker_boot(self, broker: Broker, worker: Worker) -> None:
-        logging.config.dictConfig(LOGGING)
+        logging.config.dictConfig(DRAMATIQ_LOGGING)
         configure_logging()

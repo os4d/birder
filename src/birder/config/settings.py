@@ -209,6 +209,11 @@ LOGGING = {
             "level": get_log_level_for("dramatiq"),
             "propagate": False,
         },
+        "elastic_search": {
+            "handlers": ["null"],
+            "level": get_log_level_for("elasticsearch"),
+            "propagate": should_propagate("elasticsearch"),
+        },
         "urllib3": {
             "handlers": ["null"],
             "level": get_log_level_for("urllib3"),

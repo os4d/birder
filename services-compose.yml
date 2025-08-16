@@ -28,7 +28,7 @@ services:
   redis:
     image: "redis:alpine"
     ports:
-      - "26379:6379"
+      - "36379:6379"
 
   memcached:
     image: "memcached:alpine3.21"
