@@ -96,6 +96,7 @@ UNFOLD = {
         "show_all_applications": True,  # Dropdown with all applications and models
     },
 }
+
 MANAGE_CONFIG = {
     **COMMON_CONFIG,
     "SITE_SYMBOL": "speed",  # symbol from icon set
@@ -130,7 +131,7 @@ MANAGE_CONFIG = {
                         "link": reverse_lazy("console:birder_monitor_changelist"),
                     },
                     {
-                        "title": _("Deadlines"),
+                        "title": _("Dates"),
                         "icon": "D",
                         "link": reverse_lazy("console:birder_deadline_changelist"),
                     },

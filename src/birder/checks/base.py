@@ -10,9 +10,11 @@ from django.utils.safestring import mark_safe
 from markdown_deux import markdown
 from unfold.widgets import BASE_INPUT_CLASSES
 
+from birder.exceptions import CheckError
+
 if TYPE_CHECKING:
     from birder.models import Monitor
-    from birder.types import Json
+    from birder.types import DebugInfo, Json
 
 
 class DefaultsMetaclass(DeclarativeFieldsMetaclass):
@@ -115,7 +117,7 @@ class BaseCheck:
             raise ValueError("Must specify a configuration")  # pragma: no cover
         self.monitor: Monitor = owner
         self.status = {}
-        self.debug_info = None
+        self.debug_info: DebugInfo = {}
 
     @classmethod
     def clean_config(cls, cfg: dict[str, Any]) -> dict[str, Any]:
@@ -140,4 +142,11 @@ class BaseCheck:
         """Perform the check."""
 
     def check(self, raise_error: bool = False) -> bool:
-        return self._run_check(raise_error)
+        try:
+            self.debug_info = {}
+            return self._run_check(raise_error)
+        except Exception as exc:
+            self.debug_info["exception"] = exc
+            if not isinstance(exc, CheckError) or raise_error:
+                raise
+            return False

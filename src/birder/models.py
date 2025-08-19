@@ -443,6 +443,8 @@ class Deadline(models.Model):
 
     class Meta:
         ordering = ["-start"]
+        verbose_name_plural = "Dates"
+        verbose_name = "Date"
 
     def __str__(self) -> str:
         return self.title

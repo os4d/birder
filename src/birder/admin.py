@@ -2,12 +2,14 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from admin_extra_buttons.buttons import ButtonWidget
 from admin_extra_buttons.decorators import button
 from admin_extra_buttons.mixins import ExtraButtonsMixin
 from adminfilters.autocomplete import AutoCompleteFilter, LinkedAutoCompleteFilter
 from adminfilters.mixin import AdminFiltersMixin
 from django.conf import settings
 from django.contrib import admin, messages
+from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
 from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
@@ -22,6 +24,8 @@ from strategy_field.admin import StrategyFieldListFilter
 from unfold.admin import ModelAdmin as UnfoldModelAdmin
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
+from .checks import BaseCheck
+from .exceptions import CheckError
 from .forms import ChangeIconForm, FlagStateForm, MonitorForm
 from .models import Deadline, Environment, LogCheck, Monitor, Project, User
 from .tasks import queue_trigger
@@ -85,10 +89,18 @@ class StrategyFieldListComboFilter(StrategyFieldListFilter):
     template = "strategy_field/list_filter.html"
 
 
+def show_if_remote(btn: ButtonWidget) -> bool:
+    return btn.context["original"].strategy.mode == BaseCheck.REMOTE_INVOCATION
+
+
+def show_if_local(btn: ButtonWidget) -> bool:
+    return btn.context["original"].strategy.mode == BaseCheck.LOCAL_TRIGGER
+
+
 @admin.register(Monitor)
 class MonitorAdmin(BirderAdminMixin, admin.ModelAdmin[Monitor]):
     search_fields = ("name",)
-    list_display = ("name", "project", "environment", "counters", "checker", "active")
+    list_display = ("name", "project", "environment", "counters", "checker", "active", "position")
     list_filter = (
         ("project", LinkedAutoCompleteFilter.factory(parent=None)),
         ("environment", LinkedAutoCompleteFilter.factory(parent=None)),
@@ -97,14 +109,9 @@ class MonitorAdmin(BirderAdminMixin, admin.ModelAdmin[Monitor]):
     )
     actions = ["check_selected"]
     autocomplete_fields = ("environment", "project")
+
     form = MonitorForm
     change_form_template = None
-    fields = (
-        "name",
-        "project",
-        "environment",
-        "strategy",
-    )
 
     @admin.display(ordering="strategy")
     def checker(self, obj: Monitor) -> str:
@@ -118,12 +125,44 @@ class MonitorAdmin(BirderAdminMixin, admin.ModelAdmin[Monitor]):
         for m in queryset.all():
             queue_trigger.send(m.id)
 
+    def change_view(
+        self, request: HttpRequest, object_id: str, form_url: str = "", extra_context: dict[str, Any] | None = None
+    ) -> HttpResponse:
+        extra_context = {
+            "show_save_and_continue": False,
+            "show_save_and_add_another": False,
+        }
+        return super().change_view(request, object_id, form_url, extra_context)
+
+    def add_view(self, request: HttpRequest, form_url: str = "", extra_context: dict[str, Any] | None = None) -> Any:
+        extra_context = {
+            "show_save_and_continue": False,
+            "show_save_and_add_another": False,
+        }
+        return self.changeform_view(request, None, form_url, extra_context)
+
+    def _response_post_save(self, request: HttpRequest, obj: Monitor) -> HttpResponse:
+        if self.has_view_or_change_permission(request):
+            post_url = reverse(
+                f"admin:{self.opts.app_label}_{self.opts.model_name}_configure",
+                args=(obj.pk,),
+                current_app=self.admin_site.name,
+            )
+            preserved_filters = self.get_preserved_filters(request)
+            post_url = add_preserved_filters({"preserved_filters": preserved_filters, "opts": self.opts}, post_url)
+        else:
+            post_url = reverse("admin:index", current_app=self.admin_site.name)
+        return HttpResponseRedirect(post_url)
+
     def get_fields(self, request: HttpRequest, obj: Monitor | None = None) -> list[str]:
+        if obj is None:
+            return ["name", "project", "environment", "strategy"]
         return [
             "name",
             "strategy",
             "project",
             "environment",
+            "position",
             "active",
             "warn_threshold",
             "err_threshold",
@@ -131,7 +170,7 @@ class MonitorAdmin(BirderAdminMixin, admin.ModelAdmin[Monitor]):
             "notes",
         ]
 
-    @button(label="Refresh Token")
+    @button(label="Refresh Token", visible=show_if_remote)
     def regenerate_token(self, request: HttpRequest, pk: str) -> HttpResponse:
         self.get_common_context(request, pk)
         self.object.regenerate_token(True)
@@ -158,7 +197,7 @@ class MonitorAdmin(BirderAdminMixin, admin.ModelAdmin[Monitor]):
 
         return render(request, "admin/birder/monitor/change_icon.html", ctx)
 
-    @button(label="Run")
+    @button(label="Run", visible=show_if_local)
     def manual_run(self, request: HttpRequest, pk: str) -> HttpResponse:
         self.get_common_context(request, pk)
         monitor: Monitor = self.object
@@ -171,7 +210,7 @@ class MonitorAdmin(BirderAdminMixin, admin.ModelAdmin[Monitor]):
         except Exception as e:  # noqa #BLE001
             self.message_user(request, str(e), level=messages.ERROR)
 
-    @button(label="Check")
+    @button(label="Check", visible=show_if_local)
     def manual_check(self, request: HttpRequest, pk: str) -> HttpResponse:
         self.get_common_context(request, pk)
         monitor: Monitor = self.object
@@ -179,9 +218,12 @@ class MonitorAdmin(BirderAdminMixin, admin.ModelAdmin[Monitor]):
         try:
             monitor.strategy.check(raise_error=True)
             self.message_user(request, "Monitor check success", level=messages.SUCCESS)
-        except Exception as e:  # noqa #BLE001
+        except CheckError as e:  # noqa #BLE001
             logger.exception("Monitor check failed", exc_info=e)
             self.message_user(request, f"Monitor check failure: {e}", level=messages.ERROR)
+        except Exception as e:  # noqa #BLE001
+            logger.exception("Monitor check exception", exc_info=e)
+            self.message_user(request, f"Monitor check exception: {monitor.strategy.debug_info}", level=messages.ERROR)
 
     @button()
     def configure(self, request: HttpRequest, pk: str) -> HttpResponse:

@@ -6,6 +6,7 @@ from django import forms
 from django.core.validators import MinValueValidator
 from django.utils.translation import gettext as _
 
+from ..exceptions import CheckError
 from . import HttpCheck
 from .base import ConfigForm
 
@@ -28,14 +29,21 @@ class SslCertCheck(HttpCheck):
     config_class = SslCertConfig
     address_format: str = "{host}"
 
-    def check(self, raise_error: bool = False) -> bool:
+    def _run_check(self, raise_error: bool = False) -> bool:
         context = ssl.create_default_context()
-        with (
-            socket.create_connection((self.config["hostname"], self.config["port"])) as sock,
-            context.wrap_socket(sock, server_hostname=self.config["hostname"]) as ssock,
-        ):
-            cert = ssock.getpeercert()
-            expiry_str = cert["notAfter"]
-            expiry_date = datetime.datetime.strptime(expiry_str, "%b %d %H:%M:%S %Y %Z").replace(tzinfo=datetime.UTC)
-            delta = expiry_date - datetime.datetime.now(datetime.UTC)
-            return delta.days > self.config["alert_days"]
+        try:
+            with (
+                socket.create_connection((self.config["hostname"], self.config["port"])) as sock,
+                context.wrap_socket(sock, server_hostname=self.config["hostname"]) as ssock,
+            ):
+                cert = ssock.getpeercert()
+                expiry_str = cert["notAfter"]
+                expiry_date = datetime.datetime.strptime(expiry_str, "%b %d %H:%M:%S %Y %Z").replace(
+                    tzinfo=datetime.UTC
+                )
+                delta = expiry_date - datetime.datetime.now(datetime.UTC)
+                return delta.days > self.config["alert_days"]
+        except ssl.SSLCertVerificationError as e:
+            if raise_error:
+                raise CheckError("certificate has expired") from e
+            return False
