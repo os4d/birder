@@ -27,7 +27,7 @@ class SslCertCheck(HttpCheck):
     icon = "ssl.svg"
     pragma = ["ssl"]
     config_class = SslCertConfig
-    address_format: str = "{host}"
+    address_format: str = "{hostname}"
 
     def _run_check(self, raise_error: bool = False) -> bool:
         context = ssl.create_default_context()
@@ -46,4 +46,8 @@ class SslCertCheck(HttpCheck):
         except ssl.SSLCertVerificationError as e:
             if raise_error:
                 raise CheckError("certificate has expired") from e
+            return False
+        except socket.gaierror as e:
+            if raise_error:
+                raise CheckError(str(e)) from e
             return False
