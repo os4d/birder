@@ -10,6 +10,7 @@ This section provides documentation for the various checks available in Birder.
 *   [HTTP/HTTPS](./checks/http.md)
 *   [LDAP/ActiveDirectory](./checks/ldap.md)
 *   [Memcached](./checks/memcache.md)
+*   [MongoDB](./checks/mongodb.md)
 *   [MySQL/MariaDB](./checks/mysql.md)
 *   [Passive](./checks/passive.md)
 *   [PostgreSQL/PostGIS](./checks/pg.md)
