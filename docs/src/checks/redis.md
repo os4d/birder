@@ -1,3 +1,4 @@
+{% include "../_includes/checks_breadcrumb.md" %}
 # Redis Check
 
 This check monitors the availability of a Redis server. It attempts to connect to the specified host and execute a `PING` command to verify that the server is responsive.

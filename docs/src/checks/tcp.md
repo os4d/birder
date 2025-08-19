@@ -1,3 +1,4 @@
+{% include "../_includes/checks_breadcrumb.md" %}
 # TCP Check
 
 This check monitors the availability of a TCP port on a specified host. It attempts to establish a TCP connection to the given host and port to verify that the service is listening.

@@ -1,3 +1,4 @@
+{% include "../_includes/checks_breadcrumb.md" %}
 # HTTP Check
 
 This check monitors the availability and response of an HTTP or HTTPS endpoint. It sends an HTTP GET request to the specified URL and validates the response.

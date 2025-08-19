@@ -1,3 +1,4 @@
+{% include "../_includes/checks_breadcrumb.md" %}
 # PostgreSQL Check
 
 This check monitors the availability of a PostgreSQL database server. It attempts to connect to the specified host and execute a simple query to verify that the server is responsive and accessible.

@@ -1,3 +1,4 @@
+{% include "../_includes/checks_breadcrumb.md" %}
 # Memcached Check
 
 This check monitors the availability of a Memcached server. It attempts to connect to the specified host and port to verify that the server is responsive.

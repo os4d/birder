@@ -1,3 +1,4 @@
+{% include "../_includes/checks_breadcrumb.md" %}
 # AMQP Check
 
 The AMQP check is used to monitor the status of an AMQP (Advanced Message Queuing Protocol) server, such as RabbitMQ. It verifies that a connection can be successfully established with the server.
