@@ -232,7 +232,7 @@ fancycompleter==0.11.1
     # via pdbpp
 fasteners==0.19
     # via seleniumbase
-filelock==3.18.0
+filelock==3.20.3
     # via
     #   seleniumbase
     #   tox
