@@ -669,7 +669,7 @@ websockets==15.0.1
     # via seleniumbase
 webtest==3.0.6
     # via django-webtest
-wheel==0.45.1
+wheel==0.46.2
     # via seleniumbase
 wsproto==1.2.0
     # via
