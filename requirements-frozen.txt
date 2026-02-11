@@ -111,7 +111,7 @@ constantly==23.10.4
     # via twisted
 coverage==7.8.2
     # via pytest-cov
-cryptography==45.0.3
+cryptography==46.0.5
     # via
     #   autobahn
     #   django-fernet-encrypted-fields
