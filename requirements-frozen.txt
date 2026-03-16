@@ -431,7 +431,7 @@ pymysql==1.1.1
     # via os4d-birder
 pynose==1.5.4
     # via seleniumbase
-pyopenssl==25.1.0
+pyopenssl==26.0.0
     # via twisted
 pyotp==2.9.0
     # via seleniumbase
