@@ -517,7 +517,7 @@ redis==6.2.0
     #   redis-timeseries
 redis-timeseries==0.1.9
     # via os4d-birder
-requests==2.32.3
+requests==2.33.0
     # via
     #   docker
     #   os4d-birder
