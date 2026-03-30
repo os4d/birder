@@ -415,7 +415,7 @@ pycparser==2.22
     # via cffi
 pycryptodome==3.23.0
     # via minio
-pygments==2.19.1
+pygments==2.20.0
     # via
     #   ipython
     #   ipython-pygments-lexers
