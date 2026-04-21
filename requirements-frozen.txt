@@ -291,7 +291,7 @@ kombu==5.5.4
     #   pytest-celery
 ldap3==2.9.1
     # via os4d-birder
-lxml==5.4.0
+lxml==6.1.0
     # via
     #   os4d-birder
     #   pyquery
