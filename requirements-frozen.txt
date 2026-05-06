@@ -606,7 +606,7 @@ trio-websocket==0.12.2
     #   seleniumbase
 trove-classifiers==2025.5.9.12
     # via hatchling
-twisted==24.11.0
+twisted==26.4.0rc2
     # via daphne
 txaio==23.1.1
     # via autobahn
