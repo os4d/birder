@@ -423,7 +423,7 @@ pygments==2.19.1
     #   pdbpp
     #   rich
     #   seleniumbase
-pyjwt==2.10.1
+pyjwt==2.13.0
     # via social-auth-core
 pymemcache==4.0.0
     # via os4d-birder
