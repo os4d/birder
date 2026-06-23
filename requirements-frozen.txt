@@ -313,7 +313,7 @@ mdurl==0.1.2
     #   seleniumbase
 minio==7.2.15
     # via os4d-birder
-msgpack==1.1.0
+msgpack==1.2.1
     # via channels-redis
 mycdp==1.2.0
     # via seleniumbase
