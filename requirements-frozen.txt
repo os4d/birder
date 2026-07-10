@@ -570,7 +570,7 @@ sortedcontainers==2.4.0
     # via
     #   seleniumbase
     #   trio
-soupsieve==2.7
+soupsieve==2.8.4
     # via
     #   beautifulsoup4
     #   seleniumbase
