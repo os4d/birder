@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = "==3.12.*"
 resolution-markers = [
     "implementation_name == 'pypy' and platform_python_implementation != 'PyPy' and sys_platform == 'win32'",
@@ -516,16 +516,16 @@ wheels = [
 
 [[package]]
 name = "daphne"
-version = "4.2.0"
+version = "4.2.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asgiref" },
     { name = "autobahn" },
     { name = "twisted", extra = ["tls"] },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e9/fa/88208e036d1a000cc99eed11a5ddae2397a39d89c44ac22a3c35a58eb951/daphne-4.2.0.tar.gz", hash = "sha256:c055de9e685cab7aa369e25e16731baa9b310b9db1a76886dbdde0b4456fb056", size = 45302, upload-time = "2025-05-16T14:46:48.422Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/64/d3/65ff32c01cc64d44441b038dbb7cfb0c6a5507a1c937b3d41bd99af7bdc4/daphne-4.2.2.tar.gz", hash = "sha256:6c3527d4ce32630ae054dfb0ef5578e9a35d2f39f0ebcd02ef4f9129a121ce8d", size = 47601, upload-time = "2026-06-03T10:53:13.31Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/4a/ad/b00755d09a1ec080ad5fe0d5a6e609f9e4441755204a16c17cc7a07f80f6/daphne-4.2.0-py3-none-any.whl", hash = "sha256:ccc7a476c498272237e27758a02aff11c76ab777c4e20b9b6c141729db599d5d", size = 28493, upload-time = "2025-05-16T14:46:46.859Z" },
+    { url = "https://files.pythonhosted.org/packages/78/ab/85534d9cbca09f3c10f58fc2093659062280ed5703707c0b41dbca8ec297/daphne-4.2.2-py3-none-any.whl", hash = "sha256:466ba8a7c31c5b758953095b451dbad9dc23e5783c68a3716e5fc7aa5f26d168", size = 29466, upload-time = "2026-06-03T10:53:11.841Z" },
 ]
 
 [[package]]
