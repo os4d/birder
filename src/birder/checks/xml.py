@@ -9,6 +9,7 @@ from lxml.etree import XPathSyntaxError
 from lxml.html.soupparser import fromstring
 
 from ..exceptions import CheckError
+from ..utils.security import validate_url_not_private
 from . import HttpCheck
 from .http import BaseHttpConfig
 
@@ -40,6 +41,7 @@ class XMLCheck(HttpCheck):
 
     def check(self, raise_error: bool = False) -> bool:
         try:
+            validate_url_not_private(self.config["url"])
             timeout = self.config["timeout"]
             match = self.config["xpath"]
             res = requests.get(self.config["url"], timeout=timeout)

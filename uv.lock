@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = "==3.12.*"
 resolution-markers = [
     "implementation_name == 'pypy' and platform_python_implementation != 'PyPy' and sys_platform == 'win32'",
@@ -1980,7 +1980,7 @@ requires-dist = [
     { name = "django-unfold", specifier = ">=0.60" },
     { name = "djangorestframework", specifier = ">=3.15.2" },
     { name = "dnspython", specifier = ">=2.6.1" },
-    { name = "dramatiq", specifier = ">=1.17.1" },
+    { name = "dramatiq", specifier = ">=1.17.1,<2" },
     { name = "dramatiq-crontab", extras = ["sentry"], specifier = ">=1.0.8" },
     { name = "durations-nlp", specifier = ">=1.0.1" },
     { name = "elasticsearch", specifier = ">=9.0.2" },

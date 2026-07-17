@@ -25,6 +25,7 @@ def test_s3():
         "aws_access_key_id": "key1",
         "aws_secret_access_key": "secret1",
         "aws_session_token": "token1",
+        "verify_ssl": True,
     }
 
 

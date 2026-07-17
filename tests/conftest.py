@@ -5,7 +5,11 @@ from typing import TYPE_CHECKING
 
 import pytest
 import responses
-from django.utils.deprecation import RemovedInDjango60Warning
+
+try:
+    from django.utils.deprecation import RemovedInDjango60Warning
+except ImportError:
+    RemovedInDjango60Warning = FutureWarning
 
 if TYPE_CHECKING:
     from django_webtest import DjangoTestApp
@@ -101,7 +105,7 @@ def passive_monitor(project) -> "Monitor":
     return MonitorFactory(project=project, strategy=HealthCheck)
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 async def close_channels_redis_connections():
     yield
     from channels.layers import channel_layers

@@ -13,6 +13,7 @@ class S3Config(ConfigForm):
     aws_access_key_id = forms.CharField(required=True)
     aws_secret_access_key = WriteOnlyField(required=True)
     aws_session_token = WriteOnlyField(required=False)
+    verify_ssl = forms.BooleanField(required=False, initial=True, label="Verify SSL certificate")
 
 
 class S3Check(HttpCheck):
@@ -25,7 +26,8 @@ class S3Check(HttpCheck):
         try:
             cfg = {**self.config}
             bucket_name = cfg.pop("bucket_name")
-            s3 = boto3.resource("s3", **cfg, config=boto3.session.Config(signature_version="s3v4"), verify=False)
+            verify_ssl = cfg.pop("verify_ssl")
+            s3 = boto3.resource("s3", **cfg, config=boto3.session.Config(signature_version="s3v4"), verify=verify_ssl)
             s3.Bucket(bucket_name).check()
             return True
         except ValueError as e:

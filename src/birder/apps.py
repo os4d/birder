@@ -9,6 +9,7 @@ class Config(AppConfig):
     def ready(self) -> None:
         from . import handlers  # noqa
         from . import tasks  # noqa
-        from .check import check_crypt
+        from .check import check_crypt, check_hsts
 
         checks.register(check_crypt, "birder")
+        checks.register(check_hsts, "birder")
