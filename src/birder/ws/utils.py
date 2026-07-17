@@ -45,9 +45,9 @@ def _ping(timestamp: str) -> None:
     _broadcast(channel_layer, PUBLIC_GROUP, payload)
 
 
-def _encode_monitor(monitor: "Monitor", public: bool = False) -> dict:
+def _encode_monitor(monitor: "Monitor", public: bool = False) -> dict[str, Any]:
     data, labels = get_data_for_date(monitor)
-    result = {
+    result: dict[str, Any] = {
         "id": monitor.id,
         "project": {
             "id": monitor.project.id,

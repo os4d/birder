@@ -15,7 +15,7 @@ WEAK_SECRETS = {"sensitive-secret-key", ""}
 def check_crypt(
     app_configs: "Sequence[AppConfig]", databases: "Sequence[str] | None", **kwargs: Any
 ) -> "Iterable[checks.CheckMessage]":
-    errors = []
+    errors: list[checks.CheckMessage] = []
     if not settings.SALT_KEY:
         errors.append(checks.Error("CRYPT_SALT_KEY env var must be a list of Fernet keys"))
     if not settings.SECRET_KEY_FALLBACKS:
