@@ -1,11 +1,16 @@
 import os
 import sys
+import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
 import responses
-from django.utils.deprecation import RemovedInDjango60Warning
+
+try:
+    from django.utils.deprecation import RemovedInDjango60Warning
+except ImportError:
+    RemovedInDjango60Warning = FutureWarning
 
 if TYPE_CHECKING:
     from django_webtest import DjangoTestApp
