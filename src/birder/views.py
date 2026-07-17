@@ -4,6 +4,7 @@ from typing import Any
 
 from django.conf import settings
 from django.contrib.auth.views import LoginView as LoginView_
+from django.core.cache import cache
 from django.db.models import QuerySet
 from django.forms import Media
 from django.http.request import HttpRequest
@@ -108,9 +109,51 @@ class MonitorDetail(CommonContextMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
+LOGIN_ATTEMPT_PREFIX = "login:attempt:"
+LOGIN_MAX_ATTEMPTS = 5
+LOGIN_BLOCK_DURATION = 300
+
+
 class LoginView(CommonContextMixin, LoginView_):
     template_name = "login.html"
     form_class = LoginForm
+
+    def _client_ip(self) -> str:
+        xff = self.request.META.get("HTTP_X_FORWARDED_FOR")
+        if xff:
+            return xff.split(",")[0].strip()
+        return self.request.META.get("REMOTE_ADDR", "")
+
+    def _is_blocked(self) -> bool:
+        key = f"{LOGIN_ATTEMPT_PREFIX}{self._client_ip()}"
+        return cache.get(key, 0) >= LOGIN_MAX_ATTEMPTS
+
+    def _increment_attempts(self) -> None:
+        key = f"{LOGIN_ATTEMPT_PREFIX}{self._client_ip()}"
+        attempts = cache.get(key, 0)
+        cache.set(key, attempts + 1, timeout=LOGIN_BLOCK_DURATION)
+
+    def _clear_attempts(self) -> None:
+        key = f"{LOGIN_ATTEMPT_PREFIX}{self._client_ip()}"
+        cache.delete(key)
+
+    def form_invalid(self, form: Any) -> HttpResponse:
+        self._increment_attempts()
+        return super().form_invalid(form)
+
+    def form_valid(self, form: Any) -> HttpResponse:
+        self._clear_attempts()
+        return super().form_valid(form)
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        if self._is_blocked():
+            return render(request, "errors/429.html", status=429)
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        if self._is_blocked():
+            return render(request, "errors/429.html", status=429)
+        return super().post(request, *args, **kwargs)
 
 
 def trigger(request: HttpRequest, pk: str, token: str) -> HttpResponse:
@@ -121,6 +164,10 @@ def trigger(request: HttpRequest, pk: str, token: str) -> HttpResponse:
         return HttpResponse("Check not enabled for remote call", status=400)
     m.get()
     return HttpResponse("Ok")
+
+
+def error_429(request: HttpRequest, exception: Exception = None) -> HttpResponse:
+    return render(request, "errors/429.html", {"error_code": 429, "message": "Too Many Requests"}, status=429)
 
 
 def error_400(request: HttpRequest, exception: Exception = None) -> HttpResponse:

@@ -6,6 +6,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator, URLVali
 from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 
 from ..exceptions import CheckError
+from ..utils.security import validate_url_not_private
 from .base import BaseCheck, ConfigForm, WriteOnlyField
 
 
@@ -67,8 +68,13 @@ class HttpCheck(BaseCheck):
             cfg["url"] = cfg.get("address", "")
         return cfg
 
+    @staticmethod
+    def _validate_url(url: str) -> None:
+        validate_url_not_private(url)
+
     def check(self, raise_error: bool = False) -> bool:
         try:
+            self._validate_url(self.config["url"])
             timeout = self.config["timeout"]
             match = self.config["match"]
             username, password = self.config["username"], self.config["password"]
@@ -79,7 +85,7 @@ class HttpCheck(BaseCheck):
                 auth = HTTPDigestAuth(username, password)
             elif self.config["auth_type"] == "token":
                 auth = None
-                headers = {"Authorization": "access_token myToken"}
+                headers = {"Authorization": f"Bearer {password}"}
             else:
                 auth = None
             res = requests.get(self.config["url"], timeout=timeout, auth=auth, headers=headers)

@@ -1,5 +1,5 @@
 import logging
-from ftplib import FTP
+from ftplib import FTP, FTP_TLS
 from typing import Any
 
 from django import forms
@@ -17,6 +17,7 @@ class FtpConfig(ConfigForm):
     timeout = forms.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], initial=2)
     user = forms.CharField(required=False)
     passwd = WriteOnlyField(required=False)
+    tls = forms.BooleanField(required=False, initial=False, label="Use FTPS (FTP over SSL/TLS)")
 
 
 class FtpCheck(BaseCheck):
@@ -36,9 +37,11 @@ class FtpCheck(BaseCheck):
     def check(self, raise_error: bool = False) -> bool:
         try:
             cfg = {**self.config}
+            tls = cfg.pop("tls")
             p = cfg.pop("port")
 
-            ftp = FTP(**cfg)  # noqa: S321
+            ftp_class: type[FTP] = FTP if not tls else FTP_TLS
+            ftp = ftp_class(**cfg)  # noqa: S321
             ftp.port = p
             ftp.connect()
             return True

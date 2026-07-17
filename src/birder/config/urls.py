@@ -9,12 +9,14 @@ from birder.console.site import console
 handler400 = views.error_400
 handler403 = views.error_403
 handler404 = views.error_404
+handler429 = views.error_429
 handler500 = views.error_500
 
 urlpatterns = [
     path("errors/400/", handler400, name="errors-400"),
     path("errors/403/", handler403, name="errors-403"),
     path("errors/404/", handler404, name="errors-404"),
+    path("errors/429/", handler429, name="errors-429"),
     path("errors/500/", handler500, name="errors-500"),
     path("social/", include("social_django.urls", namespace="social")),
     path("i18n/", include("django.conf.urls.i18n")),

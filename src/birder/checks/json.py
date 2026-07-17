@@ -7,6 +7,7 @@ from django import forms
 from jmespath.exceptions import LexerError
 
 from ..exceptions import CheckError
+from ..utils.security import validate_url_not_private
 from . import HttpCheck
 from .http import BaseHttpConfig
 
@@ -28,6 +29,7 @@ class JsonCheck(HttpCheck):
 
     def check(self, raise_error: bool = False) -> bool:
         try:
+            validate_url_not_private(self.config["url"])
             timeout = self.config["timeout"]
             match = self.config["match"]
             res = requests.get(self.config["url"], timeout=timeout)

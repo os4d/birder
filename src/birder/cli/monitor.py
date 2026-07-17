@@ -44,10 +44,20 @@ def check_(ctx: Context, monitor_id: int, _all: bool = False, debug: bool = True
     ok = click.style("\u2714", fg="green")
     ko = click.style("\u2716", fg="red")
 
+    def _safe_config(m: Monitor) -> str:
+        from birder.checks.base import WriteOnlyField
+
+        cfg = dict(m.configuration)
+        if form_class := getattr(m.strategy, "config_class", None):
+            for name, field in form_class.declared_fields.items():
+                if isinstance(field, WriteOnlyField) and name in cfg:
+                    cfg[name] = WriteOnlyField.MASK
+        return str(cfg)
+
     def c(m: Monitor) -> None:
         res = m.run()
         status = ok if res else ko
-        info = "" if not debug else f" | {m.configuration}"
+        info = "" if not debug else f" | {_safe_config(m)}"
         click.echo(
             f"{m.project.name[:20]:<22} | "
             f"{m.environment.name[:15]:<17} | "

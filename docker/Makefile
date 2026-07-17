@@ -1,3 +1,5 @@
+# Local development targets only. NOT for production use.
+# All secrets in this file are insecure defaults.
 DOCKER_IMAGE_NAME?=os4d/birder
 VERSION:=$(shell cd .. && uvx --with hatch-vcs hatchling metadata version)
 BUILD_DATE:=$(shell date +"%Y-%m-%d %H:%M")

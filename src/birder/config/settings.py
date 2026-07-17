@@ -58,9 +58,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "csp.middleware.CSPMiddleware",
 ]
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_NAME = "birder_sessionid"
 
 ROOT_URLCONF = "birder.config.urls"
@@ -239,6 +240,14 @@ LOGGING = {
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_HSTS_SECONDS = env("SECURE_HSTS_SECONDS")
+
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "cdnjs.cloudflare.com", "fonts.googleapis.com")
+CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "cdnjs.cloudflare.com")
+CSP_FONT_SRC = ("'self'", "fonts.gstatic.com", "cdnjs.cloudflare.com")
+CSP_IMG_SRC = ("'self'", "data:", "https:")
+CSP_CONNECT_SRC = ("'self'", "ws:", "wss:")
+CSP_INCLUDE_NONCE_IN = ("script-src",)
 
 from .fragments.app import *  # noqa
 from .fragments.constance import *  # noqa

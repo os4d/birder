@@ -10,12 +10,16 @@ from constance import config
 from strategy_field.utils import fqn
 
 from ..utils.charts import get_data_for_date
-from .consumers import GROUP
+from .consumers import GROUP, PUBLIC_GROUP
 
 if TYPE_CHECKING:
     from birder.models import Monitor
 
 logger = logging.getLogger(__name__)
+
+
+def _broadcast(channel_layer: Any, group: str, message: dict) -> None:
+    async_to_sync(channel_layer.group_send)(group, message)
 
 
 def notify_ui(msg: str, *args: Any, **kwargs: Any) -> None:
@@ -29,61 +33,72 @@ def notify_ui(msg: str, *args: Any, **kwargs: Any) -> None:
 
 def _refresh(monitor: "Monitor", crud: str) -> None:
     channel_layer = channels.layers.get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        GROUP,
-        {
-            "type": "send.json",
-            "reason": "update",
-            "crud": crud,
-        },
-    )
+    payload = {"type": "send.json", "reason": "update", "crud": crud}
+    _broadcast(channel_layer, GROUP, payload)
+    _broadcast(channel_layer, PUBLIC_GROUP, payload)
 
 
 def _ping(timestamp: str) -> None:
     channel_layer = channels.layers.get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        GROUP,
-        {"type": "send.json", "reason": "ping", "ts": timestamp},
-    )
+    payload = {"type": "send.json", "reason": "ping", "ts": timestamp}
+    _broadcast(channel_layer, GROUP, payload)
+    _broadcast(channel_layer, PUBLIC_GROUP, payload)
+
+
+def _encode_monitor(monitor: "Monitor", public: bool = False) -> dict:
+    data, labels = get_data_for_date(monitor)
+    result = {
+        "id": monitor.id,
+        "project": {
+            "id": monitor.project.id,
+            "name": monitor.project.name,
+            "environment": monitor.environment.name,
+        },
+        "url": monitor.get_absolute_url(),
+        "status": monitor.status,
+        "active": monitor.active,
+        "name": monitor.name,
+        "icon": monitor.icon,
+    }
+    if not public:
+        result["project"]["data"] = json.loads(json.dumps(monitor.project.overview(), cls=JSONEncoder))
+        result["project"]["status"] = json.loads(json.dumps(monitor.project.status, cls=JSONEncoder))
+        result["last_check"] = json.loads(json.dumps(monitor.last_timestamp_check, cls=JSONEncoder))
+        result["last_error"] = json.loads(json.dumps(monitor.last_timestamp_failure, cls=JSONEncoder))
+        result["last_success"] = json.loads(json.dumps(monitor.last_timestamp_success, cls=JSONEncoder))
+        result["fqn"] = fqn(monitor.strategy)
+        result["failures"] = monitor.failures
+        result["thresholds"] = [monitor.warn_threshold, monitor.err_threshold]
+        result["data"] = data
+        result["labels"] = labels
+    return result
 
 
 def _update(monitor: "Monitor") -> None:
     channel_layer = channels.layers.get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
+    _broadcast(
+        channel_layer,
         GROUP,
-        {"type": "send.json", "reason": "status", "monitor": json.loads(json.dumps(monitor, cls=JSONEncoder))},
+        {
+            "type": "send.json",
+            "reason": "status",
+            "monitor": _encode_monitor(monitor),
+        },
     )
+    if monitor.project.public:
+        _broadcast(
+            channel_layer,
+            PUBLIC_GROUP,
+            {
+                "type": "send.json",
+                "reason": "status",
+                "monitor": _encode_monitor(monitor, public=True),
+            },
+        )
 
 
 class JSONEncoder(JSONEncoder_):
     def default(self, obj: Any) -> Any:
-        from birder.models import Monitor
-
-        if isinstance(obj, Monitor):
-            data, labels = get_data_for_date(obj)
-            return {
-                "id": obj.id,
-                "project": {
-                    "id": obj.project.id,
-                    "name": obj.project.name,
-                    "environment": obj.environment.name,
-                    "data": json.loads(json.dumps(obj.project.overview(), cls=JSONEncoder)),
-                    "status": json.loads(json.dumps(obj.project.status, cls=JSONEncoder)),
-                },
-                "url": obj.get_absolute_url(),
-                "status": obj.status,
-                "active": obj.active,
-                "name": obj.name,
-                "last_check": json.loads(json.dumps(obj.last_timestamp_check, cls=JSONEncoder)),
-                "last_error": json.loads(json.dumps(obj.last_timestamp_failure, cls=JSONEncoder)),
-                "last_success": json.loads(json.dumps(obj.last_timestamp_success, cls=JSONEncoder)),
-                "fqn": fqn(obj.strategy),
-                "icon": obj.icon,
-                "failures": obj.failures,
-                "thresholds": [obj.warn_threshold, obj.err_threshold],
-                "data": data,
-                "labels": labels,
-            }
         if isinstance(obj, datetime):
             return obj.strftime(config.DATETIME_FORMAT)
         if isinstance(obj, date):

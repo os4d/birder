@@ -23,5 +23,5 @@ if SENTRY_DSN:
             sentry_logging,
         ],
         release=birder.VERSION,
-        send_default_pii=True,
+        send_default_pii=env("DEBUG"),
     )

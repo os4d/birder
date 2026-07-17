@@ -16,7 +16,7 @@ class SSHConfig(ConfigForm):
     port = forms.IntegerField(validators=[MinValueValidator(1)], initial=22)
     username = forms.CharField(required=False)
     password = WriteOnlyField(required=False)
-    login_timeout = forms.IntegerField(initial=2)
+    login_timeout = forms.IntegerField(validators=[MinValueValidator(1)], initial=2)
 
 
 class SSHCheck(BaseCheck):

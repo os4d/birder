@@ -1,3 +1,5 @@
+# This is a sample compose file for local development and testing.
+# NOT for production use. All secrets here are insecure defaults.
 x-env: &env
   environment:
     - ADMIN_EMAIL=admin@example.com
