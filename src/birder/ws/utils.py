@@ -75,24 +75,37 @@ def _encode_monitor(monitor: "Monitor", public: bool = False) -> dict[str, Any]:
 
 
 def _update(monitor: "Monitor") -> None:
+    from birder.models import Monitor as MonitorModel
+
     channel_layer = channels.layers.get_channel_layer()
-    _broadcast(
-        channel_layer,
-        GROUP,
-        {
-            "type": "send.json",
-            "reason": "status",
-            "monitor": _encode_monitor(monitor),
-        },
-    )
-    if monitor.project.public:
+    if isinstance(monitor, MonitorModel):
         _broadcast(
             channel_layer,
-            PUBLIC_GROUP,
+            GROUP,
             {
                 "type": "send.json",
                 "reason": "status",
-                "monitor": _encode_monitor(monitor, public=True),
+                "monitor": _encode_monitor(monitor),
+            },
+        )
+        if monitor.project.public:
+            _broadcast(
+                channel_layer,
+                PUBLIC_GROUP,
+                {
+                    "type": "send.json",
+                    "reason": "status",
+                    "monitor": _encode_monitor(monitor, public=True),
+                },
+            )
+    else:
+        _broadcast(
+            channel_layer,
+            GROUP,
+            {
+                "type": "send.json",
+                "reason": "status",
+                "monitor": json.loads(json.dumps(monitor, cls=JSONEncoder)),
             },
         )
 

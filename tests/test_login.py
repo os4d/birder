@@ -26,7 +26,7 @@ def test_login(db, user, client):
     session["google-oauth2_state"] = "1"
     session.save()
 
-    res = client.get(reverse("social:begin", kwargs={"backend": "google-oauth2"}))
+    res = client.post(reverse("social:begin", kwargs={"backend": "google-oauth2"}))
     assert res.status_code == 302
 
     with responses.RequestsMock() as rsps:
