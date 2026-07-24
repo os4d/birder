@@ -404,7 +404,7 @@ ptyprocess==0.7.0
     # via pexpect
 pure-eval==0.2.3
     # via stack-data
-pyasn1==0.6.1
+pyasn1==0.6.4
     # via
     #   ldap3
     #   pyasn1-modules
