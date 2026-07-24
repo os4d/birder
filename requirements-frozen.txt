@@ -544,7 +544,7 @@ sentry-sdk==2.29.1
     #   os4d-birder
 service-identity==24.2.0
     # via twisted
-setuptools==80.9.0
+setuptools==83.0.0
     # via
     #   autobahn
     #   incremental
