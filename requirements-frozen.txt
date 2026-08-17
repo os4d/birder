@@ -574,7 +574,7 @@ soupsieve==2.7
     # via
     #   beautifulsoup4
     #   seleniumbase
-sqlparse==0.5.3
+sqlparse==0.6.0
     # via django
 stack-data==0.6.3
     # via ipython
