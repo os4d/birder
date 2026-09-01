@@ -198,7 +198,7 @@ django-timezone-field==7.1
 django-unfold==0.60.0
     # via os4d-birder
 django-webtest==1.9.13
-djangorestframework==3.16.0
+djangorestframework==3.17.2
     # via os4d-birder
 docker==7.1.0
     # via
