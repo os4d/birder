@@ -26,7 +26,7 @@ attrs==25.3.0
     #   service-identity
     #   trio
     #   twisted
-autobahn==24.4.2
+autobahn==26.7.1
     # via daphne
 automat==25.4.16
     # via twisted
