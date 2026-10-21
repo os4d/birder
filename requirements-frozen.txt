@@ -54,7 +54,7 @@ celery==5.5.3
     #   flower
     #   os4d-birder
     #   pytest-celery
-certifi==2025.4.26
+certifi==2026.10.19
     # via
     #   elastic-transport
     #   minio
